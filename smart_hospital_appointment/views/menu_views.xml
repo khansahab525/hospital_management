@@ -1,0 +1,22 @@
+<odoo>
+    <data>
+        <menuitem id="menu_hospital_root" name="Smart Hospital" sequence="10"/>
+
+        <menuitem id="menu_hospital_operations" name="Operations" parent="menu_hospital_root" sequence="10"/>
+        <menuitem id="menu_hospital_masters" name="Masters" parent="menu_hospital_root" sequence="20" groups="smart_hospital_appointment.group_hospital_admin,smart_hospital_appointment.group_hospital_receptionist"/>
+        <menuitem id="menu_hospital_reports" name="Reports" parent="menu_hospital_root" sequence="30"/>
+
+        <menuitem id="menu_hospital_appointments" name="Appointments" parent="menu_hospital_operations" action="smart_hospital_appointment.action_hospital_appointment" sequence="10"/>
+        <menuitem id="menu_hospital_patients" name="Patients" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_patient" sequence="20"/>
+        <menuitem id="menu_hospital_doctors" name="Doctors" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_doctor" sequence="30"/>
+        <menuitem id="menu_hospital_branches" name="Branches" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_branch" sequence="40"/>
+
+        <record id="action_hospital_appointment_report_wizard" model="ir.actions.act_window">
+            <field name="name">Appointment Summary Report</field>
+            <field name="res_model">hospital.appointment.report.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem id="menu_hospital_appointment_report" name="Appointment Summary" parent="menu_hospital_reports" action="smart_hospital_appointment.action_hospital_appointment_report_wizard" sequence="10"/>
+    </data>
+</odoo>

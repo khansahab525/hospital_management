@@ -1,0 +1,22 @@
+<odoo>
+    <data>
+        <record id="view_hospital_appointment_report_wizard_form" model="ir.ui.view">
+            <field name="name">hospital.appointment.report.wizard.form</field>
+            <field name="model">hospital.appointment.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Appointment Report">
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="branch_id"/>
+                    </group>
+                    <footer>
+                        <button name="action_print_pdf" type="object" string="Print PDF" class="btn-primary"/>
+                        <button name="action_export_excel" type="object" string="Export Excel" class="btn-secondary"/>
+                        <button string="Cancel" class="btn-link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

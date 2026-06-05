@@ -1,0 +1,54 @@
+<odoo>
+    <data>
+        <record id="action_hospital_appointment_report" model="ir.actions.report">
+            <field name="name">Appointment Summary</field>
+            <field name="model">hospital.appointment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">smart_hospital_appointment.report_hospital_appointment_document</field>
+            <field name="report_file">smart_hospital_appointment.report_hospital_appointment_document</field>
+            <field name="print_report_name">'Appointment Summary - %s' % (object.name)</field>
+        </record>
+
+        <template id="report_hospital_appointment_document">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Appointment Summary</h2>
+                        <p>
+                            <strong>From:</strong>
+                            <span t-esc="data.get('date_from')"/>
+                            <strong style="margin-left: 20px;">To:</strong>
+                            <span t-esc="data.get('date_to')"/>
+                            <strong style="margin-left: 20px;">Branch:</strong>
+                            <span t-esc="data.get('branch')"/>
+                        </p>
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Appointment</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Branch</th>
+                                    <th>Date/Time</th>
+                                    <th>Status</th>
+                                    <th>Queue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="docs" t-as="appt">
+                                    <td><span t-esc="appt.name"/></td>
+                                    <td><span t-esc="appt.patient_id.name"/></td>
+                                    <td><span t-esc="appt.doctor_id.name"/></td>
+                                    <td><span t-esc="appt.branch_id.name"/></td>
+                                    <td><span t-esc="appt.appointment_datetime"/></td>
+                                    <td><span t-esc="appt.state"/></td>
+                                    <td><span t-esc="appt.queue_number"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

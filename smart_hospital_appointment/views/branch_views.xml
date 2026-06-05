@@ -1,0 +1,48 @@
+<odoo>
+    <data>
+        <record id="view_hospital_branch_tree" model="ir.ui.view">
+            <field name="name">hospital.branch.tree</field>
+            <field name="model">hospital.branch</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="phone"/>
+                    <field name="email"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_hospital_branch_form" model="ir.ui.view">
+            <field name="name">hospital.branch.form</field>
+            <field name="model">hospital.branch</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="phone"/>
+                                <field name="email"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="address"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_hospital_branch" model="ir.actions.act_window">
+            <field name="name">Branches</field>
+            <field name="res_model">hospital.branch</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

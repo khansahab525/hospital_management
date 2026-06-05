@@ -1,0 +1,139 @@
+<odoo>
+    <data>
+        <record id="view_hospital_appointment_tree" model="ir.ui.view">
+            <field name="name">hospital.appointment.tree</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <tree decoration-danger="state == 'cancelled'" decoration-success="state == 'completed'">
+                    <field name="name"/>
+                    <field name="appointment_datetime"/>
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="branch_id"/>
+                    <field name="queue_number"/>
+                    <field name="is_high_priority"/>
+                    <field name="estimated_wait_minutes"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_hospital_appointment_search" model="ir.ui.view">
+            <field name="name">hospital.appointment.search</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="branch_id"/>
+                    <field name="state"/>
+                    <filter name="today" string="Today Onward" domain="[('appointment_datetime', '&gt;=', context_today())]"/>
+                    <filter name="high_priority" string="High Priority" domain="[('is_high_priority', '=', True)]"/>
+                    <group string="Group By">
+                        <filter name="group_doctor" string="Doctor" context="{'group_by': 'doctor_id'}"/>
+                        <filter name="group_branch" string="Branch" context="{'group_by': 'branch_id'}"/>
+                        <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_hospital_appointment_form" model="ir.ui.view">
+            <field name="name">hospital.appointment.form</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_confirm" type="object" string="Confirm" class="btn-primary" invisible="state != 'draft'"/>
+                        <button name="action_in_progress" type="object" string="Start" class="btn-primary" invisible="state != 'confirmed'"/>
+                        <button name="action_complete" type="object" string="Complete" class="btn-success" invisible="state != 'in_progress'"/>
+                        <button name="action_cancel" type="object" string="Cancel" class="btn-secondary" invisible="state not in ['draft', 'confirmed', 'in_progress']"/>
+                        <button name="action_set_high_priority" type="object" string="Mark High Priority" invisible="is_high_priority"/>
+                        <button name="action_remove_high_priority" type="object" string="Remove Priority" invisible="not is_high_priority"/>
+                        <button name="action_suggest_reschedule" type="object" string="Suggest Next Slot"/>
+                        <button name="action_apply_suggested_slot" type="object" string="Apply Suggested Slot" invisible="not suggested_slot"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,in_progress,completed,cancelled"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="patient_id"/>
+                                <field name="doctor_id"/>
+                                <field name="branch_id"/>
+                                <field name="appointment_datetime"/>
+                            </group>
+                            <group>
+                                <field name="duration_minutes"/>
+                                <field name="queue_number" readonly="1"/>
+                                <field name="is_high_priority"/>
+                                <field name="estimated_wait_minutes" readonly="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="completion_minutes"/>
+                            <field name="suggested_slot" readonly="1"/>
+                            <field name="reschedule_note" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="notes"/>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_hospital_appointment" model="ir.actions.act_window">
+            <field name="name">Appointments</field>
+            <field name="res_model">hospital.appointment</field>
+            <field name="view_mode">tree,form,pivot,graph,calendar</field>
+            <field name="search_view_id" ref="view_hospital_appointment_search"/>
+        </record>
+
+        <record id="view_hospital_appointment_calendar" model="ir.ui.view">
+            <field name="name">hospital.appointment.calendar</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <calendar string="Appointments Calendar" date_start="appointment_datetime" color="doctor_id">
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="branch_id"/>
+                    <field name="state"/>
+                    <field name="is_high_priority"/>
+                </calendar>
+            </field>
+        </record>
+
+        <record id="view_hospital_appointment_pivot" model="ir.ui.view">
+            <field name="name">hospital.appointment.pivot</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <pivot string="Appointment Analytics">
+                    <field name="branch_id" type="row"/>
+                    <field name="doctor_id" type="row"/>
+                    <field name="state" type="col"/>
+                    <field name="id" type="measure" string="Appointments"/>
+                    <field name="estimated_wait_minutes" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="view_hospital_appointment_graph" model="ir.ui.view">
+            <field name="name">hospital.appointment.graph</field>
+            <field name="model">hospital.appointment</field>
+            <field name="arch" type="xml">
+                <graph string="Doctor Workload" type="bar">
+                    <field name="doctor_id"/>
+                    <field name="id" type="measure"/>
+                    <field name="state"/>
+                </graph>
+            </field>
+        </record>
+    </data>
+</odoo>
