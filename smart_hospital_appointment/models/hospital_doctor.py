@@ -4,7 +4,8 @@ from odoo import api, fields, models
 class HospitalDoctor(models.Model):
     _name = "hospital.doctor"
     _description = "Hospital Doctor"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["hospital.branch.filtered", "mail.thread", "mail.activity.mixin"]
+    _hospital_branch_field = "branch_ids"
     _order = "name"
 
     name = fields.Char(required=True, tracking=True)
@@ -47,6 +48,7 @@ class HospitalDoctor(models.Model):
 class HospitalDoctorAvailability(models.Model):
     _name = "hospital.doctor.availability"
     _description = "Doctor Availability Slot"
+    _inherit = ["hospital.branch.filtered"]
     _order = "doctor_id, day_of_week, start_time"
 
     doctor_id = fields.Many2one("hospital.doctor", required=True, ondelete="cascade")

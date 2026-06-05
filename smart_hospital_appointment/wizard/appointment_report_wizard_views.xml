@@ -8,7 +8,7 @@
                     <group>
                         <field name="date_from"/>
                         <field name="date_to"/>
-                        <field name="branch_id"/>
+                        <field name="branch_id" options="{'no_create': True}"/>
                     </group>
                     <footer>
                         <button name="action_print_pdf" type="object" string="Print PDF" class="btn-primary"/>

@@ -7,7 +7,7 @@ from odoo.exceptions import UserError, ValidationError
 class HospitalAppointment(models.Model):
     _name = "hospital.appointment"
     _description = "Hospital Appointment"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["hospital.branch.filtered", "mail.thread", "mail.activity.mixin"]
     _order = "appointment_datetime, is_high_priority desc, id"
 
     name = fields.Char(
@@ -100,17 +100,18 @@ class HospitalAppointment(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         seq = self.env["ir.sequence"].sudo()
+        default_branch = self.env.user.branch_id.id
         for vals in vals_list:
             if vals.get("name", "New") == "New":
                 vals["name"] = seq.next_by_code("hospital.appointment") or "New"
+            if not vals.get("branch_id") and default_branch:
+                vals["branch_id"] = default_branch
         recs = super().create(vals_list)
         recs._assign_queue_number()
         return recs
 
     def unlink(self):
-        privileged = self.env.user.has_group(
-            "smart_hospital_appointment.group_hospital_admin"
-        ) or self.env.user.has_group("smart_hospital_appointment.group_hospital_receptionist")
+        privileged = self.env.user.has_group("base.group_system")
         if not privileged:
             bad = self.filtered(lambda r: r.state not in ("draft", "confirmed"))
             if bad:

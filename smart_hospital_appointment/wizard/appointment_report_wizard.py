@@ -12,7 +12,10 @@ class AppointmentReportWizard(models.TransientModel):
 
     date_from = fields.Date(required=True)
     date_to = fields.Date(required=True)
-    branch_id = fields.Many2one("hospital.branch")
+    branch_id = fields.Many2one(
+        "hospital.branch",
+        default=lambda self: self.env.user.branch_id,
+    )
     file_data = fields.Binary(readonly=True)
     file_name = fields.Char(readonly=True)
 

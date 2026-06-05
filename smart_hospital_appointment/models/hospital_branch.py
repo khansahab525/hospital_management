@@ -1,10 +1,24 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class HospitalBranch(models.Model):
     _name = "hospital.branch"
     _description = "Hospital Branch"
+    _inherit = ["hospital.branch.filtered"]
+    _hospital_branch_field = "id"
     _order = "name"
+
+    @api.model
+    def _get_hospital_branch_search_domain(self):
+        user = self.env.user
+        if (
+            self.env.su
+            or not user.allowed_branch_ids
+            or not user.branch_id
+            or user.has_group("base.group_system")
+        ):
+            return []
+        return [("id", "=", user.branch_id.id)]
 
     name = fields.Char(required=True)
     code = fields.Char(required=True)

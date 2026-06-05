@@ -1,10 +1,11 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class HospitalPatient(models.Model):
     _name = "hospital.patient"
     _description = "Hospital Patient"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["hospital.branch.filtered", "mail.thread", "mail.activity.mixin"]
     _order = "name"
 
     name = fields.Char(required=True, tracking=True)
@@ -42,7 +43,86 @@ class HospitalPatient(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         seq = self.env["ir.sequence"].sudo()
+        default_branch = self.env.user.branch_id.id
         for vals in vals_list:
             if vals.get("patient_code", "New") == "New":
                 vals["patient_code"] = seq.next_by_code("hospital.patient") or "New"
+            if not vals.get("branch_id") and default_branch:
+                vals["branch_id"] = default_branch
         return super().create(vals_list)
+
+    @api.model
+    def register_portal_patient(self, data):
+        """Create a portal user and linked patient record from website registration."""
+        name = (data.get("name") or "").strip()
+        email = (data.get("email") or "").strip().lower()
+        password = data.get("password") or ""
+        confirm_password = data.get("confirm_password") or ""
+        phone = (data.get("phone") or "").strip()
+        gender = data.get("gender")
+        address = (data.get("address") or "").strip()
+        branch_id = int(data.get("branch_id") or 0)
+        try:
+            age = int(data.get("age") or 0)
+        except (TypeError, ValueError):
+            age = 0
+
+        if not name:
+            raise UserError(_("Please enter your full name."))
+        if not email:
+            raise UserError(_("Please enter your email address."))
+        if not password:
+            raise UserError(_("Please enter a password."))
+        if password != confirm_password:
+            raise UserError(_("Passwords do not match. Please retype them."))
+        if len(password) < 8:
+            raise UserError(_("Password must be at least 8 characters."))
+        if not phone:
+            raise UserError(_("Please enter your phone number."))
+        if age <= 0:
+            raise UserError(_("Please enter a valid age."))
+        if gender not in ("male", "female", "other"):
+            raise UserError(_("Please select your gender."))
+        branch = self.env["hospital.branch"].sudo().browse(branch_id)
+        if not branch.exists() or not branch.active:
+            raise UserError(_("Please select a valid hospital branch."))
+
+        Users = self.env["res.users"].sudo()
+        if Users.search([("login", "=", email)], limit=1):
+            raise UserError(_("An account with this email already exists. Please sign in instead."))
+        if self.sudo().search([("email", "=", email)], limit=1):
+            raise UserError(_("A patient record with this email already exists."))
+
+        user_vals = {
+            "name": name,
+            "login": email,
+            "email": email,
+            "password": password,
+            "phone": phone,
+            "branch_id": branch.id,
+            "allowed_branch_ids": [(6, 0, [branch.id])],
+        }
+        user = Users.with_context(no_reset_password=True)._create_user_from_template(user_vals)
+        partner = user.partner_id
+        partner.sudo().write(
+            {
+                "name": name,
+                "email": email,
+                "phone": phone,
+                "street": address or False,
+            }
+        )
+        patient = self.sudo().create(
+            {
+                "name": name,
+                "partner_id": partner.id,
+                "user_id": user.id,
+                "age": age,
+                "gender": gender,
+                "phone": phone,
+                "email": email,
+                "address": address or False,
+                "branch_id": branch.id,
+            }
+        )
+        return user, patient
