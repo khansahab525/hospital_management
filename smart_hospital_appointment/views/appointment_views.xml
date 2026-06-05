@@ -4,13 +4,14 @@
             <field name="name">hospital.appointment.tree</field>
             <field name="model">hospital.appointment</field>
             <field name="arch" type="xml">
-                <tree decoration-danger="state == 'cancelled'" decoration-success="state == 'completed'">
+                <tree decoration-danger="state == 'cancelled'" decoration-success="state in ('completed', 'released')">
                     <field name="name"/>
                     <field name="appointment_datetime"/>
-                    <field name="patient_id"/>
+                    <field name="patient_id" readonly="state in ('completed', 'released', 'cancelled')"/>
                     <field name="doctor_id"/>
                     <field name="branch_id"/>
                     <field name="queue_number"/>
+                    <field name="expected_turn_datetime" optional="show"/>
                     <field name="is_high_priority"/>
                     <field name="estimated_wait_minutes"/>
                     <field name="state"/>
@@ -48,14 +49,18 @@
                         <button name="action_confirm" type="object" string="Confirm" class="btn-primary" invisible="state != 'draft'"/>
                         <button name="action_in_progress" type="object" string="Start" class="btn-primary" invisible="state != 'confirmed'"/>
                         <button name="action_complete" type="object" string="Complete" class="btn-success" invisible="state != 'in_progress'"/>
+                        <button name="action_release" type="object" string="Release patient" class="btn-primary" invisible="state != 'completed'"/>
+                        <button name="action_print_medicine_prescription" type="object" string="Medicine report" invisible="state not in ('completed', 'released')"/>
                         <button name="action_cancel" type="object" string="Cancel" class="btn-secondary" invisible="state not in ['draft', 'confirmed', 'in_progress']"/>
+                        <button name="action_set_to_draft" type="object" string="Set to draft" class="btn-secondary" invisible="state != 'cancelled'"/>
                         <button name="action_set_high_priority" type="object" string="Mark High Priority" invisible="is_high_priority"/>
                         <button name="action_remove_high_priority" type="object" string="Remove Priority" invisible="not is_high_priority"/>
                         <button name="action_suggest_reschedule" type="object" string="Suggest Next Slot"/>
                         <button name="action_apply_suggested_slot" type="object" string="Apply Suggested Slot" invisible="not suggested_slot"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,in_progress,completed,cancelled"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,in_progress,completed,released,cancelled"/>
                     </header>
                     <sheet>
+                        <field name="medicine_category_id" invisible="1"/>
                         <div class="oe_title">
                             <h1>
                                 <field name="name" readonly="1"/>
@@ -63,7 +68,7 @@
                         </div>
                         <group>
                             <group>
-                                <field name="patient_id"/>
+                                <field name="patient_id" readonly="state in ('completed', 'released', 'cancelled')"/>
                                 <field name="doctor_id"/>
                                 <field name="branch_id"/>
                                 <field name="appointment_datetime"/>
@@ -71,6 +76,7 @@
                             <group>
                                 <field name="duration_minutes"/>
                                 <field name="queue_number" readonly="1"/>
+                                <field name="expected_turn_datetime" readonly="1"/>
                                 <field name="is_high_priority"/>
                                 <field name="estimated_wait_minutes" readonly="1"/>
                             </group>
@@ -83,6 +89,27 @@
                         <group>
                             <field name="notes"/>
                         </group>
+                        <notebook invisible="state not in ('completed', 'released')">
+                            <page string="Medicines" name="medicines">
+                                <field name="medicine_line_ids" nolabel="1" readonly="state == 'released'">
+                                    <tree string="Medicines" editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field
+                                            name="product_id"
+                                            domain="[('categ_id', 'child_of', parent.medicine_category_id)]"
+                                            options="{'no_create': True}"
+                                        />
+                                        <field name="product_uom_id"/>
+                                        <field name="quantity"/>
+                                        <field name="days"/>
+                                        <field name="dosage" optional="show"/>
+                                        <field name="frequency" optional="show"/>
+                                        <field name="route" optional="hide"/>
+                                        <field name="instructions" optional="hide"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
                     </sheet>
                     <chatter/>
                 </form>

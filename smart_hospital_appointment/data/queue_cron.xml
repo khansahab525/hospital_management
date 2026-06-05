@@ -4,7 +4,7 @@
             <field name="name">Hospital Queue Resequence</field>
             <field name="model_id" ref="model_hospital_appointment"/>
             <field name="state">code</field>
-            <field name="code">model.cron_resequence_queue()</field>
+            <field name="code">model.cron_resequence_queue(); model.cron_late_queue_swap()</field>
             <field name="interval_number">5</field>
             <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>

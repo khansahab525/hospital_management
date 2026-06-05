@@ -24,23 +24,24 @@ class HospitalPatient(models.Model):
     medical_history = fields.Html()
     allergies = fields.Text()
     branch_id = fields.Many2one("hospital.branch", required=True, tracking=True)
-    appointment_ids = fields.One2many(
-        "hospital.appointment", "patient_id", string="Appointments"
-    )
     appointment_count = fields.Integer(compute="_compute_appointment_count")
 
     _sql_constraints = [
         ("hospital_patient_code_uniq", "unique(patient_code)", "Patient ID must be unique."),
     ]
 
-    @api.depends("appointment_ids")
+    @api.depends("partner_id")
     def _compute_appointment_count(self):
+        Appointment = self.env["hospital.appointment"]
         for rec in self:
-            rec.appointment_count = len(rec.appointment_ids)
+            if rec.partner_id:
+                rec.appointment_count = Appointment.search_count([("patient_id", "=", rec.partner_id.id)])
+            else:
+                rec.appointment_count = 0
 
     @api.model_create_multi
     def create(self, vals_list):
-        seq = self.env["ir.sequence"]
+        seq = self.env["ir.sequence"].sudo()
         for vals in vals_list:
             if vals.get("patient_code", "New") == "New":
                 vals["patient_code"] = seq.next_by_code("hospital.patient") or "New"

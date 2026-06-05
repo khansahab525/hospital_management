@@ -37,7 +37,9 @@ class HospitalDoctor(models.Model):
     @api.depends("appointment_ids.state", "appointment_ids.patient_id")
     def _compute_metrics(self):
         for rec in self:
-            completed = rec.appointment_ids.filtered(lambda a: a.state == "completed")
+            completed = rec.appointment_ids.filtered(
+                lambda a: a.state in ("completed", "released")
+            )
             rec.completed_appointments = len(completed)
             rec.total_patients = len(completed.mapped("patient_id"))
 
