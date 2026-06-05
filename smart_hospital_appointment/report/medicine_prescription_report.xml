@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_report_hospital_medicine_prescription" model="ir.actions.report">
+            <field name="name">Medicine Prescription</field>
+            <field name="model">hospital.appointment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">smart_hospital_appointment.report_hospital_medicine_prescription_document</field>
+            <field name="report_file">smart_hospital_appointment.report_hospital_medicine_prescription_document</field>
+            <field name="print_report_name">'Medicines - %s' % (object.name)</field>
+        </record>
+
+        <template id="report_hospital_medicine_prescription_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h2>Medicine prescription</h2>
+                            <div class="row mt-3 mb-4">
+                                <div class="col-6">
+                                    <strong>Appointment:</strong>
+                                    <span t-field="o.name"/>
+                                    <br/>
+                                    <strong>Date:</strong>
+                                    <span t-field="o.appointment_datetime"/>
+                                    <br/>
+                                    <strong>Queue #:</strong>
+                                    <span t-esc="o.queue_number or '-'"/>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Patient:</strong>
+                                    <span t-field="o.patient_id.name"/>
+                                    <br/>
+                                    <strong>Doctor:</strong>
+                                    <span t-field="o.doctor_id.name"/>
+                                    <br/>
+                                    <strong>Branch:</strong>
+                                    <span t-field="o.branch_id.name"/>
+                                </div>
+                            </div>
+                            <table class="table table-sm o_main_table">
+                                <thead>
+                                    <tr>
+                                        <th>Medicine</th>
+                                        <th class="text-end">Qty</th>
+                                        <th>UoM</th>
+                                        <th class="text-center">Days</th>
+                                        <th>Dosage</th>
+                                        <th>Frequency</th>
+                                        <th>Route</th>
+                                        <th>Instructions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="o.medicine_line_ids" t-as="line">
+                                        <td><span t-field="line.product_id.display_name"/></td>
+                                        <td class="text-end"><span t-field="line.quantity"/></td>
+                                        <td><span t-field="line.product_uom_id.name"/></td>
+                                        <td class="text-center"><span t-esc="line.days"/></td>
+                                        <td><span t-esc="line.dosage or ''"/></td>
+                                        <td><span t-esc="line.frequency or ''"/></td>
+                                        <td><span t-esc="line.route or ''"/></td>
+                                        <td><span t-esc="line.instructions or ''"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p t-if="not o.medicine_line_ids" class="text-muted">No medicines recorded on this appointment.</p>
+                            <p class="mt-4" t-if="o.notes">
+                                <strong>Notes:</strong>
+                                <br/>
+                                <span t-field="o.notes"/>
+                            </p>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

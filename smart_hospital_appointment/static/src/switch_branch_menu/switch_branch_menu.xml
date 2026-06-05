@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="smart_hospital_appointment.SwitchBranchMenu">
+    <Dropdown class="'o_switch_branch_menu d-none d-md-block'" position="'bottom-end'">
+        <t t-set-slot="toggler">
+            <i class="fa fa-map-marker d-lg-none"/>
+            <span class="oe_topbar_name d-none d-lg-block" t-esc="currentBranchName"/>
+        </t>
+        <t t-foreach="branches" t-as="branch" t-key="branch.id">
+            <DropdownItem
+                class="{ 'alert-primary': isCurrent(branch.id) }"
+                onSelected="() => this.switchToBranch(branch.id)"
+            >
+                <span t-attf-class="#{isCurrent(branch.id) ? 'fw-bold text-900' : ''}">
+                    <i t-if="isCurrent(branch.id)" class="fa fa-check me-2 text-primary"/>
+                    <t t-out="branch.name"/>
+                    <small t-if="branch.code" class="text-muted ms-1">(<t t-out="branch.code"/>)</small>
+                </span>
+            </DropdownItem>
+        </t>
+    </Dropdown>
+</t>
+
+</templates>

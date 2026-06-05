@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_hospital_medicine_variants" model="ir.actions.act_window">
+            <field name="name">Medicine</field>
+            <field name="res_model">product.product</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="domain" eval="[('categ_id', 'child_of', ref('smart_hospital_appointment.product_category_hospital_medicines'))]"/>
+            <field name="context" eval="{'default_categ_id': ref('smart_hospital_appointment.product_category_hospital_medicines')}"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Register a medicine product variant.
+                </p>
+                <p>
+                    New items are created under the <strong>Medicines</strong> product category.
+                    Assign existing products to that category (or a sub-category) so they appear here and on prescriptions.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+            id="menu_hospital_medicine_variants"
+            name="Medicine"
+            parent="menu_hospital_masters"
+            action="action_hospital_medicine_variants"
+            sequence="50"
+        />
+    </data>
+</odoo>

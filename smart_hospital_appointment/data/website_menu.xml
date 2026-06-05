@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <function model="website.menu" name="_update_hospital_appointment_menu"/>
+
+        <record id="website_menu_hospital_doctors" model="website.menu">
+            <field name="name">Doctors</field>
+            <field name="url">/doctors</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">56</field>
+        </record>
+
+        <record id="website_menu_hospital_book" model="website.menu">
+            <field name="name">Book Appointment</field>
+            <field name="url">/appointment/book</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">55</field>
+        </record>
+
+        <record id="website_menu_hospital_register" model="website.menu">
+            <field name="name">Register</field>
+            <field name="url">/appointment/register</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">54</field>
+        </record>
+    </data>
+</odoo>

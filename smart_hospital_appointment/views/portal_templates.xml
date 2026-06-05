@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_hospital" inherit_id="portal.portal_my_home" name="Portal My Home: Hospital">
+        <xpath expr="//div[@id='portal_common_category']" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Hospital</t>
+                <t t-set="url" t-value="'/my/hospital'"/>
+                <t t-set="text">Book and manage your appointments</t>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_menu_hospital" inherit_id="portal.portal_breadcrumbs" name="Portal breadcrumbs: Hospital">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name and page_name in ('hospital', 'hospital_new', 'hospital_edit', 'hospital_detail')" t-attf-class="breadcrumb-item #{'active' if page_name == 'hospital' else ''}">
+                <a t-if="page_name != 'hospital'" href="/my/hospital">Hospital</a>
+                <t t-else="">Hospital</t>
+            </li>
+            <li t-if="page_name == 'hospital_new'" class="breadcrumb-item active">New appointment</li>
+            <li t-if="page_name == 'hospital_edit'" class="breadcrumb-item active">Edit appointment</li>
+            <li t-if="page_name == 'hospital_detail'" class="breadcrumb-item active">Appointment</li>
+        </xpath>
+    </template>
+
+    <template id="portal_appointment_status_badge" name="Appointment status badge">
+        <t t-set="status_class" t-value="'o_status_' + appointment.state"/>
+        <span t-attf-class="o_appt_status #{status_class}">
+            <i class="fa fa-circle" style="font-size: 0.45rem;" aria-hidden="true"/>
+            <span t-field="appointment.state"/>
+        </span>
+    </template>
+
+    <template id="portal_my_hospital" name="Hospital portal dashboard">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Hospital appointments</t>
+            </t>
+            <div class="container pb-5 o_hospital_appointments_page">
+                <section class="o_appt_hero">
+                    <div class="o_appt_hero_inner">
+                        <div>
+                            <span class="o_appt_hero_badge">
+                                <i class="fa fa-calendar-check-o" aria-hidden="true"/>
+                                Your healthcare appointments
+                            </span>
+                            <h1 class="o_appt_hero_title">My Appointments</h1>
+                            <p class="o_appt_hero_subtitle">
+                                Track your visits, queue position, and estimated wait time. Book a new appointment anytime.
+                            </p>
+                        </div>
+                        <div class="o_appt_hero_actions">
+                            <a href="/appointment/book" class="o_appt_btn_primary">
+                                <i class="fa fa-plus" aria-hidden="true"/>
+                                New Appointment
+                            </a>
+                            <a href="/doctors" class="o_appt_btn_light">
+                                <i class="fa fa-user-md" aria-hidden="true"/>
+                                Browse Doctors
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="o_appt_stats">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="o_appt_stat_card">
+                                <div class="o_appt_stat_icon">
+                                    <i class="fa fa-list-alt" aria-hidden="true"/>
+                                </div>
+                                <div>
+                                    <div class="o_appt_stat_value" t-out="appointment_count"/>
+                                    <p class="o_appt_stat_label">Total Appointments</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="o_appt_stat_card">
+                                <div class="o_appt_stat_icon">
+                                    <i class="fa fa-clock-o" aria-hidden="true"/>
+                                </div>
+                                <div>
+                                    <div class="o_appt_stat_value" t-out="upcoming_count"/>
+                                    <p class="o_appt_stat_label">Upcoming</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="o_appt_stat_card">
+                                <div class="o_appt_stat_icon">
+                                    <i class="fa fa-check-circle" aria-hidden="true"/>
+                                </div>
+                                <div>
+                                    <div class="o_appt_stat_value" t-out="completed_count"/>
+                                    <p class="o_appt_stat_label">Completed</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <t t-if="not appointments">
+                    <div class="o_appt_empty">
+                        <i class="fa fa-calendar-times-o" aria-hidden="true"/>
+                        <h3>No appointments yet</h3>
+                        <p>Book your first visit with one of our specialists.</p>
+                        <a href="/appointment/book" class="o_appt_action_btn o_btn_primary">
+                            <i class="fa fa-plus" aria-hidden="true"/>
+                            Book Appointment
+                        </a>
+                    </div>
+                </t>
+
+                <section t-if="appointments">
+                    <t t-foreach="appointments" t-as="a">
+                        <article class="o_appt_card">
+                            <div class="o_appt_card_top">
+                                <a t-attf-href="/my/hospital/appointment/#{a.id}" class="o_appt_ref" t-out="a.name"/>
+                                <t t-set="appointment" t-value="a"/>
+                                <t t-call="smart_hospital_appointment.portal_appointment_status_badge"/>
+                            </div>
+                            <div class="o_appt_meta_grid">
+                                <div class="o_appt_meta_item">
+                                    <span class="o_appt_meta_icon"><i class="fa fa-calendar" aria-hidden="true"/></span>
+                                    <span>
+                                        <span class="o_appt_meta_label">Date &amp; Time</span>
+                                        <span t-field="a.appointment_datetime"/>
+                                    </span>
+                                </div>
+                                <div class="o_appt_meta_item">
+                                    <span class="o_appt_meta_icon"><i class="fa fa-user-md" aria-hidden="true"/></span>
+                                    <span>
+                                        <span class="o_appt_meta_label">Doctor</span>
+                                        <span t-field="a.doctor_id.name"/>
+                                    </span>
+                                </div>
+                                <div class="o_appt_meta_item">
+                                    <span class="o_appt_meta_icon"><i class="fa fa-hospital-o" aria-hidden="true"/></span>
+                                    <span>
+                                        <span class="o_appt_meta_label">Branch</span>
+                                        <span t-field="a.branch_id.name"/>
+                                    </span>
+                                </div>
+                                <div class="o_appt_meta_item">
+                                    <span class="o_appt_meta_icon"><i class="fa fa-sort-numeric-asc" aria-hidden="true"/></span>
+                                    <span>
+                                        <span class="o_appt_meta_label">Queue #</span>
+                                        <t t-out="a.queue_number or '-'"/>
+                                    </span>
+                                </div>
+                                <div class="o_appt_meta_item" t-if="a.expected_turn_datetime">
+                                    <span class="o_appt_meta_icon"><i class="fa fa-hourglass-half" aria-hidden="true"/></span>
+                                    <span>
+                                        <span class="o_appt_meta_label">Est. with doctor</span>
+                                        <span t-field="a.expected_turn_datetime"/>
+                                    </span>
+                                </div>
+                                <div class="o_appt_meta_item">
+                                    <span class="o_appt_meta_icon"><i class="fa fa-users" aria-hidden="true"/></span>
+                                    <span>
+                                        <span class="o_appt_meta_label">Released today</span>
+                                        <t t-out="a.portal_released_today_count"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="o_appt_card_footer">
+                                <a t-attf-href="/my/hospital/appointment/#{a.id}" class="o_appt_open_btn">
+                                    View Details
+                                    <i class="fa fa-arrow-right" aria-hidden="true"/>
+                                </a>
+                            </div>
+                        </article>
+                    </t>
+                </section>
+
+                <div t-if="pager" class="o_portal_pager d-flex justify-content-center my-4">
+                    <t t-call="portal.pager"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_hospital_appointment_detail" name="Hospital portal appointment detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Appointment</t>
+            </t>
+            <div class="container pb-5 o_hospital_appointments_page">
+                <div class="o_appt_detail_card">
+                    <div class="o_appt_detail_header">
+                        <h1 class="o_appt_detail_title" t-out="appointment.name"/>
+                        <t t-call="smart_hospital_appointment.portal_appointment_status_badge"/>
+                    </div>
+                    <div class="o_appt_detail_body">
+                        <div class="o_appt_detail_grid">
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Date &amp; Time</div>
+                                <p class="o_appt_detail_value"><span t-field="appointment.appointment_datetime"/></p>
+                            </div>
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Doctor</div>
+                                <p class="o_appt_detail_value"><span t-field="appointment.doctor_id.name"/></p>
+                            </div>
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Branch</div>
+                                <p class="o_appt_detail_value"><span t-field="appointment.branch_id.name"/></p>
+                            </div>
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Your Queue #</div>
+                                <p class="o_appt_detail_value"><t t-out="appointment.queue_number or '-'"/></p>
+                            </div>
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Released Today</div>
+                                <p class="o_appt_detail_value"><t t-out="appointment.portal_released_today_count"/></p>
+                            </div>
+                            <div class="o_appt_detail_item" t-if="appointment.expected_turn_datetime">
+                                <div class="o_appt_detail_label">Est. Time with Doctor</div>
+                                <p class="o_appt_detail_value"><span t-field="appointment.expected_turn_datetime"/></p>
+                            </div>
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Est. Wait (minutes)</div>
+                                <p class="o_appt_detail_value"><t t-out="appointment.estimated_wait_minutes"/></p>
+                            </div>
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Duration</div>
+                                <p class="o_appt_detail_value"><t t-out="appointment.duration_minutes"/> min</p>
+                            </div>
+                        </div>
+                        <div t-if="appointment.notes" class="o_appt_notes_box">
+                            <strong>Notes:</strong>
+                            <span t-field="appointment.notes"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="o_appt_actions">
+                    <a href="/my/hospital" class="o_appt_action_btn o_btn_secondary">
+                        <i class="fa fa-arrow-left" aria-hidden="true"/>
+                        Back to list
+                    </a>
+                    <a t-if="appointment.state in ('draft', 'confirmed')" t-attf-href="/my/hospital/appointment/#{appointment.id}/edit" class="o_appt_action_btn o_btn_primary">
+                        <i class="fa fa-pencil" aria-hidden="true"/>
+                        Edit
+                    </a>
+                    <form t-if="appointment.state == 'draft'" t-attf-action="/my/hospital/appointment/#{appointment.id}/confirm" method="post" class="d-inline">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <button type="submit" class="o_appt_action_btn o_btn_success">
+                            <i class="fa fa-check" aria-hidden="true"/>
+                            Confirm
+                        </button>
+                    </form>
+                    <a
+                        t-if="appointment.state in ('completed', 'released')"
+                        t-attf-href="/my/hospital/appointment/#{appointment.id}/medicine-report"
+                        class="o_appt_action_btn o_btn_info"
+                    >
+                        <i class="fa fa-file-text-o" aria-hidden="true"/>
+                        Print medicine report
+                    </a>
+                    <form t-if="appointment.state in ('draft', 'confirmed', 'in_progress')" t-attf-action="/my/hospital/appointment/#{appointment.id}/cancel" method="post" class="d-inline">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <button type="submit" class="o_appt_action_btn o_btn_warning" onclick="return confirm('Cancel this appointment?');">
+                            <i class="fa fa-times" aria-hidden="true"/>
+                            Cancel appointment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_hospital_appointment_form" name="Hospital portal appointment form">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Appointment</t>
+            </t>
+            <div class="container pb-5 o_hospital_appointments_page">
+                <div class="o_appt_form_card">
+                    <div class="o_appt_form_header">
+                        <h1 class="o_appt_form_title" t-if="appointment">Edit Appointment</h1>
+                        <h1 class="o_appt_form_title" t-else="">Book New Appointment</h1>
+                        <p class="o_appt_form_subtitle">
+                            Booking as <strong t-out="portal_partner.name"/>.
+                            Select your doctor, branch, and preferred time slot.
+                        </p>
+                    </div>
+                    <div class="o_appt_form_body">
+                        <div t-if="error and error.get('message')" class="o_appt_alert" t-out="error['message']"/>
+                        <form t-att-action="form_action or request.httprequest.path" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="o_appt_form_grid">
+                                <div class="o_appt_form_group">
+                                    <label class="form-label" for="doctor_id">Doctor</label>
+                                    <select class="form-select" name="doctor_id" id="doctor_id" required="required">
+                                        <t t-foreach="doctors" t-as="d">
+                                            <option t-att-value="d.id" t-att-selected="'selected' if selected_doctor_id == d.id else None">
+                                                <t t-out="d.name"/> — <t t-out="d.specialization"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="o_appt_form_group">
+                                    <label class="form-label" for="branch_id">Branch</label>
+                                    <select class="form-select" name="branch_id" id="branch_id" required="required">
+                                        <t t-foreach="branches" t-as="b">
+                                            <option t-att-value="b.id" t-att-selected="'selected' if selected_branch_id == b.id else None">
+                                                <t t-out="b.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="o_appt_form_group">
+                                    <label class="form-label" for="appointment_datetime">Date and time</label>
+                                    <input class="form-control" type="datetime-local" name="appointment_datetime" id="appointment_datetime" required="required"
+                                           t-att-value="appointment_datetime_input or post.get('appointment_datetime') or ''"/>
+                                </div>
+                                <div class="o_appt_form_group">
+                                    <label class="form-label" for="duration_minutes">Duration (minutes)</label>
+                                    <input class="form-control" type="number" name="duration_minutes" id="duration_minutes" min="1"
+                                           t-att-value="appointment.duration_minutes if appointment else (post.get('duration_minutes') or 30)"/>
+                                </div>
+                                <div class="o_appt_form_group o_appt_form_full">
+                                    <label class="form-label" for="notes">Notes (optional)</label>
+                                    <textarea class="form-control" name="notes" id="notes" rows="4"
+                                              t-att-placeholder="'Any symptoms or special requests...'"
+                                              t-out="appointment.notes if appointment else post.get('notes') or ''"/>
+                                </div>
+                            </div>
+                            <div class="o_appt_form_footer">
+                                <button type="submit" class="o_appt_action_btn o_btn_primary">
+                                    <i class="fa fa-calendar-check-o" aria-hidden="true"/>
+                                    Save Appointment
+                                </button>
+                                <a href="/my/hospital" class="o_appt_action_btn o_btn_secondary">Cancel</a>
+                                <a href="/doctors" class="o_appt_action_btn o_btn_secondary">
+                                    <i class="fa fa-user-md" aria-hidden="true"/>
+                                    View Doctors
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

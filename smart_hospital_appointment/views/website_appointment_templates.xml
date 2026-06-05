@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="website_appointment_book" name="Book Appointment">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure o_hospital_appointments_page">
+                <section class="o_appt_hero">
+                    <div class="container">
+                        <div class="o_appt_hero_inner">
+                            <div>
+                                <span class="o_appt_hero_badge">
+                                    <i class="fa fa-calendar-plus-o" aria-hidden="true"/>
+                                    Online booking
+                                </span>
+                                <h1 class="o_appt_hero_title">Book an Appointment</h1>
+                                <p class="o_appt_hero_subtitle">
+                                    Choose your doctor, branch, and preferred time. Your appointment will be confirmed instantly.
+                                </p>
+                                <p t-if="request.params.get('account_created')" class="o_appt_success_banner mt-2 mb-0">
+                                    <i class="fa fa-check-circle" aria-hidden="true"/>
+                                    Your account was created successfully. You can now book your first appointment.
+                                </p>
+                            </div>
+                            <div class="o_appt_hero_actions">
+                                <a href="/my/hospital" class="o_appt_btn_light">
+                                    <i class="fa fa-list" aria-hidden="true"/>
+                                    My Appointments
+                                </a>
+                                <a href="/doctors" class="o_appt_btn_light">
+                                    <i class="fa fa-user-md" aria-hidden="true"/>
+                                    Browse Doctors
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="container pb-5">
+                    <div class="o_appt_form_card">
+                        <div class="o_appt_form_header">
+                            <h2 class="o_appt_form_title" t-if="appointment">Edit Appointment</h2>
+                            <h2 class="o_appt_form_title" t-else="">Schedule Your Visit</h2>
+                            <p class="o_appt_form_subtitle">
+                                Booking as
+                                <strong t-out="portal_partner.name"/>
+                                <span t-if="portal_partner.email"> — <t t-out="portal_partner.email"/></span>
+                            </p>
+                        </div>
+                        <div class="o_appt_form_body">
+                            <div t-if="error and error.get('message')" class="o_appt_alert" t-out="error['message']"/>
+                            <form t-att-action="form_action" method="post" class="o_website_appointment_form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="o_appt_form_grid">
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="doctor_id">Doctor <span class="text-danger">*</span></label>
+                                        <select class="form-select" name="doctor_id" id="doctor_id" required="required">
+                                            <option value="" disabled="disabled" t-att-selected="not selected_doctor_id and 'selected' or None">Select a doctor</option>
+                                            <t t-foreach="doctors" t-as="d">
+                                                <option t-att-value="d.id" t-att-selected="selected_doctor_id == d.id and 'selected' or None">
+                                                    <t t-out="d.name"/> — <t t-out="d.specialization"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="branch_id">Branch <span class="text-danger">*</span></label>
+                                        <select class="form-select" name="branch_id" id="branch_id" required="required">
+                                            <option value="" disabled="disabled" t-att-selected="not selected_branch_id and 'selected' or None">Select a branch</option>
+                                            <t t-foreach="branches" t-as="b">
+                                                <option t-att-value="b.id" t-att-selected="selected_branch_id == b.id and 'selected' or None">
+                                                    <t t-out="b.name"/>
+                                                    <t t-if="b.code"> (<t t-out="b.code"/>)</t>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="appointment_datetime">Date and time <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="datetime-local" name="appointment_datetime" id="appointment_datetime" required="required"
+                                               t-att-value="appointment_datetime_input or post.get('appointment_datetime') or ''"/>
+                                    </div>
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="duration_minutes">Duration (minutes)</label>
+                                        <input class="form-control" type="number" name="duration_minutes" id="duration_minutes" min="15" step="15"
+                                               t-att-value="appointment.duration_minutes if appointment else (post.get('duration_minutes') or 30)"/>
+                                    </div>
+                                    <div class="o_appt_form_group o_appt_form_full">
+                                        <label class="form-label" for="notes">Notes (optional)</label>
+                                        <textarea class="form-control" name="notes" id="notes" rows="4"
+                                                  placeholder="Symptoms, allergies, or special requests..."
+                                                  t-out="appointment.notes if appointment else post.get('notes') or ''"/>
+                                    </div>
+                                </div>
+                                <div class="o_appt_form_footer">
+                                    <button type="submit" class="o_appt_action_btn o_btn_primary">
+                                        <i class="fa fa-calendar-check-o" aria-hidden="true"/>
+                                        <t t-if="appointment">Save Changes</t>
+                                        <t t-else="">Confirm Booking</t>
+                                    </button>
+                                    <a href="/my/hospital" class="o_appt_action_btn o_btn_secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+</odoo>

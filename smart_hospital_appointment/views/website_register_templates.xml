@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="website_patient_register" name="Patient Registration">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure o_hospital_appointments_page">
+                <section class="o_appt_hero">
+                    <div class="container">
+                        <div class="o_appt_hero_inner">
+                            <div>
+                                <span class="o_appt_hero_badge">
+                                    <i class="fa fa-user-plus" aria-hidden="true"/>
+                                    Patient registration
+                                </span>
+                                <h1 class="o_appt_hero_title">Create Your Account</h1>
+                                <p class="o_appt_hero_subtitle">
+                                    Register as a patient to book appointments, track your visits, and manage your healthcare online.
+                                </p>
+                            </div>
+                            <div class="o_appt_hero_actions">
+                                <a href="/web/login?redirect=/appointment/book" class="o_appt_btn_light">
+                                    <i class="fa fa-sign-in" aria-hidden="true"/>
+                                    Already have an account?
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="container pb-5">
+                    <div class="o_appt_form_card">
+                        <div class="o_appt_form_header">
+                            <h2 class="o_appt_form_title">Patient Registration</h2>
+                            <p class="o_appt_form_subtitle">
+                                Your portal account and patient profile will be created together.
+                            </p>
+                        </div>
+                        <div class="o_appt_form_body">
+                            <div t-if="error" class="o_appt_alert" t-out="error"/>
+                            <form action="/appointment/register" method="post" class="o_website_register_form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <h3 class="o_appt_form_section_title">Account details</h3>
+                                <div class="o_appt_form_grid">
+                                    <div class="o_appt_form_group o_appt_form_full">
+                                        <label class="form-label" for="name">Full name <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="text" name="name" id="name" required="required"
+                                               placeholder="Your full name"
+                                               t-att-value="post.get('name') or ''"/>
+                                    </div>
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="email">Email <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="email" name="email" id="email" required="required"
+                                               placeholder="you@example.com"
+                                               t-att-value="post.get('email') or ''"/>
+                                    </div>
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="phone">Phone <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="tel" name="phone" id="phone" required="required"
+                                               placeholder="+1 555 000 0000"
+                                               t-att-value="post.get('phone') or ''"/>
+                                    </div>
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="password" name="password" id="password" required="required" minlength="8"
+                                               placeholder="At least 8 characters"/>
+                                    </div>
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="confirm_password">Confirm password <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="password" name="confirm_password" id="confirm_password" required="required" minlength="8"/>
+                                    </div>
+                                </div>
+
+                                <h3 class="o_appt_form_section_title mt-4">Patient profile</h3>
+                                <div class="o_appt_form_grid">
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="age">Age <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="number" name="age" id="age" required="required" min="1" max="150"
+                                               t-att-value="post.get('age') or ''"/>
+                                    </div>
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="gender">Gender <span class="text-danger">*</span></label>
+                                        <select class="form-select" name="gender" id="gender" required="required">
+                                            <option value="" disabled="disabled" t-att-selected="not post.get('gender') and 'selected' or None">Select gender</option>
+                                            <option value="male" t-att-selected="post.get('gender') == 'male' and 'selected' or None">Male</option>
+                                            <option value="female" t-att-selected="post.get('gender') == 'female' and 'selected' or None">Female</option>
+                                            <option value="other" t-att-selected="post.get('gender') == 'other' and 'selected' or None">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="branch_id">Preferred branch <span class="text-danger">*</span></label>
+                                        <select class="form-select" name="branch_id" id="branch_id" required="required">
+                                            <option value="" disabled="disabled" t-att-selected="not post.get('branch_id') and 'selected' or None">Select a branch</option>
+                                            <t t-foreach="branches" t-as="branch">
+                                                <option t-att-value="branch.id"
+                                                        t-att-selected="str(post.get('branch_id') or '') == str(branch.id) and 'selected' or None">
+                                                    <t t-out="branch.name"/>
+                                                    <t t-if="branch.code"> (<t t-out="branch.code"/>)</t>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="o_appt_form_group o_appt_form_full">
+                                        <label class="form-label" for="address">Address (optional)</label>
+                                        <textarea class="form-control" name="address" id="address" rows="2"
+                                                  placeholder="Street, city, country"
+                                                  t-out="post.get('address') or ''"/>
+                                    </div>
+                                </div>
+
+                                <div class="o_appt_form_footer">
+                                    <button type="submit" class="o_appt_action_btn o_btn_primary">
+                                        <i class="fa fa-user-plus" aria-hidden="true"/>
+                                        Create Account
+                                    </button>
+                                    <a href="/web/login?redirect=/appointment/book" class="o_appt_action_btn o_btn_secondary">
+                                        Sign in instead
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="login_register_link" inherit_id="web.login" name="Hospital login register link">
+        <xpath expr="//input[@name='redirect']" position="after">
+            <div class="text-center mt-3 small">
+                <span>Need a patient account?</span>
+                <a href="/appointment/register">Register here</a>
+            </div>
+        </xpath>
+    </template>
+</odoo>

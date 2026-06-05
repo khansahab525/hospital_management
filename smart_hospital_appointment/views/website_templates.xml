@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="website_doctors_list" name="Doctors">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure o_hospital_doctors_page">
+                <section class="o_doctors_hero">
+                    <div class="container">
+                        <span class="o_doctors_hero_badge">
+                            <i class="fa fa-heartbeat" aria-hidden="true"/>
+                            Trusted Healthcare Professionals
+                        </span>
+                        <h1 class="o_doctors_hero_title">Meet Our Doctors</h1>
+                        <p class="o_doctors_hero_subtitle">
+                            Browse our experienced specialists, compare consultation fees, and book your appointment online in just a few clicks.
+                        </p>
+                    </div>
+                </section>
+
+                <section class="o_doctors_stats">
+                    <div class="container">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="o_doctors_stat_card">
+                                    <div class="o_doctors_stat_icon">
+                                        <i class="fa fa-user-md" aria-hidden="true"/>
+                                    </div>
+                                    <div>
+                                        <div class="o_doctors_stat_value" t-out="doctor_count"/>
+                                        <p class="o_doctors_stat_label">Available Doctors</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="o_doctors_stat_card">
+                                    <div class="o_doctors_stat_icon">
+                                        <i class="fa fa-hospital-o" aria-hidden="true"/>
+                                    </div>
+                                    <div>
+                                        <div class="o_doctors_stat_value" t-out="branch_count"/>
+                                        <p class="o_doctors_stat_label">Hospital Branches</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="o_doctors_stat_card">
+                                    <div class="o_doctors_stat_icon">
+                                        <i class="fa fa-calendar-check-o" aria-hidden="true"/>
+                                    </div>
+                                    <div>
+                                        <div class="o_doctors_stat_value">24/7</div>
+                                        <p class="o_doctors_stat_label">Online Booking</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="o_doctors_grid">
+                    <div class="container">
+                        <t t-if="not doctors">
+                            <div class="o_doctors_empty">
+                                <i class="fa fa-user-md" aria-hidden="true"/>
+                                <h3>No doctors available right now</h3>
+                                <p>Please check back soon or contact us for assistance.</p>
+                                <a href="/contactus" class="btn btn-primary mt-3">Contact us</a>
+                            </div>
+                        </t>
+
+                        <div t-if="doctors" class="row g-4">
+                            <t t-foreach="doctors" t-as="doctor">
+                                <t t-set="partner" t-value="doctor.user_id.partner_id if doctor.user_id else False"/>
+                                <t t-set="initials" t-value="''.join([part[0].upper() for part in doctor.name.split()[:2] if part])"/>
+                                <div class="col-md-6 col-xl-4">
+                                    <article class="o_doctor_card">
+                                        <div class="o_doctor_card_header">
+                                            <div class="o_doctor_avatar">
+                                                <img t-if="partner and partner.image_128"
+                                                     t-attf-src="/web/image/res.partner/#{partner.id}/avatar_128"
+                                                     t-att-alt="doctor.name"/>
+                                                <span t-else="" t-out="initials"/>
+                                            </div>
+                                            <h2 class="o_doctor_name" t-out="doctor.name"/>
+                                            <p class="o_doctor_specialization" t-out="doctor.specialization"/>
+                                            <span t-if="doctor.rating" class="o_doctor_rating">
+                                                <i class="fa fa-star" aria-hidden="true"/>
+                                                <t t-out="'%.1f' % doctor.rating"/> / 5
+                                            </span>
+                                            <span t-else="" class="o_doctor_rating">
+                                                <i class="fa fa-star-o" aria-hidden="true"/>
+                                                New
+                                            </span>
+                                        </div>
+                                        <div class="o_doctor_card_body">
+                                            <ul class="o_doctor_info_list">
+                                                <li>
+                                                    <span class="o_doctor_info_icon">
+                                                        <i class="fa fa-briefcase" aria-hidden="true"/>
+                                                    </span>
+                                                    <span>
+                                                        <span class="o_doctor_info_label">Experience</span>
+                                                        <t t-out="doctor.experience_years"/> years
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="o_doctor_info_icon">
+                                                        <i class="fa fa-money" aria-hidden="true"/>
+                                                    </span>
+                                                    <span>
+                                                        <span class="o_doctor_info_label">Consultation Fee</span>
+                                                        <span t-field="doctor.consultation_fee" t-options="{'widget': 'monetary', 'display_currency': request.env.company.currency_id}"/>
+                                                    </span>
+                                                </li>
+                                                <li t-if="doctor.completed_appointments">
+                                                    <span class="o_doctor_info_icon">
+                                                        <i class="fa fa-check-circle" aria-hidden="true"/>
+                                                    </span>
+                                                    <span>
+                                                        <span class="o_doctor_info_label">Completed Visits</span>
+                                                        <t t-out="doctor.completed_appointments"/>
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                            <div t-if="doctor.branch_ids" class="o_doctor_branches">
+                                                <t t-foreach="doctor.branch_ids" t-as="branch">
+                                                    <span class="o_doctor_branch_tag" t-out="branch.name"/>
+                                                </t>
+                                            </div>
+                                            <a t-attf-href="/appointment/book?doctor_id=#{doctor.id}" class="o_doctor_book_btn">
+                                                <i class="fa fa-calendar-plus-o" aria-hidden="true"/>
+                                                Book Appointment
+                                            </a>
+                                        </div>
+                                    </article>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+</odoo>

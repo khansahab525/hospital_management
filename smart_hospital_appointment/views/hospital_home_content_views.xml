@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hospital_home_content_tree" model="ir.ui.view">
+        <field name="name">hospital.home.content.tree</field>
+        <field name="model">hospital.home.content</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="section_type"/>
+                <field name="title"/>
+                <field name="is_published" widget="boolean_toggle"/>
+                <field name="published_date" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hospital_home_content_form" model="ir.ui.view">
+        <field name="name">hospital.home.content.form</field>
+        <field name="model">hospital.home.content</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_publish" string="Publish" type="object" class="oe_highlight"
+                            invisible="is_published" confirm="Publish this section on the website home page?"/>
+                    <button name="action_unpublish" string="Unpublish" type="object"
+                            invisible="not is_published" confirm="Remove this section from the website home page?"/>
+                    <field name="is_published" invisible="1"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Published" bg_color="text-bg-success" invisible="not is_published"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Internal section name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="section_type"/>
+                            <field name="layout" invisible="section_type not in ('content',)"/>
+                            <field name="background_style" invisible="section_type in ('header', 'footer')"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="published_date" readonly="1"/>
+                            <field name="published_by_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Content" name="content">
+                            <group>
+                                <field name="title" placeholder="Section heading / Hospital name"/>
+                                <field name="subtitle" placeholder="Tagline or short supporting line"/>
+                            </group>
+                            <field name="body_content" widget="html" options="{'style-inline': true}"/>
+                        </page>
+                        <page string="Header" name="header" invisible="section_type != 'header'">
+                            <group>
+                                <group string="Branding">
+                                    <field name="image" widget="image" class="oe_avatar"/>
+                                    <field name="image_alt"/>
+                                    <field name="title" placeholder="Hospital name"/>
+                                    <field name="subtitle" placeholder="Tagline shown under logo"/>
+                                </group>
+                                <group string="Top Bar Info">
+                                    <field name="phone" placeholder="Emergency: +92 91 111 111 091"/>
+                                    <field name="address" placeholder="Plot No. 6-A, Sector A2, Hayatabad"/>
+                                    <field name="working_hours" placeholder="24/7"/>
+                                    <field name="email"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Footer" name="footer" invisible="section_type != 'footer'">
+                            <group>
+                                <group string="About">
+                                    <field name="title" placeholder="Footer heading"/>
+                                    <field name="body_content" widget="html"/>
+                                    <field name="copyright_text"/>
+                                </group>
+                                <group string="Contact Details">
+                                    <field name="address" placeholder="Street, city, country"/>
+                                    <field name="phone"/>
+                                    <field name="email"/>
+                                    <field name="working_hours"/>
+                                    <field name="contact_url"/>
+                                </group>
+                            </group>
+                            <group string="Social Media">
+                                <field name="facebook_url"/>
+                                <field name="twitter_url"/>
+                                <field name="instagram_url"/>
+                                <field name="linkedin_url"/>
+                            </group>
+                        </page>
+                        <page string="Media" name="media" invisible="section_type in ('header', 'footer')">
+                            <group>
+                                <field name="image" widget="image" class="oe_avatar"/>
+                                <field name="image_alt"/>
+                                <field name="icon" placeholder="fa-heartbeat" invisible="section_type != 'feature'"/>
+                            </group>
+                        </page>
+                        <page string="Buttons" name="buttons" invisible="section_type in ('header', 'footer')">
+                            <group>
+                                <group string="Primary Button">
+                                    <field name="button_text"/>
+                                    <field name="button_url"/>
+                                </group>
+                                <group string="Secondary Button">
+                                    <field name="button_text_2"/>
+                                    <field name="button_url_2"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Statistics" name="stats" invisible="section_type != 'stats'">
+                            <group>
+                                <field name="stat_value" placeholder="e.g. 50+"/>
+                                <field name="stat_label" placeholder="e.g. Expert Doctors"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hospital_home_content_search" model="ir.ui.view">
+        <field name="name">hospital.home.content.search</field>
+        <field name="model">hospital.home.content</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="title"/>
+                <field name="section_type"/>
+                <filter name="published" string="Published" domain="[('is_published', '=', True)]"/>
+                <filter name="draft" string="Draft" domain="[('is_published', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_section_type" string="Section Type" context="{'group_by': 'section_type'}"/>
+                    <filter name="group_published" string="Published" context="{'group_by': 'is_published'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hospital_home_content" model="ir.actions.act_window">
+        <field name="name">Home Page Contents</field>
+        <field name="res_model">hospital.home.content</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first home page section
+            </p>
+            <p>
+                Build the website with header, footer, hero banners, content blocks, features, and more.
+                Click <b>Publish</b> on each section to show it on the live website.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <function model="ir.rule" name="_update_hospital_branch_rule_domains"/>
+</odoo>

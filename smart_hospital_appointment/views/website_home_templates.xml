@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hospital_home_section_hero" name="Hospital Home: Hero">
+        <t t-set="section" t-value="section_item"/>
+        <section t-attf-class="o_home_section o_home_hero o_bg_#{section.background_style or 'primary'}">
+            <div class="container">
+                <div class="o_home_hero_inner">
+                    <div>
+                        <span t-if="section.subtitle" class="o_home_badge">
+                            <i class="fa fa-heartbeat" aria-hidden="true"/>
+                            <t t-out="section.subtitle"/>
+                        </span>
+                        <h1 t-if="section.title" class="o_home_title" t-out="section.title"/>
+                        <div t-if="section.body_content" class="o_home_body" t-field="section.body_content"/>
+                        <div t-if="section.button_text or section.button_text_2" class="o_home_actions">
+                            <a t-if="section.button_text" t-att-href="section.button_url or '#'" class="o_home_btn_primary">
+                                <i class="fa fa-calendar-check-o" aria-hidden="true"/>
+                                <t t-out="section.button_text"/>
+                            </a>
+                            <a t-if="section.button_text_2" t-att-href="section.button_url_2 or '#'" class="o_home_btn_secondary">
+                                <t t-out="section.button_text_2"/>
+                            </a>
+                        </div>
+                    </div>
+                    <div t-if="section.image" class="o_home_hero_image">
+                        <img t-attf-src="/web/image/hospital.home.content/#{section.id}/image"
+                             t-att-alt="section.image_alt or section.title or 'Hospital'"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="hospital_home_section_content" name="Hospital Home: Content">
+        <t t-set="section" t-value="section_item"/>
+        <section t-attf-class="o_home_section o_bg_#{section.background_style or 'white'}">
+            <div class="container">
+                <div t-attf-class="o_home_content_grid o_layout_#{section.layout or 'image_right'}">
+                    <div t-if="section.image and section.layout in ('image_left', 'image_top')" class="o_home_content_image">
+                        <img t-attf-src="/web/image/hospital.home.content/#{section.id}/image"
+                             t-att-alt="section.image_alt or section.title or 'Hospital'"/>
+                    </div>
+                    <div>
+                        <h2 t-if="section.title" class="o_home_section_title" t-out="section.title"/>
+                        <p t-if="section.subtitle" class="o_home_subtitle" t-out="section.subtitle"/>
+                        <div t-if="section.body_content" class="o_home_body" t-field="section.body_content"/>
+                        <div t-if="section.button_text" class="o_home_actions mt-3">
+                            <a t-att-href="section.button_url or '#'" class="o_home_btn_primary" style="background: linear-gradient(135deg, #0d6efd, #0a58ca); color: #fff;">
+                                <t t-out="section.button_text"/>
+                            </a>
+                        </div>
+                    </div>
+                    <div t-if="section.image and section.layout == 'image_right'" class="o_home_content_image">
+                        <img t-attf-src="/web/image/hospital.home.content/#{section.id}/image"
+                             t-att-alt="section.image_alt or section.title or 'Hospital'"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="hospital_home_section_features" name="Hospital Home: Features">
+        <section class="o_home_section o_bg_light">
+            <div class="container">
+                <div class="o_home_features_grid">
+                    <t t-foreach="section_items" t-as="feature">
+                        <article class="o_home_feature_card">
+                            <div t-if="feature.icon" class="o_home_feature_icon">
+                                <i t-attf-class="fa #{feature.icon}" aria-hidden="true"/>
+                            </div>
+                            <div t-else="" class="o_home_feature_icon">
+                                <i class="fa fa-medkit" aria-hidden="true"/>
+                            </div>
+                            <h3 t-if="feature.title" class="o_home_feature_title" t-out="feature.title"/>
+                            <p t-if="feature.subtitle" class="text-muted mb-2" t-out="feature.subtitle"/>
+                            <div t-if="feature.body_content" t-field="feature.body_content"/>
+                        </article>
+                    </t>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="hospital_home_section_stats" name="Hospital Home: Stats">
+        <section class="o_home_section o_bg_primary">
+            <div class="container">
+                <div class="o_home_stats_grid">
+                    <t t-foreach="section_items" t-as="stat">
+                        <div class="o_home_stat_card">
+                            <div class="o_home_stat_value" t-out="stat.stat_value or stat.title"/>
+                            <p class="o_home_stat_label" t-out="stat.stat_label or stat.subtitle or stat.body_content"/>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="hospital_home_section_cta" name="Hospital Home: CTA">
+        <t t-set="section" t-value="section_item"/>
+        <section t-attf-class="o_home_section o_bg_#{section.background_style or 'accent'}">
+            <div class="container">
+                <div class="o_home_cta">
+                    <h2 t-if="section.title" class="o_home_section_title" t-out="section.title"/>
+                    <p t-if="section.subtitle" class="o_home_subtitle" t-out="section.subtitle"/>
+                    <div t-if="section.body_content" class="o_home_body" t-field="section.body_content"/>
+                    <div t-if="section.button_text or section.button_text_2" class="o_home_actions">
+                        <a t-if="section.button_text" t-att-href="section.button_url or '#'" class="o_home_btn_primary">
+                            <t t-out="section.button_text"/>
+                        </a>
+                        <a t-if="section.button_text_2" t-att-href="section.button_url_2 or '#'" class="o_home_btn_secondary">
+                            <t t-out="section.button_text_2"/>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="hospital_homepage" name="Hospital Homepage">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure o_hospital_homepage">
+                <t t-if="not home_sections">
+                    <div class="o_home_fallback">
+                        <h2>Welcome to Smart Hospital</h2>
+                        <p>Publish home page content from the backend to customize this page.</p>
+                        <a href="/doctors" class="btn btn-primary mt-3">Meet Our Doctors</a>
+                    </div>
+                </t>
+                <t t-foreach="home_sections" t-as="block">
+                    <t t-if="block['kind'] == 'single'">
+                        <t t-set="section_item" t-value="block['item']"/>
+                        <t t-if="block['item'].section_type == 'hero'" t-call="smart_hospital_appointment.hospital_home_section_hero"/>
+                        <t t-if="block['item'].section_type == 'content'" t-call="smart_hospital_appointment.hospital_home_section_content"/>
+                        <t t-if="block['item'].section_type == 'cta'" t-call="smart_hospital_appointment.hospital_home_section_cta"/>
+                    </t>
+                    <t t-if="block['kind'] == 'feature'">
+                        <t t-set="section_items" t-value="block['items']"/>
+                        <t t-call="smart_hospital_appointment.hospital_home_section_features"/>
+                    </t>
+                    <t t-if="block['kind'] == 'stats'">
+                        <t t-set="section_items" t-value="block['items']"/>
+                        <t t-call="smart_hospital_appointment.hospital_home_section_stats"/>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>
