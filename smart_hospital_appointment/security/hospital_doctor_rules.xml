@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Doctor: own profile -->
+    <record id="hospital_doctor_own_profile_rule" model="ir.rule">
+        <field name="name">Hospital Doctor: own profile only</field>
+        <field name="model_id" ref="model_hospital_doctor"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_hospital_doctor'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Doctor: own availability -->
+    <record id="hospital_doctor_availability_own_rule" model="ir.rule">
+        <field name="name">Hospital Doctor Availability: own slots only</field>
+        <field name="model_id" ref="model_hospital_doctor_availability"/>
+        <field name="domain_force">[('doctor_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_hospital_doctor'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Doctor: own appointments (all branches) -->
+    <record id="hospital_appointment_doctor_own_rule" model="ir.rule">
+        <field name="name">Hospital Appointment: doctor own appointments</field>
+        <field name="model_id" ref="model_hospital_appointment"/>
+        <field name="domain_force">[('doctor_id', '=', hospital_doctor_id)]</field>
+        <field name="groups" eval="[(4, ref('group_hospital_doctor'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Doctor: patients linked to own appointments -->
+    <record id="hospital_patient_doctor_own_rule" model="ir.rule">
+        <field name="name">Hospital Patient: doctor own patients</field>
+        <field name="model_id" ref="model_hospital_patient"/>
+        <field name="domain_force">[('partner_id', 'in', hospital_doctor_patient_partner_ids)]</field>
+        <field name="groups" eval="[(4, ref('group_hospital_doctor'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Doctor: prescriptions on own appointments -->
+    <record id="hospital_appointment_medicine_line_doctor_own_rule" model="ir.rule">
+        <field name="name">Hospital Appointment Medicine Line: doctor own lines</field>
+        <field name="model_id" ref="model_hospital_appointment_medicine_line"/>
+        <field name="domain_force">[('appointment_id.doctor_id', '=', hospital_doctor_id)]</field>
+        <field name="groups" eval="[(4, ref('group_hospital_doctor'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Doctor: read assigned branches -->
+    <record id="hospital_branch_doctor_read_rule" model="ir.rule">
+        <field name="name">Hospital Branch: doctor allowed branches</field>
+        <field name="model_id" ref="model_hospital_branch"/>
+        <field name="domain_force">[('id', 'in', user.allowed_branch_ids.ids)]</field>
+        <field name="groups" eval="[(4, ref('group_hospital_doctor'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

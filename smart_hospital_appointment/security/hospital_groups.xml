@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_smart_hospital" model="ir.module.category">
+        <field name="name">Smart Hospital</field>
+        <field name="description">Hospital appointment and operations access levels.</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- Administrator: all branches, full hospital backend -->
+    <record id="group_hospital_admin" model="res.groups">
+        <field name="name">Hospital Administrator</field>
+        <field name="category_id" ref="module_category_smart_hospital"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Full access to all branches, masters, reports, and configuration.</field>
+    </record>
+
+    <!-- Receptionist: current branch operations only -->
+    <record id="group_hospital_receptionist" model="res.groups">
+        <field name="name">Hospital Receptionist</field>
+        <field name="category_id" ref="module_category_smart_hospital"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Manage appointments and patients for the user's current branch only.</field>
+    </record>
+
+    <!-- Doctor: own appointments and linked patients -->
+    <record id="group_hospital_doctor" model="res.groups">
+        <field name="name">Hospital Doctor</field>
+        <field name="category_id" ref="module_category_smart_hospital"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">View and update own profile, availability, appointments, and patients.</field>
+    </record>
+
+    <!-- Technical: limits branch master list for receptionists -->
+    <record id="group_hospital_branch_limited" model="res.groups">
+        <field name="name">Hospital Branch Limited</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+        <field name="comment">Limit branch master visibility to the current branch (receptionists).</field>
+    </record>
+</odoo>

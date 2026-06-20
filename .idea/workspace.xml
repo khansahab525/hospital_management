@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="89e5d811-f245-4813-883c-323579376117" name="Changes" comment="new module">
+      <change beforePath="$PROJECT_DIR$/smart_hospital_appointment/__manifest__.py" beforeDir="false" afterPath="$PROJECT_DIR$/smart_hospital_appointment/__manifest__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart_hospital_appointment/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/smart_hospital_appointment/models/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart_hospital_appointment/models/hospital_appointment.py" beforeDir="false" afterPath="$PROJECT_DIR$/smart_hospital_appointment/models/hospital_appointment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart_hospital_appointment/models/hospital_branch.py" beforeDir="false" afterPath="$PROJECT_DIR$/smart_hospital_appointment/models/hospital_branch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart_hospital_appointment/models/hospital_doctor.py" beforeDir="false" afterPath="$PROJECT_DIR$/smart_hospital_appointment/models/hospital_doctor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart_hospital_appointment/models/hospital_patient.py" beforeDir="false" afterPath="$PROJECT_DIR$/smart_hospital_appointment/models/hospital_patient.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart_hospital_appointment/security/hospital_security.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart_hospital_appointment/security/ir.model.access.csv" beforeDir="false" afterPath="$PROJECT_DIR$/smart_hospital_appointment/security/ir.model.access.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart_hospital_appointment/views/menu_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/smart_hospital_appointment/views/menu_views.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart_hospital_appointment/wizard/appointment_report_wizard.py" beforeDir="false" afterPath="$PROJECT_DIR$/smart_hospital_appointment/wizard/appointment_report_wizard.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart_hospital_appointment/wizard/appointment_report_wizard_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/smart_hospital_appointment/wizard/appointment_report_wizard_views.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "khansahab525"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/khansahab525/hospital_management.git",
+    "accountId": "42002691-6133-4a09-81d2-b87c25164050"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 3
+}]]></component>
+  <component name="ProjectId" id="3EiI2RR3MPgGbG01IbBC1J9rMtN" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/zubair/odoo17/gohar_addons"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-c59985aa861c-c2ffad84badb-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.24374.152" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="89e5d811-f245-4813-883c-323579376117" name="Changes" comment="" />
+      <created>1780654756136</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1780654756136</updated>
+    </task>
+    <task id="LOCAL-00001" summary="menifest">
+      <option name="closed" value="true" />
+      <created>1780654801273</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1780654801273</updated>
+    </task>
+    <task id="LOCAL-00002" summary="new module">
+      <option name="closed" value="true" />
+      <created>1780655195949</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1780655195949</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="menifest" />
+    <MESSAGE value="new module" />
+    <option name="LAST_COMMIT_MESSAGE" value="new module" />
+  </component>
+</project>
