@@ -24,6 +24,7 @@
             parent="menu_hospital_masters"
             action="action_hospital_medicine_variants"
             sequence="50"
+            groups="smart_hospital_appointment.group_hospital_admin,base.group_system"
         />
     </data>
 </odoo>

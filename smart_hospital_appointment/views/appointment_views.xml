@@ -70,7 +70,8 @@
                             <group>
                                 <field name="patient_id" readonly="state in ('completed', 'released', 'cancelled')"/>
                                 <field name="doctor_id"/>
-                                <field name="branch_id"/>
+                                <field name="branch_id" readonly="1" force_save="1"/>
+                                <field name="user_id" readonly="1" force_save="1"/>
                                 <field name="appointment_datetime"/>
                             </group>
                             <group>
@@ -121,6 +122,15 @@
             <field name="res_model">hospital.appointment</field>
             <field name="view_mode">tree,form,pivot,graph,calendar</field>
             <field name="search_view_id" ref="view_hospital_appointment_search"/>
+            <field name="context">{'default_user_id': uid}</field>
+        </record>
+
+        <record id="action_hospital_appointment_my" model="ir.actions.act_window">
+            <field name="name">My Appointments</field>
+            <field name="res_model">hospital.appointment</field>
+            <field name="view_mode">tree,form,calendar</field>
+            <field name="search_view_id" ref="view_hospital_appointment_search"/>
+            <field name="context">{'create': False, 'delete': False}</field>
         </record>
 
         <record id="view_hospital_appointment_calendar" model="ir.ui.view">

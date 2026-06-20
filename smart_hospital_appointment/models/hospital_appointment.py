@@ -15,7 +15,20 @@ class HospitalAppointment(models.Model):
     )
     patient_id = fields.Many2one("res.partner", required=True, tracking=True)
     doctor_id = fields.Many2one("hospital.doctor", required=True, tracking=True)
-    branch_id = fields.Many2one("hospital.branch", required=True, tracking=True)
+    branch_id = fields.Many2one(
+        "hospital.branch",
+        required=True,
+        tracking=True,
+        default=lambda self: self.env.context.get("hospital_branch_id")
+        or (self.env.user.branch_id.id if self.env.user.branch_id else False),
+    )
+    user_id = fields.Many2one(
+        "res.users",
+        string="Booked By",
+        default=lambda self: self.env.uid,
+        ondelete="set null",
+        help="Staff user who booked this appointment.",
+    )
     appointment_datetime = fields.Datetime(required=True, tracking=True)
     duration_minutes = fields.Integer(default=30, required=True)
     queue_number = fields.Integer(readonly=True, copy=False, index=True)
@@ -97,15 +110,30 @@ class HospitalAppointment(models.Model):
         self.ensure_one()
         return self.name or _("Appointment")
 
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        user = self.env.user
+        if "branch_id" in fields_list and not res.get("branch_id"):
+            branch_id = self.env.context.get("hospital_branch_id") or user.branch_id.id
+            if branch_id:
+                res["branch_id"] = branch_id
+        if "user_id" in fields_list and not res.get("user_id"):
+            res["user_id"] = user.id
+        return res
+
     @api.model_create_multi
     def create(self, vals_list):
         seq = self.env["ir.sequence"].sudo()
-        default_branch = self.env.user.branch_id.id
+        user = self.env.user
+        default_branch = self.env.context.get("hospital_branch_id") or user.branch_id.id
         for vals in vals_list:
             if vals.get("name", "New") == "New":
                 vals["name"] = seq.next_by_code("hospital.appointment") or "New"
             if not vals.get("branch_id") and default_branch:
                 vals["branch_id"] = default_branch
+            if not vals.get("user_id"):
+                vals["user_id"] = user.id
         recs = super().create(vals_list)
         recs._assign_queue_number()
         return recs

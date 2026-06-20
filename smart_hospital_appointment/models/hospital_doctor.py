@@ -17,7 +17,19 @@ class HospitalDoctor(models.Model):
     is_unavailable = fields.Boolean(
         string="Unavailable", help="Enable when doctor is unavailable for appointments."
     )
-    user_id = fields.Many2one("res.users", ondelete="set null")
+    user_id = fields.Many2one(
+        "res.users",
+        string="Login User",
+        ondelete="set null",
+        help="Backend login linked to this doctor profile.",
+    )
+    registered_by_id = fields.Many2one(
+        "res.users",
+        string="Registered By",
+        default=lambda self: self.env.uid,
+        ondelete="set null",
+        help="Staff user who created this doctor record.",
+    )
     branch_ids = fields.Many2many(
         "hospital.branch",
         "hospital_doctor_branch_rel",
@@ -44,8 +56,20 @@ class HospitalDoctor(models.Model):
             rec.completed_appointments = len(completed)
             rec.total_patients = len(completed.mapped("patient_id"))
 
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        user = self.env.user
+        branch_id = self.env.context.get("hospital_branch_id") or user.branch_id.id
+        if branch_id and "branch_ids" in fields_list and not res.get("branch_ids"):
+            res["branch_ids"] = [(6, 0, [branch_id])]
+        if "registered_by_id" in fields_list and not res.get("registered_by_id"):
+            res["registered_by_id"] = user.id
+        return res
+
     @api.model_create_multi
     def create(self, vals_list):
+        user = self.env.user
         branch_id = self._get_current_hospital_branch_id()
         for vals in vals_list:
             if branch_id:
@@ -55,7 +79,48 @@ class HospitalDoctor(models.Model):
                 for command in vals.get("availability_ids") or []:
                     if command[0] == 0 and isinstance(command[2], dict):
                         command[2].setdefault("branch_id", branch_id)
-        return super().create(vals_list)
+            if not vals.get("registered_by_id"):
+                vals["registered_by_id"] = user.id
+        records = super().create(vals_list)
+        records._sync_linked_user_groups()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "user_id" in vals:
+            self._sync_linked_user_groups()
+        return res
+
+    def _sync_linked_user_groups(self):
+        """Assign Hospital Doctor role to linked users."""
+        doctor_group = self.env.ref(
+            "smart_hospital_appointment.group_hospital_doctor", raise_if_not_found=False
+        )
+        if not doctor_group:
+            return
+        role_groups = [
+            self.env.ref(xmlid, raise_if_not_found=False)
+            for xmlid in (
+                "smart_hospital_appointment.group_hospital_receptionist",
+                "smart_hospital_appointment.group_hospital_admin",
+                "smart_hospital_appointment.group_hospital_staff",
+            )
+        ]
+        role_groups = [g for g in role_groups if g]
+        for rec in self.filtered("user_id"):
+            user_updates = {}
+            if not rec.user_id.allowed_branch_ids and rec.branch_ids:
+                user_updates["allowed_branch_ids"] = [(6, 0, rec.branch_ids.ids)]
+                user_updates["branch_id"] = rec.branch_ids[0].id
+            group_ops = [(4, doctor_group.id)]
+            for group in role_groups:
+                if group in rec.user_id.groups_id:
+                    group_ops.append((3, group.id))
+            user_updates["groups_id"] = group_ops
+            rec.user_id.sudo().with_context(skip_hospital_branch_sync=True).write(
+                user_updates
+            )
+            rec.user_id._sync_hospital_branch_access()
 
 
 class HospitalDoctorAvailability(models.Model):

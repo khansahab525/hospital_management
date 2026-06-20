@@ -29,14 +29,19 @@
                                 <field name="consultation_fee"/>
                             </group>
                             <group>
-                                <field name="rating"/>
+                                <field name="rating" groups="smart_hospital_appointment.group_hospital_admin,smart_hospital_appointment.group_hospital_receptionist,base.group_system"/>
                                 <field name="is_unavailable"/>
-                                <field name="user_id"/>
-                                <field name="active"/>
+                                <field name="user_id" groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
+                                <field name="active" groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
                             </group>
                         </group>
                         <group>
-                            <field name="branch_ids" widget="many2many_tags"/>
+                            <field name="branch_ids" widget="many2many_tags" readonly="1" force_save="1"
+                                   groups="smart_hospital_appointment.group_hospital_admin,smart_hospital_appointment.group_hospital_receptionist,base.group_system"/>
+                            <field name="registered_by_id" readonly="1" force_save="1"
+                                   groups="smart_hospital_appointment.group_hospital_admin,smart_hospital_appointment.group_hospital_receptionist,base.group_system"/>
+                            <field name="branch_ids" widget="many2many_tags" readonly="1"
+                                   groups="smart_hospital_appointment.group_hospital_doctor"/>
                         </group>
                         <group string="Performance">
                             <field name="total_patients" readonly="1"/>
@@ -64,6 +69,15 @@
             <field name="name">Doctors</field>
             <field name="res_model">hospital.doctor</field>
             <field name="view_mode">tree,form</field>
+            <field name="context">{'default_registered_by_id': uid}</field>
+        </record>
+
+        <record id="action_hospital_doctor_my_profile" model="ir.actions.act_window">
+            <field name="name">My Profile</field>
+            <field name="res_model">hospital.doctor</field>
+            <field name="view_mode">form,tree</field>
+            <field name="domain">[('user_id', '=', uid)]</field>
+            <field name="context">{'create': False, 'delete': False}</field>
         </record>
     </data>
 </odoo>

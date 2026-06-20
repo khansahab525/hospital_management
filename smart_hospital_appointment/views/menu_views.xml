@@ -1,16 +1,45 @@
 <odoo>
     <data>
-        <menuitem id="menu_hospital_root" name="Smart Hospital" sequence="10"/>
+        <menuitem id="menu_hospital_root" name="Smart Hospital" sequence="10"
+                  groups="smart_hospital_appointment.group_hospital_admin,smart_hospital_appointment.group_hospital_receptionist,smart_hospital_appointment.group_hospital_doctor,base.group_system"/>
 
-        <menuitem id="menu_hospital_operations" name="Operations" parent="menu_hospital_root" sequence="10"/>
-        <menuitem id="menu_hospital_masters" name="Masters" parent="menu_hospital_root" sequence="20"/>
-        <menuitem id="menu_hospital_reports" name="Reports" parent="menu_hospital_root" sequence="30"/>
+        <!-- Administrator & system -->
+        <menuitem id="menu_hospital_operations" name="Operations" parent="menu_hospital_root" sequence="10"
+                  groups="smart_hospital_appointment.group_hospital_admin,smart_hospital_appointment.group_hospital_receptionist,base.group_system"/>
+        <menuitem id="menu_hospital_masters" name="Masters" parent="menu_hospital_root" sequence="20"
+                  groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
+        <menuitem id="menu_hospital_masters_receptionist" name="Directory" parent="menu_hospital_root" sequence="20"
+                  groups="smart_hospital_appointment.group_hospital_receptionist"/>
+        <menuitem id="menu_hospital_reports" name="Reports" parent="menu_hospital_root" sequence="30"
+                  groups="smart_hospital_appointment.group_hospital_admin,smart_hospital_appointment.group_hospital_receptionist,base.group_system"/>
 
-        <menuitem id="menu_hospital_appointments" name="Appointments" parent="menu_hospital_operations" action="smart_hospital_appointment.action_hospital_appointment" sequence="10"/>
-        <menuitem id="menu_hospital_patients" name="Patients" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_patient" sequence="20"/>
-        <menuitem id="menu_hospital_doctors" name="Doctors" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_doctor" sequence="30"/>
-        <menuitem id="menu_hospital_branches" name="Branches" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_branch" sequence="40"/>
-        <menuitem id="menu_hospital_home_content" name="Home Page Contents" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_home_content" sequence="50"/>
+        <menuitem id="menu_hospital_appointments" name="Appointments" parent="menu_hospital_operations" action="smart_hospital_appointment.action_hospital_appointment" sequence="10"
+                  groups="smart_hospital_appointment.group_hospital_admin,smart_hospital_appointment.group_hospital_receptionist,base.group_system"/>
+        <menuitem id="menu_hospital_patients" name="Patients" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_patient" sequence="10"
+                  groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
+        <menuitem id="menu_hospital_patients_receptionist" name="Patients" parent="menu_hospital_masters_receptionist" action="smart_hospital_appointment.action_hospital_patient" sequence="10"
+                  groups="smart_hospital_appointment.group_hospital_receptionist"/>
+        <menuitem id="menu_hospital_doctors" name="Doctors" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_doctor" sequence="20"
+                  groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
+        <menuitem id="menu_hospital_doctors_receptionist" name="Doctors" parent="menu_hospital_masters_receptionist" action="smart_hospital_appointment.action_hospital_doctor" sequence="20"
+                  groups="smart_hospital_appointment.group_hospital_receptionist"/>
+        <menuitem id="menu_hospital_branches" name="Branches" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_branch" sequence="30"
+                  groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
+        <menuitem id="menu_hospital_home_content" name="Home Page Contents" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_home_content" sequence="40"
+                  groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
+
+        <!-- Doctor workspace -->
+        <menuitem id="menu_hospital_doctor_workspace" name="My Clinic" parent="menu_hospital_root" sequence="5"
+                  groups="smart_hospital_appointment.group_hospital_doctor"/>
+        <menuitem id="menu_hospital_my_appointments" name="My Appointments" parent="menu_hospital_doctor_workspace"
+                  action="smart_hospital_appointment.action_hospital_appointment_my" sequence="10"
+                  groups="smart_hospital_appointment.group_hospital_doctor"/>
+        <menuitem id="menu_hospital_my_patients" name="My Patients" parent="menu_hospital_doctor_workspace"
+                  action="smart_hospital_appointment.action_hospital_patient_my" sequence="20"
+                  groups="smart_hospital_appointment.group_hospital_doctor"/>
+        <menuitem id="menu_hospital_doctor_my_profile" name="My Profile" parent="menu_hospital_doctor_workspace"
+                  action="smart_hospital_appointment.action_hospital_doctor_my_profile" sequence="30"
+                  groups="smart_hospital_appointment.group_hospital_doctor"/>
 
         <record id="action_hospital_appointment_report_wizard" model="ir.actions.act_window">
             <field name="name">Appointment Summary Report</field>
@@ -18,6 +47,7 @@
             <field name="view_mode">form</field>
             <field name="target">new</field>
         </record>
-        <menuitem id="menu_hospital_appointment_report" name="Appointment Summary" parent="menu_hospital_reports" action="smart_hospital_appointment.action_hospital_appointment_report_wizard" sequence="10"/>
+        <menuitem id="menu_hospital_appointment_report" name="Appointment Summary" parent="menu_hospital_reports" action="smart_hospital_appointment.action_hospital_appointment_report_wizard" sequence="10"
+                  groups="smart_hospital_appointment.group_hospital_admin,smart_hospital_appointment.group_hospital_receptionist,base.group_system"/>
     </data>
 </odoo>

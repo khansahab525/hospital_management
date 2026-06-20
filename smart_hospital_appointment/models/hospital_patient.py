@@ -14,7 +14,13 @@ class HospitalPatient(models.Model):
         string="Patient ID", readonly=True, default=lambda self: "New", copy=False
     )
     partner_id = fields.Many2one("res.partner", ondelete="set null")
-    user_id = fields.Many2one("res.users", ondelete="set null")
+    user_id = fields.Many2one(
+        "res.users",
+        string="Registered By",
+        default=lambda self: self.env.uid,
+        ondelete="set null",
+        help="Staff user who registered this patient.",
+    )
     age = fields.Integer(required=True)
     gender = fields.Selection(
         [("male", "Male"), ("female", "Female"), ("other", "Other")], required=True
@@ -24,7 +30,13 @@ class HospitalPatient(models.Model):
     address = fields.Text()
     medical_history = fields.Html()
     allergies = fields.Text()
-    branch_id = fields.Many2one("hospital.branch", required=True, tracking=True)
+    branch_id = fields.Many2one(
+        "hospital.branch",
+        required=True,
+        tracking=True,
+        default=lambda self: self.env.context.get("hospital_branch_id")
+        or (self.env.user.branch_id.id if self.env.user.branch_id else False),
+    )
     appointment_count = fields.Integer(compute="_compute_appointment_count")
 
     _sql_constraints = [
@@ -40,15 +52,30 @@ class HospitalPatient(models.Model):
             else:
                 rec.appointment_count = 0
 
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        user = self.env.user
+        if "branch_id" in fields_list and not res.get("branch_id"):
+            branch_id = self.env.context.get("hospital_branch_id") or user.branch_id.id
+            if branch_id:
+                res["branch_id"] = branch_id
+        if "user_id" in fields_list and not res.get("user_id"):
+            res["user_id"] = user.id
+        return res
+
     @api.model_create_multi
     def create(self, vals_list):
         seq = self.env["ir.sequence"].sudo()
-        default_branch = self.env.user.branch_id.id
+        user = self.env.user
+        default_branch = self.env.context.get("hospital_branch_id") or user.branch_id.id
         for vals in vals_list:
             if vals.get("patient_code", "New") == "New":
                 vals["patient_code"] = seq.next_by_code("hospital.patient") or "New"
             if not vals.get("branch_id") and default_branch:
                 vals["branch_id"] = default_branch
+            if not vals.get("user_id"):
+                vals["user_id"] = user.id
         return super().create(vals_list)
 
     @api.model

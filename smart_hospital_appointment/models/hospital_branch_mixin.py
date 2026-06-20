@@ -105,7 +105,17 @@ class HospitalBranchFiltered(models.AbstractModel):
     @api.model
     def _get_hospital_branch_search_domain(self):
         user = self.env.user
-        if self.env.su or not user.allowed_branch_ids or not user.branch_id:
+        if (
+            self.env.su
+            or user.has_group("base.group_system")
+            or user.has_group("smart_hospital_appointment.group_hospital_admin")
+        ):
+            return []
+        if user.has_group("smart_hospital_appointment.group_hospital_doctor") and not user.has_group(
+            "smart_hospital_appointment.group_hospital_receptionist"
+        ):
+            return []
+        if not user.allowed_branch_ids or not user.branch_id:
             return []
         field_name = self._get_hospital_branch_field_name()
         if field_name == "branch_ids":
@@ -133,7 +143,18 @@ class HospitalBranchFiltered(models.AbstractModel):
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
-        if self.env.su or not self.env.user.allowed_branch_ids or not self.env.user.branch_id:
+        user = self.env.user
+        if (
+            self.env.su
+            or user.has_group("base.group_system")
+            or user.has_group("smart_hospital_appointment.group_hospital_admin")
+            or (
+                user.has_group("smart_hospital_appointment.group_hospital_doctor")
+                and not user.has_group("smart_hospital_appointment.group_hospital_receptionist")
+            )
+            or not user.allowed_branch_ids
+            or not user.branch_id
+        ):
             return res
         branch_id = self._get_current_hospital_branch_id()
         if not branch_id:
