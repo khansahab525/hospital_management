@@ -44,6 +44,19 @@ class HospitalDoctor(models.Model):
             rec.completed_appointments = len(completed)
             rec.total_patients = len(completed.mapped("patient_id"))
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        branch_id = self._get_current_hospital_branch_id()
+        for vals in vals_list:
+            if branch_id:
+                vals["branch_ids"] = self._branch_ids_commands_with_branch(
+                    vals.get("branch_ids"), branch_id
+                )
+                for command in vals.get("availability_ids") or []:
+                    if command[0] == 0 and isinstance(command[2], dict):
+                        command[2].setdefault("branch_id", branch_id)
+        return super().create(vals_list)
+
 
 class HospitalDoctorAvailability(models.Model):
     _name = "hospital.doctor.availability"

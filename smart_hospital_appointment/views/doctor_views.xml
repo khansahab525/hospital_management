@@ -44,7 +44,7 @@
                         </group>
                         <notebook>
                             <page string="Availability">
-                                <field name="availability_ids">
+                                <field name="availability_ids" context="{'default_branch_id': context.get('hospital_branch_id')}">
                                     <tree editable="bottom">
                                         <field name="branch_id"/>
                                         <field name="day_of_week"/>
