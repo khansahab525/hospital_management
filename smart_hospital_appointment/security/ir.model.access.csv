@@ -7,6 +7,7 @@ access_hospital_patient_admin,hospital.patient admin,model_hospital_patient,smar
 access_hospital_patient_receptionist,hospital.patient receptionist,model_hospital_patient,smart_hospital_appointment.group_hospital_receptionist,1,1,1,1
 access_hospital_patient_doctor,hospital.patient doctor,model_hospital_patient,smart_hospital_appointment.group_hospital_doctor,1,0,0,0
 access_hospital_patient_system,hospital.patient system,model_hospital_patient,base.group_system,1,1,1,1
+access_hospital_specialization_admin,hospital.specialization admin,model_hospital_specialization,smart_hospital_appointment.group_hospital_admin,1,1,1,1
 access_hospital_doctor_admin,hospital.doctor admin,model_hospital_doctor,smart_hospital_appointment.group_hospital_admin,1,1,1,1
 access_hospital_doctor_receptionist,hospital.doctor receptionist,model_hospital_doctor,smart_hospital_appointment.group_hospital_receptionist,1,0,0,0
 access_hospital_doctor_doctor,hospital.doctor doctor,model_hospital_doctor,smart_hospital_appointment.group_hospital_doctor,1,1,0,0
@@ -31,6 +32,7 @@ access_hospital_home_content_system,hospital.home.content system,model_hospital_
 access_hospital_home_content_public,hospital.home.content public,model_hospital_home_content,,1,0,0,0
 access_hospital_branch_portal,hospital.branch portal,model_hospital_branch,base.group_portal,1,0,0,0
 access_hospital_doctor_portal,hospital.doctor portal,model_hospital_doctor,base.group_portal,1,0,0,0
+access_hospital_specialization_portal,hospital.specialization portal,model_hospital_specialization,base.group_portal,1,0,0,0
 access_hospital_doctor_availability_portal,hospital.doctor.availability portal,model_hospital_doctor_availability,base.group_portal,1,0,0,0
 access_hospital_appointment_portal,hospital.appointment portal,model_hospital_appointment,base.group_portal,1,1,1,0
 access_hospital_patient_portal,hospital.patient portal,model_hospital_patient,base.group_portal,1,0,0,0

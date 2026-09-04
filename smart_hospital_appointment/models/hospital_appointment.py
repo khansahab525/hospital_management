@@ -31,7 +31,7 @@ class HospitalAppointment(models.Model):
     )
     appointment_datetime = fields.Datetime(required=True, tracking=True)
     duration_minutes = fields.Integer(default=30, required=True)
-    queue_number = fields.Integer(readonly=True, copy=False, index=True)
+    queue_number = fields.Integer(string="Number", readonly=True, copy=False, index=True)
     state = fields.Selection(
         [
             ("draft", "Draft"),
@@ -273,7 +273,7 @@ class HospitalAppointment(models.Model):
                 ("appointment_datetime", "<", day_end),
                 ("state", "in", ("draft", "confirmed", "in_progress", "completed")),
             ]
-            daily = self.search(active_domain, order="is_high_priority desc, appointment_datetime asc, id asc")
+            daily = self.search(active_domain, order="create_date asc, id asc")
             for idx, appt in enumerate(daily, start=1):
                 appt.write({"queue_number": idx})
             clear_domain = [

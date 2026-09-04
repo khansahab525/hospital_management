@@ -5,6 +5,7 @@ from . import ir_rule
 from . import hospital_branch_mixin
 from . import hospital_branch
 from . import hospital_patient
+from . import hospital_specialization
 from . import hospital_doctor
 from . import hospital_appointment_medicine_line
 from . import hospital_appointment

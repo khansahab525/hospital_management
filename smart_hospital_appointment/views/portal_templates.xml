@@ -3,9 +3,10 @@
     <template id="portal_my_home_hospital" inherit_id="portal.portal_my_home" name="Portal My Home: Hospital">
         <xpath expr="//div[@id='portal_common_category']" position="inside">
             <t t-call="portal.portal_docs_entry">
-                <t t-set="title">Hospital</t>
-                <t t-set="url" t-value="'/my/hospital'"/>
+                <t t-set="title">Book Appointment</t>
+                <t t-set="url" t-value="'/appointment/book'"/>
                 <t t-set="text">Book and manage your appointments</t>
+                <t t-set="config_card" t-value="True"/>
             </t>
         </xpath>
     </template>
@@ -64,8 +65,8 @@
 
                 <section class="o_appt_stats">
                     <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="o_appt_stat_card">
+                        <div class="col-6 col-lg">
+                            <a href="/my/hospital?filterby=all" t-attf-class="o_appt_stat_card #{'active' if filterby == 'all' else ''}">
                                 <div class="o_appt_stat_icon">
                                     <i class="fa fa-list-alt" aria-hidden="true"/>
                                 </div>
@@ -73,10 +74,10 @@
                                     <div class="o_appt_stat_value" t-out="appointment_count"/>
                                     <p class="o_appt_stat_label">Total Appointments</p>
                                 </div>
-                            </div>
+                            </a>
                         </div>
-                        <div class="col-md-4">
-                            <div class="o_appt_stat_card">
+                        <div class="col-6 col-lg">
+                            <a href="/my/hospital?filterby=upcoming" t-attf-class="o_appt_stat_card #{'active' if filterby == 'upcoming' else ''}">
                                 <div class="o_appt_stat_icon">
                                     <i class="fa fa-clock-o" aria-hidden="true"/>
                                 </div>
@@ -84,10 +85,21 @@
                                     <div class="o_appt_stat_value" t-out="upcoming_count"/>
                                     <p class="o_appt_stat_label">Upcoming</p>
                                 </div>
-                            </div>
+                            </a>
                         </div>
-                        <div class="col-md-4">
-                            <div class="o_appt_stat_card">
+                        <div class="col-6 col-lg">
+                            <a href="/my/hospital?filterby=pending" t-attf-class="o_appt_stat_card #{'active' if filterby == 'pending' else ''}">
+                                <div class="o_appt_stat_icon">
+                                    <i class="fa fa-hourglass-half" aria-hidden="true"/>
+                                </div>
+                                <div>
+                                    <div class="o_appt_stat_value" t-out="pending_count"/>
+                                    <p class="o_appt_stat_label">Pending</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-6 col-lg">
+                            <a href="/my/hospital?filterby=completed" t-attf-class="o_appt_stat_card #{'active' if filterby == 'completed' else ''}">
                                 <div class="o_appt_stat_icon">
                                     <i class="fa fa-check-circle" aria-hidden="true"/>
                                 </div>
@@ -95,7 +107,18 @@
                                     <div class="o_appt_stat_value" t-out="completed_count"/>
                                     <p class="o_appt_stat_label">Completed</p>
                                 </div>
-                            </div>
+                            </a>
+                        </div>
+                        <div class="col-6 col-lg">
+                            <a href="/my/hospital?filterby=cancelled" t-attf-class="o_appt_stat_card #{'active' if filterby == 'cancelled' else ''}">
+                                <div class="o_appt_stat_icon">
+                                    <i class="fa fa-times-circle" aria-hidden="true"/>
+                                </div>
+                                <div>
+                                    <div class="o_appt_stat_value" t-out="cancelled_count"/>
+                                    <p class="o_appt_stat_label">Cancelled</p>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </section>
@@ -103,8 +126,10 @@
                 <t t-if="not appointments">
                     <div class="o_appt_empty">
                         <i class="fa fa-calendar-times-o" aria-hidden="true"/>
-                        <h3>No appointments yet</h3>
-                        <p>Book your first visit with one of our specialists.</p>
+                        <h3 t-if="filterby == 'all'">No appointments yet</h3>
+                        <h3 t-else="">No appointments in this filter</h3>
+                        <p t-if="filterby == 'all'">Book your first visit with one of our specialists.</p>
+                        <p t-else="">Try another status or book a new appointment.</p>
                         <a href="/appointment/book" class="o_appt_action_btn o_btn_primary">
                             <i class="fa fa-plus" aria-hidden="true"/>
                             Book Appointment
@@ -145,8 +170,9 @@
                                 <div class="o_appt_meta_item">
                                     <span class="o_appt_meta_icon"><i class="fa fa-sort-numeric-asc" aria-hidden="true"/></span>
                                     <span>
-                                        <span class="o_appt_meta_label">Queue #</span>
-                                        <t t-out="a.queue_number or '-'"/>
+                                        <span class="o_appt_meta_label">Number</span>
+                                        <t t-if="a.queue_number">#<t t-out="a.queue_number"/></t>
+                                        <t t-else="">-</t>
                                     </span>
                                 </div>
                                 <div class="o_appt_meta_item" t-if="a.expected_turn_datetime">
@@ -208,8 +234,11 @@
                                 <p class="o_appt_detail_value"><span t-field="appointment.branch_id.name"/></p>
                             </div>
                             <div class="o_appt_detail_item">
-                                <div class="o_appt_detail_label">Your Queue #</div>
-                                <p class="o_appt_detail_value"><t t-out="appointment.queue_number or '-'"/></p>
+                                <div class="o_appt_detail_label">Number</div>
+                                <p class="o_appt_detail_value">
+                                    <t t-if="appointment.queue_number">#<t t-out="appointment.queue_number"/></t>
+                                    <t t-else="">-</t>
+                                </p>
                             </div>
                             <div class="o_appt_detail_item">
                                 <div class="o_appt_detail_label">Released Today</div>
@@ -222,10 +251,6 @@
                             <div class="o_appt_detail_item">
                                 <div class="o_appt_detail_label">Est. Wait (minutes)</div>
                                 <p class="o_appt_detail_value"><t t-out="appointment.estimated_wait_minutes"/></p>
-                            </div>
-                            <div class="o_appt_detail_item">
-                                <div class="o_appt_detail_label">Duration</div>
-                                <p class="o_appt_detail_value"><t t-out="appointment.duration_minutes"/> min</p>
                             </div>
                         </div>
                         <div t-if="appointment.notes" class="o_appt_notes_box">
@@ -284,7 +309,7 @@
                         <h1 class="o_appt_form_title" t-else="">Book New Appointment</h1>
                         <p class="o_appt_form_subtitle">
                             Booking as <strong t-out="portal_partner.name"/>.
-                            Select your doctor, branch, and preferred time slot.
+                            Select your branch, specialization, doctor, date, and time.
                         </p>
                     </div>
                     <div class="o_appt_form_body">
@@ -293,18 +318,9 @@
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                             <div class="o_appt_form_grid">
                                 <div class="o_appt_form_group">
-                                    <label class="form-label" for="doctor_id">Doctor</label>
-                                    <select class="form-select" name="doctor_id" id="doctor_id" required="required">
-                                        <t t-foreach="doctors" t-as="d">
-                                            <option t-att-value="d.id" t-att-selected="'selected' if selected_doctor_id == d.id else None">
-                                                <t t-out="d.name"/> — <t t-out="d.specialization"/>
-                                            </option>
-                                        </t>
-                                    </select>
-                                </div>
-                                <div class="o_appt_form_group">
                                     <label class="form-label" for="branch_id">Branch</label>
                                     <select class="form-select" name="branch_id" id="branch_id" required="required">
+                                        <option value="" disabled="disabled" t-att-selected="not selected_branch_id and 'selected' or None">Select a branch</option>
                                         <t t-foreach="branches" t-as="b">
                                             <option t-att-value="b.id" t-att-selected="'selected' if selected_branch_id == b.id else None">
                                                 <t t-out="b.name"/>
@@ -313,14 +329,44 @@
                                     </select>
                                 </div>
                                 <div class="o_appt_form_group">
-                                    <label class="form-label" for="appointment_datetime">Date and time</label>
-                                    <input class="form-control" type="datetime-local" name="appointment_datetime" id="appointment_datetime" required="required"
-                                           t-att-value="appointment_datetime_input or post.get('appointment_datetime') or ''"/>
+                                    <label class="form-label" for="specialization_id">Specialization</label>
+                                    <select class="form-select" name="specialization_id" id="specialization_id" required="required" t-att-disabled="not selected_branch_id and 'disabled' or None">
+                                        <option value="" disabled="disabled" t-att-selected="not selected_specialization_id and 'selected' or None">
+                                            <t t-if="not selected_branch_id">Select a branch first</t>
+                                            <t t-elif="not specializations">No specialization at this branch</t>
+                                            <t t-else="">Select a specialization</t>
+                                        </option>
+                                        <t t-foreach="specializations" t-as="s">
+                                            <option t-att-value="s.id" t-att-selected="'selected' if selected_specialization_id == s.id else None">
+                                                <t t-out="s.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
                                 </div>
                                 <div class="o_appt_form_group">
-                                    <label class="form-label" for="duration_minutes">Duration (minutes)</label>
-                                    <input class="form-control" type="number" name="duration_minutes" id="duration_minutes" min="1"
-                                           t-att-value="appointment.duration_minutes if appointment else (post.get('duration_minutes') or 30)"/>
+                                    <label class="form-label" for="doctor_id">Doctor</label>
+                                    <select class="form-select" name="doctor_id" id="doctor_id" required="required" t-att-disabled="not selected_specialization_id and 'disabled' or None">
+                                        <option value="" disabled="disabled" t-att-selected="not selected_doctor_id and 'selected' or None">
+                                            <t t-if="not selected_specialization_id">Select a specialization first</t>
+                                            <t t-elif="not doctors">No doctor available for this branch and specialization</t>
+                                            <t t-else="">Select a doctor</t>
+                                        </option>
+                                        <t t-foreach="doctors" t-as="d">
+                                            <option t-att-value="d.id" t-att-selected="'selected' if selected_doctor_id == d.id else None">
+                                                <t t-out="d.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="o_appt_form_group">
+                                    <label class="form-label" for="appointment_date">Date</label>
+                                    <input class="form-control" type="date" name="appointment_date" id="appointment_date" required="required"
+                                           t-att-value="appointment_date_input or post.get('appointment_date') or ''"/>
+                                </div>
+                                <div class="o_appt_form_group">
+                                    <label class="form-label" for="appointment_time">Time</label>
+                                    <input class="form-control" type="time" name="appointment_time" id="appointment_time" required="required" readonly="readonly"
+                                           t-att-value="appointment_time_input or ''"/>
                                 </div>
                                 <div class="o_appt_form_group o_appt_form_full">
                                     <label class="form-label" for="notes">Notes (optional)</label>
@@ -341,6 +387,39 @@
                                 </a>
                             </div>
                         </form>
+                            <script>
+                                (function () {
+                                    const branch = document.getElementById("branch_id");
+                                    const spec = document.getElementById("specialization_id");
+                                    const doctor = document.getElementById("doctor_id");
+                                    const date = document.getElementById("appointment_date");
+                                    if (!branch || !spec) return;
+                                    function reloadFilters(mode) {
+                                        const params = new URLSearchParams(window.location.search);
+                                        params.set("branch_id", branch.value || "");
+                                        if (mode === "branch") {
+                                            params.delete("specialization_id");
+                                            params.delete("doctor_id");
+                                        } else {
+                                            params.set("specialization_id", spec.value || "");
+                                            if (mode === "spec") {
+                                                params.delete("doctor_id");
+                                            } else if (doctor &amp;&amp; doctor.value) {
+                                                params.set("doctor_id", doctor.value);
+                                            }
+                                        }
+                                        if (date &amp;&amp; date.value) params.set("appointment_date", date.value);
+                                        params.delete("appointment_time");
+                                        const notes = document.getElementById("notes");
+                                        if (notes &amp;&amp; notes.value) params.set("notes", notes.value);
+                                        window.location.search = params.toString();
+                                    }
+                                    branch.addEventListener("change", function () { reloadFilters("branch"); });
+                                    spec.addEventListener("change", function () { reloadFilters("spec"); });
+                                    if (doctor) doctor.addEventListener("change", function () { reloadFilters("doctor"); });
+                                    if (date) date.addEventListener("change", function () { reloadFilters("date"); });
+                                })();
+                            </script>
                     </div>
                 </div>
             </div>

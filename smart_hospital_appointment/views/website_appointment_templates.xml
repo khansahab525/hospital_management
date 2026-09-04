@@ -13,7 +13,7 @@
                                 </span>
                                 <h1 class="o_appt_hero_title">Book an Appointment</h1>
                                 <p class="o_appt_hero_subtitle">
-                                    Choose your doctor, branch, and preferred time. Your appointment will be confirmed instantly.
+                                    Choose your branch, specialization, doctor, date, and time.
                                 </p>
                                 <p t-if="request.params.get('account_created')" class="o_appt_success_banner mt-2 mb-0">
                                     <i class="fa fa-check-circle" aria-hidden="true"/>
@@ -51,17 +51,6 @@
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                 <div class="o_appt_form_grid">
                                     <div class="o_appt_form_group">
-                                        <label class="form-label" for="doctor_id">Doctor <span class="text-danger">*</span></label>
-                                        <select class="form-select" name="doctor_id" id="doctor_id" required="required">
-                                            <option value="" disabled="disabled" t-att-selected="not selected_doctor_id and 'selected' or None">Select a doctor</option>
-                                            <t t-foreach="doctors" t-as="d">
-                                                <option t-att-value="d.id" t-att-selected="selected_doctor_id == d.id and 'selected' or None">
-                                                    <t t-out="d.name"/> — <t t-out="d.specialization"/>
-                                                </option>
-                                            </t>
-                                        </select>
-                                    </div>
-                                    <div class="o_appt_form_group">
                                         <label class="form-label" for="branch_id">Branch <span class="text-danger">*</span></label>
                                         <select class="form-select" name="branch_id" id="branch_id" required="required">
                                             <option value="" disabled="disabled" t-att-selected="not selected_branch_id and 'selected' or None">Select a branch</option>
@@ -74,14 +63,44 @@
                                         </select>
                                     </div>
                                     <div class="o_appt_form_group">
-                                        <label class="form-label" for="appointment_datetime">Date and time <span class="text-danger">*</span></label>
-                                        <input class="form-control" type="datetime-local" name="appointment_datetime" id="appointment_datetime" required="required"
-                                               t-att-value="appointment_datetime_input or post.get('appointment_datetime') or ''"/>
+                                        <label class="form-label" for="specialization_id">Specialization <span class="text-danger">*</span></label>
+                                        <select class="form-select" name="specialization_id" id="specialization_id" required="required" t-att-disabled="not selected_branch_id and 'disabled' or None">
+                                            <option value="" disabled="disabled" t-att-selected="not selected_specialization_id and 'selected' or None">
+                                                <t t-if="not selected_branch_id">Select a branch first</t>
+                                                <t t-elif="not specializations">No specialization at this branch</t>
+                                                <t t-else="">Select a specialization</t>
+                                            </option>
+                                            <t t-foreach="specializations" t-as="s">
+                                                <option t-att-value="s.id" t-att-selected="selected_specialization_id == s.id and 'selected' or None">
+                                                    <t t-out="s.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
                                     </div>
                                     <div class="o_appt_form_group">
-                                        <label class="form-label" for="duration_minutes">Duration (minutes)</label>
-                                        <input class="form-control" type="number" name="duration_minutes" id="duration_minutes" min="15" step="15"
-                                               t-att-value="appointment.duration_minutes if appointment else (post.get('duration_minutes') or 30)"/>
+                                        <label class="form-label" for="doctor_id">Doctor <span class="text-danger">*</span></label>
+                                        <select class="form-select" name="doctor_id" id="doctor_id" required="required" t-att-disabled="not selected_specialization_id and 'disabled' or None">
+                                            <option value="" disabled="disabled" t-att-selected="not selected_doctor_id and 'selected' or None">
+                                                <t t-if="not selected_specialization_id">Select a specialization first</t>
+                                                <t t-elif="not doctors">No doctor available for this branch and specialization</t>
+                                                <t t-else="">Select a doctor</t>
+                                            </option>
+                                            <t t-foreach="doctors" t-as="d">
+                                                <option t-att-value="d.id" t-att-selected="selected_doctor_id == d.id and 'selected' or None">
+                                                    <t t-out="d.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="appointment_date">Date <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="date" name="appointment_date" id="appointment_date" required="required"
+                                               t-att-value="appointment_date_input or post.get('appointment_date') or ''"/>
+                                    </div>
+                                    <div class="o_appt_form_group">
+                                        <label class="form-label" for="appointment_time">Time <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="time" name="appointment_time" id="appointment_time" required="required" readonly="readonly"
+                                               t-att-value="appointment_time_input or ''"/>
                                     </div>
                                     <div class="o_appt_form_group o_appt_form_full">
                                         <label class="form-label" for="notes">Notes (optional)</label>
@@ -99,6 +118,39 @@
                                     <a href="/my/hospital" class="o_appt_action_btn o_btn_secondary">Cancel</a>
                                 </div>
                             </form>
+                            <script>
+                                (function () {
+                                    const branch = document.getElementById("branch_id");
+                                    const spec = document.getElementById("specialization_id");
+                                    const doctor = document.getElementById("doctor_id");
+                                    const date = document.getElementById("appointment_date");
+                                    if (!branch || !spec) return;
+                                    function reloadFilters(mode) {
+                                        const params = new URLSearchParams(window.location.search);
+                                        params.set("branch_id", branch.value || "");
+                                        if (mode === "branch") {
+                                            params.delete("specialization_id");
+                                            params.delete("doctor_id");
+                                        } else {
+                                            params.set("specialization_id", spec.value || "");
+                                            if (mode === "spec") {
+                                                params.delete("doctor_id");
+                                            } else if (doctor &amp;&amp; doctor.value) {
+                                                params.set("doctor_id", doctor.value);
+                                            }
+                                        }
+                                        if (date &amp;&amp; date.value) params.set("appointment_date", date.value);
+                                        params.delete("appointment_time");
+                                        const notes = document.getElementById("notes");
+                                        if (notes &amp;&amp; notes.value) params.set("notes", notes.value);
+                                        window.location.search = params.toString();
+                                    }
+                                    branch.addEventListener("change", function () { reloadFilters("branch"); });
+                                    spec.addEventListener("change", function () { reloadFilters("spec"); });
+                                    if (doctor) doctor.addEventListener("change", function () { reloadFilters("doctor"); });
+                                    if (date) date.addEventListener("change", function () { reloadFilters("date"); });
+                                })();
+                            </script>
                         </div>
                     </div>
                 </section>

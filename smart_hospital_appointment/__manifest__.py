@@ -1,6 +1,6 @@
 {
     "name": "Smart Hospital Appointment System",
-    "version": "17.1",
+    "version": "17.2",
     "category": "Healthcare",
     "summary": "Smart hospital workflow with appointments and queue management",
     "description": """
@@ -36,6 +36,7 @@ Production-ready hospital appointment management for Odoo 17:
         "views/res_users_views.xml",
         "views/branch_views.xml",
         "views/patient_views.xml",
+        "views/specialization_views.xml",
         "views/doctor_views.xml",
         "views/appointment_views.xml",
         "views/hospital_home_content_views.xml",

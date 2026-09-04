@@ -21,6 +21,8 @@
                   groups="smart_hospital_appointment.group_hospital_receptionist"/>
         <menuitem id="menu_hospital_doctors" name="Doctors" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_doctor" sequence="20"
                   groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
+        <menuitem id="menu_hospital_specializations" name="Specializations" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_specialization" sequence="25"
+                  groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
         <menuitem id="menu_hospital_doctors_receptionist" name="Doctors" parent="menu_hospital_masters_receptionist" action="smart_hospital_appointment.action_hospital_doctor" sequence="20"
                   groups="smart_hospital_appointment.group_hospital_receptionist"/>
         <menuitem id="menu_hospital_branches" name="Branches" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_branch" sequence="30"

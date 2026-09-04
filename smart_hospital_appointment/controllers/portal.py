@@ -19,7 +19,11 @@ class HospitalBookingMixin:
     def _get_portal_partner(self):
         return request.env.user.partner_id
 
-    def _portal_parse_datetime(self, value):
+    def _portal_parse_datetime(self, value=None, date_value=None, time_value=None):
+        if date_value or time_value:
+            if not date_value or not time_value:
+                raise UserError(_("Please set a date and time for the appointment."))
+            value = f"{date_value} {time_value}"
         if not value:
             raise UserError(_("Please set a date and time for the appointment."))
         norm = value.replace("T", " ")
@@ -30,29 +34,68 @@ class HospitalBookingMixin:
         localized = tz.localize(naive_local)
         return localized.astimezone(pytz.UTC).replace(tzinfo=None)
 
-    def _get_booking_doctors(self):
-        return request.env["hospital.doctor"].search(
-            [("active", "=", True), ("is_unavailable", "=", False)],
-            order="name",
+    def _float_hours_to_time_str(self, value):
+        if value is False or value is None:
+            return ""
+        hours = int(value)
+        minutes = int(round((value - hours) * 60))
+        if minutes >= 60:
+            hours += 1
+            minutes = 0
+        hours %= 24
+        return f"{hours:02d}:{minutes:02d}"
+
+    def _get_doctor_start_time(self, doctor, branch, date_value=None):
+        if not doctor or not branch:
+            return ""
+        slots = request.env["hospital.doctor.availability"].sudo().search(
+            [
+                ("doctor_id", "=", doctor.id),
+                ("branch_id", "=", branch.id),
+            ],
+            order="day_of_week, start_time",
         )
+        if not slots:
+            return ""
+        if date_value:
+            try:
+                day = str(datetime.strptime(date_value, "%Y-%m-%d").weekday())
+                slots = slots.filtered(lambda slot: slot.day_of_week == day)
+            except ValueError:
+                pass
+        if not slots:
+            return ""
+        return self._float_hours_to_time_str(slots[0].start_time)
 
-    def _get_booking_branches(self, doctor=None):
-        branches = request.env["hospital.branch"].search([("active", "=", True)], order="name")
-        if doctor:
-            branches = branches.filtered(lambda branch: branch in doctor.branch_ids)
-        return branches
+    def _get_booking_branches(self):
+        return request.env["hospital.branch"].sudo().search([("active", "=", True)], order="name")
 
-    def _resolve_booking_selection(self, post, doctors, branches, appointment=None):
-        doctor_id = int(post.get("doctor_id") or 0)
+    def _get_booking_doctors(self, branch=None, specialization=None):
+        domain = [("active", "=", True), ("is_unavailable", "=", False)]
+        if branch:
+            domain.append(("branch_ids", "in", [branch.id]))
+        if specialization:
+            domain.append(("specialization", "=", specialization.id))
+        return request.env["hospital.doctor"].sudo().search(domain, order="name")
+
+    def _get_booking_specializations(self, branch=None):
+        return self._get_booking_doctors(branch=branch).mapped("specialization").sorted("name")
+
+    def _resolve_booking_selection(self, post, appointment=None):
         branch_id = int(post.get("branch_id") or 0)
+        specialization_id = int(post.get("specialization_id") or 0)
+        doctor_id = int(post.get("doctor_id") or 0)
         if appointment:
-            doctor_id = doctor_id or appointment.doctor_id.id
             branch_id = branch_id or appointment.branch_id.id
-        if not doctor_id and doctors:
-            doctor_id = doctors[0].id
-        if not branch_id and branches:
-            branch_id = branches[0].id
-        return doctor_id, branch_id
+            doctor_id = doctor_id or appointment.doctor_id.id
+            specialization_id = specialization_id or appointment.doctor_id.specialization.id
+        elif doctor_id:
+            doctor = request.env["hospital.doctor"].sudo().browse(doctor_id)
+            if doctor.exists():
+                specialization_id = specialization_id or doctor.specialization.id
+                if not branch_id and doctor.branch_ids:
+                    branch_id = doctor.branch_ids[0].id
+        return branch_id, specialization_id, doctor_id
 
     def _prepare_appointment_form_values(
         self,
@@ -65,54 +108,77 @@ class HospitalBookingMixin:
     ):
         post = post or {}
         partner = self._get_portal_partner()
-        doctors = self._get_booking_doctors()
-        selected_doctor_id, selected_branch_id = self._resolve_booking_selection(
-            post, doctors, request.env["hospital.branch"], appointment=appointment
+        branches = self._get_booking_branches()
+        selected_branch_id, selected_specialization_id, selected_doctor_id = self._resolve_booking_selection(
+            post, appointment=appointment
         )
-        doctor = doctors.filtered(lambda d: d.id == selected_doctor_id)[:1]
-        branches = self._get_booking_branches(doctor)
-        if selected_branch_id and selected_branch_id not in branches.ids:
-            selected_branch_id = branches[:1].id if branches else 0
-        appointment_datetime_input = ""
-        if appointment:
+        branch = branches.filtered(lambda b: b.id == selected_branch_id)[:1]
+        specializations = (
+            self._get_booking_specializations(branch=branch)
+            if branch
+            else request.env["hospital.specialization"]
+        )
+        if selected_specialization_id and selected_specialization_id not in specializations.ids:
+            selected_specialization_id = 0
+        specialization = specializations.filtered(lambda s: s.id == selected_specialization_id)[:1]
+        doctors = (
+            self._get_booking_doctors(branch=branch, specialization=specialization)
+            if branch and specialization
+            else request.env["hospital.doctor"]
+        )
+        if selected_doctor_id and selected_doctor_id not in doctors.ids:
+            selected_doctor_id = 0
+        doctor = doctors.filtered(lambda rec: rec.id == selected_doctor_id)[:1]
+        appointment_date_input = post.get("appointment_date") or ""
+        appointment_time_input = post.get("appointment_time") or ""
+        if appointment and not appointment_date_input:
             ctx_dt = fields.Datetime.context_timestamp(appointment, appointment.appointment_datetime)
-            appointment_datetime_input = ctx_dt.strftime("%Y-%m-%dT%H:%M")
+            appointment_date_input = ctx_dt.strftime("%Y-%m-%d")
+            appointment_time_input = appointment_time_input or ctx_dt.strftime("%H:%M")
+        start_time = self._get_doctor_start_time(doctor, branch, appointment_date_input)
+        if start_time and (not appointment or post.get("doctor_id") or post.get("appointment_date")):
+            appointment_time_input = start_time
         return {
             "appointment": appointment,
-            "appointment_datetime_input": appointment_datetime_input,
+            "appointment_date_input": appointment_date_input,
+            "appointment_time_input": appointment_time_input,
             "portal_partner": partner,
             "doctors": doctors,
             "branches": branches,
+            "specializations": specializations,
             "error": {},
             "post": post,
             "selected_doctor_id": selected_doctor_id,
             "selected_branch_id": selected_branch_id,
+            "selected_specialization_id": selected_specialization_id,
             "page_name": page_name,
             "form_action": form_action,
             "default_url": default_url,
         }
 
     def _submit_appointment_form(self, partner, post, appointment=None):
-        doctor = request.env["hospital.doctor"].browse(int(post.get("doctor_id", 0)))
-        branch = request.env["hospital.branch"].browse(int(post.get("branch_id", 0)))
+        doctor = request.env["hospital.doctor"].sudo().browse(int(post.get("doctor_id") or 0))
+        branch = request.env["hospital.branch"].sudo().browse(int(post.get("branch_id") or 0))
         if not doctor.exists() or not branch.exists():
             raise UserError(_("Please select a valid doctor and branch."))
         if branch not in doctor.branch_ids:
             raise UserError(_("This doctor does not work at the selected branch."))
-        appt_dt = self._portal_parse_datetime(post.get("appointment_datetime"))
+        appt_dt = self._portal_parse_datetime(
+            date_value=post.get("appointment_date"),
+            time_value=post.get("appointment_time"),
+        )
         vals = {
             "patient_id": partner.id,
             "doctor_id": doctor.id,
             "branch_id": branch.id,
             "appointment_datetime": fields.Datetime.to_string(appt_dt),
-            "duration_minutes": int(post.get("duration_minutes") or 30),
             "notes": post.get("notes") or False,
         }
         with request.env.cr.savepoint():
             if appointment:
                 appointment.write(vals)
                 return appointment
-            appt = request.env["hospital.appointment"].create(vals)
+            appt = request.env["hospital.appointment"].sudo().create(vals)
             appt.action_confirm()
             return appt
 
@@ -132,20 +198,32 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
         return values
 
     @http.route(["/my/hospital", "/my/hospital/page/<int:page>"], type="http", auth="user", website=True)
-    def portal_my_hospital(self, page=1, **kw):
+    def portal_my_hospital(self, page=1, filterby="all", **kw):
         values = self._prepare_hospital_portal_layout()
         partner = values["portal_partner"]
         Appointment = request.env["hospital.appointment"]
         domain = [("patient_id", "=", partner.id)]
+        filters = {
+            "all": [],
+            "upcoming": [("state", "=", "confirmed")],
+            "pending": [("state", "=", "draft")],
+            "completed": [("state", "in", ("completed", "released"))],
+            "cancelled": [("state", "=", "cancelled")],
+        }
+        if filterby not in filters:
+            filterby = "all"
+        list_domain = domain + filters[filterby]
         total = Appointment.search_count(domain)
+        filtered_total = Appointment.search_count(list_domain)
         pager = portal_pager(
             url="/my/hospital",
-            total=total,
+            url_args={"filterby": filterby},
+            total=filtered_total,
             page=page,
             step=self._items_per_page,
         )
         appointments = Appointment.search(
-            domain,
+            list_domain,
             order="appointment_datetime desc",
             limit=self._items_per_page,
             offset=pager["offset"],
@@ -155,12 +233,19 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
                 "appointments": appointments,
                 "pager": pager,
                 "default_url": "/my/hospital",
+                "filterby": filterby,
                 "appointment_count": total,
+                "pending_count": Appointment.search_count(
+                    domain + [("state", "=", "draft")]
+                ),
                 "upcoming_count": Appointment.search_count(
-                    domain + [("state", "in", ("draft", "confirmed", "in_progress"))]
+                    domain + [("state", "=", "confirmed")]
                 ),
                 "completed_count": Appointment.search_count(
                     domain + [("state", "in", ("completed", "released"))]
+                ),
+                "cancelled_count": Appointment.search_count(
+                    domain + [("state", "=", "cancelled")]
                 ),
             }
         )
@@ -254,8 +339,11 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
                         form_action=f"/my/hospital/appointment/{appointment_id}/edit",
                     )
                 )
-                values["appointment_datetime_input"] = post.get("appointment_datetime") or values[
-                    "appointment_datetime_input"
+                values["appointment_date_input"] = post.get("appointment_date") or values[
+                    "appointment_date_input"
+                ]
+                values["appointment_time_input"] = post.get("appointment_time") or values[
+                    "appointment_time_input"
                 ]
         return request.render("smart_hospital_appointment.portal_hospital_appointment_form", values)
 

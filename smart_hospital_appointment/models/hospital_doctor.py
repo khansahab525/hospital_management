@@ -10,7 +10,9 @@ class HospitalDoctor(models.Model):
 
     name = fields.Char(required=True, tracking=True)
     active = fields.Boolean(default=True)
-    specialization = fields.Char(required=True)
+    image = fields.Image(string="Photo")
+    specialization = fields.Many2one("hospital.specialization", required=True)
+    description = fields.Text()
     experience_years = fields.Integer(string="Experience (Years)", required=True)
     consultation_fee = fields.Float(required=True)
     rating = fields.Float(digits=(2, 1), default=0.0)

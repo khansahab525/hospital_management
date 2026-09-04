@@ -21,9 +21,14 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
+                        <field name="image" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Doctor name"/>
+                            </h1>
+                        </div>
                         <group>
                             <group>
-                                <field name="name"/>
                                 <field name="specialization"/>
                                 <field name="experience_years"/>
                                 <field name="consultation_fee"/>
@@ -34,6 +39,9 @@
                                 <field name="user_id" groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
                                 <field name="active" groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
                             </group>
+                        </group>
+                        <group>
+                            <field name="description" placeholder="Short biography shown on the website"/>
                         </group>
                         <group>
                             <field name="branch_ids" widget="many2many_tags" readonly="1" force_save="1"
@@ -55,7 +63,6 @@
                                         <field name="day_of_week"/>
                                         <field name="start_time"/>
                                         <field name="end_time"/>
-                                        <field name="slot_minutes"/>
                                     </tree>
                                 </field>
                             </page>

@@ -69,19 +69,19 @@
 
                         <div t-if="doctors" class="row g-4">
                             <t t-foreach="doctors" t-as="doctor">
-                                <t t-set="partner" t-value="doctor.user_id.partner_id if doctor.user_id else False"/>
                                 <t t-set="initials" t-value="''.join([part[0].upper() for part in doctor.name.split()[:2] if part])"/>
                                 <div class="col-md-6 col-xl-4">
                                     <article class="o_doctor_card">
                                         <div class="o_doctor_card_header">
                                             <div class="o_doctor_avatar">
-                                                <img t-if="partner and partner.image_128"
-                                                     t-attf-src="/web/image/res.partner/#{partner.id}/avatar_128"
+                                                <img t-if="doctor.image"
+                                                     t-attf-src="/web/image/hospital.doctor/#{doctor.id}/image"
                                                      t-att-alt="doctor.name"/>
                                                 <span t-else="" t-out="initials"/>
                                             </div>
                                             <h2 class="o_doctor_name" t-out="doctor.name"/>
-                                            <p class="o_doctor_specialization" t-out="doctor.specialization"/>
+                                            <p class="o_doctor_specialization" t-field="doctor.specialization"/>
+                                            <p t-if="doctor.description" class="o_doctor_description" t-out="doctor.description"/>
                                             <span t-if="doctor.rating" class="o_doctor_rating">
                                                 <i class="fa fa-star" aria-hidden="true"/>
                                                 <t t-out="'%.1f' % doctor.rating"/> / 5
