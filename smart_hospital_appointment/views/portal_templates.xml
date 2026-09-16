@@ -66,17 +66,6 @@
                 <section class="o_appt_stats">
                     <div class="row g-3">
                         <div class="col-6 col-lg">
-                            <a href="/my/hospital?filterby=all" t-attf-class="o_appt_stat_card #{'active' if filterby == 'all' else ''}">
-                                <div class="o_appt_stat_icon">
-                                    <i class="fa fa-list-alt" aria-hidden="true"/>
-                                </div>
-                                <div>
-                                    <div class="o_appt_stat_value" t-out="appointment_count"/>
-                                    <p class="o_appt_stat_label">Total Appointments</p>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-6 col-lg">
                             <a href="/my/hospital?filterby=upcoming" t-attf-class="o_appt_stat_card #{'active' if filterby == 'upcoming' else ''}">
                                 <div class="o_appt_stat_icon">
                                     <i class="fa fa-clock-o" aria-hidden="true"/>
@@ -117,6 +106,17 @@
                                 <div>
                                     <div class="o_appt_stat_value" t-out="cancelled_count"/>
                                     <p class="o_appt_stat_label">Cancelled</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-6 col-lg">
+                            <a href="/my/hospital?filterby=all" t-attf-class="o_appt_stat_card #{'active' if filterby == 'all' else ''}">
+                                <div class="o_appt_stat_icon">
+                                    <i class="fa fa-list-alt" aria-hidden="true"/>
+                                </div>
+                                <div>
+                                    <div class="o_appt_stat_value" t-out="appointment_count"/>
+                                    <p class="o_appt_stat_label">Total Appointments</p>
                                 </div>
                             </a>
                         </div>

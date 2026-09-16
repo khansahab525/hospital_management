@@ -20,16 +20,52 @@ except ImportError:
 class HospitalWebsite(HospitalBookingMixin, http.Controller):
     @http.route(["/doctors"], type="http", auth="public", website=True, sitemap=True)
     def doctors_list(self, **kw):
-        doctors = request.env["hospital.doctor"].sudo().search(
-            [("active", "=", True), ("is_unavailable", "=", False)],
-            order="name",
-        )
+        Doctor = request.env["hospital.doctor"].sudo()
+        Branch = request.env["hospital.branch"].sudo()
+        Specialization = request.env["hospital.specialization"].sudo()
+
+        search = (kw.get("search") or "").strip()
+        try:
+            branch_id = int(kw.get("branch_id") or 0)
+        except (TypeError, ValueError):
+            branch_id = 0
+        try:
+            specialization_id = int(kw.get("specialization_id") or 0)
+        except (TypeError, ValueError):
+            specialization_id = 0
+
+        base_domain = [("active", "=", True), ("is_unavailable", "=", False)]
+        all_doctors = Doctor.search(base_domain, order="name")
+        branches = Branch.search([("active", "=", True)], order="name")
+        specializations = Specialization.search([], order="name")
+
+        domain = list(base_domain)
+        if search:
+            domain.append(("name", "ilike", search))
+        if branch_id and branch_id in branches.ids:
+            domain.append(("branch_ids", "in", [branch_id]))
+        else:
+            branch_id = 0
+        if specialization_id and specialization_id in specializations.ids:
+            domain.append(("specialization", "=", specialization_id))
+        else:
+            specialization_id = 0
+
+        doctors = Doctor.search(domain, order="name")
+        has_filters = bool(search or branch_id or specialization_id)
         return request.render(
             "smart_hospital_appointment.website_doctors_list",
             {
                 "doctors": doctors,
-                "doctor_count": len(doctors),
-                "branch_count": len(doctors.mapped("branch_ids")),
+                "doctor_count": len(all_doctors),
+                "branch_count": len(all_doctors.mapped("branch_ids")),
+                "branches": branches,
+                "specializations": specializations,
+                "search": search,
+                "selected_branch_id": branch_id,
+                "selected_specialization_id": specialization_id,
+                "has_filters": has_filters,
+                "result_count": len(doctors),
             },
         )
 
@@ -75,9 +111,7 @@ class HospitalWebsite(HospitalBookingMixin, http.Controller):
             if not request.env.user._is_public():
                 return request.redirect("/appointment/book")
 
-        branches = request.env["hospital.branch"].sudo().search([("active", "=", True)], order="name")
         values = {
-            "branches": branches,
             "post": post,
             "error": False,
         }

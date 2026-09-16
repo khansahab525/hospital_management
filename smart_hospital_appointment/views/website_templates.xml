@@ -56,14 +56,98 @@
                     </div>
                 </section>
 
+                <section class="o_doctors_filters">
+                    <div class="container">
+                        <form action="/doctors" method="get" class="o_doctors_filter_form" id="doctors_filter_form">
+                            <div class="o_doctors_filter_grid">
+                                <div class="o_doctors_filter_group o_doctors_filter_search">
+                                    <label class="form-label" for="doctor_search">Search by name</label>
+                                    <div class="o_doctors_search_input">
+                                        <i class="fa fa-search" aria-hidden="true"/>
+                                        <input type="search"
+                                               class="form-control"
+                                               name="search"
+                                               id="doctor_search"
+                                               placeholder="Search doctor by name..."
+                                               t-att-value="search or ''"
+                                               autocomplete="off"/>
+                                    </div>
+                                </div>
+                                <div class="o_doctors_filter_group">
+                                    <label class="form-label" for="branch_id">Branch</label>
+                                    <select class="form-select" name="branch_id" id="branch_id">
+                                        <option value="">All branches</option>
+                                        <t t-foreach="branches" t-as="b">
+                                            <option t-att-value="b.id"
+                                                    t-att-selected="selected_branch_id == b.id and 'selected' or None">
+                                                <t t-out="b.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="o_doctors_filter_group">
+                                    <label class="form-label" for="specialization_id">Specialization</label>
+                                    <select class="form-select" name="specialization_id" id="specialization_id">
+                                        <option value="">All specializations</option>
+                                        <t t-foreach="specializations" t-as="s">
+                                            <option t-att-value="s.id"
+                                                    t-att-selected="selected_specialization_id == s.id and 'selected' or None">
+                                                <t t-out="s.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="o_doctors_filter_actions">
+                                    <button type="submit" class="o_doctors_filter_btn o_doctors_filter_btn_primary">
+                                        <i class="fa fa-filter" aria-hidden="true"/>
+                                        Apply
+                                    </button>
+                                    <a t-if="has_filters" href="/doctors" class="o_doctors_filter_btn o_doctors_filter_btn_secondary">
+                                        Clear
+                                    </a>
+                                </div>
+                            </div>
+                            <p class="o_doctors_filter_meta" t-if="has_filters">
+                                Showing <strong t-out="result_count"/>
+                                <t t-if="result_count == 1"> doctor</t>
+                                <t t-else=""> doctors</t>
+                                matching your filters.
+                            </p>
+                        </form>
+                        <script>
+                            (function () {
+                                const form = document.getElementById("doctors_filter_form");
+                                if (!form) {
+                                    return;
+                                }
+                                ["branch_id", "specialization_id"].forEach(function (id) {
+                                    const el = document.getElementById(id);
+                                    if (el) {
+                                        el.addEventListener("change", function () {
+                                            form.submit();
+                                        });
+                                    }
+                                });
+                            })();
+                        </script>
+                    </div>
+                </section>
+
                 <section class="o_doctors_grid">
                     <div class="container">
                         <t t-if="not doctors">
                             <div class="o_doctors_empty">
                                 <i class="fa fa-user-md" aria-hidden="true"/>
-                                <h3>No doctors available right now</h3>
-                                <p>Please check back soon or contact us for assistance.</p>
-                                <a href="/contactus" class="btn btn-primary mt-3">Contact us</a>
+                                <t t-if="has_filters">
+                                    <h3>No doctors match your search</h3>
+                                    <p>Try a different name, branch, or specialization.</p>
+                                    <a href="/doctors" class="btn btn-primary mt-3">Clear filters</a>
+                                </t>
+                                <t t-else="">
+                                    <h3>No doctors available right now</h3>
+                                    <p>Please check back soon or contact us for assistance.</p>
+                                    <a href="/contactus" class="btn btn-primary mt-3">Contact us</a>
+                                </t>
                             </div>
                         </t>
 

@@ -4,7 +4,12 @@ from odoo import api, fields, models
 class HospitalDoctor(models.Model):
     _name = "hospital.doctor"
     _description = "Hospital Doctor"
-    _inherit = ["hospital.branch.filtered", "mail.thread", "mail.activity.mixin"]
+    _inherit = [
+        "hospital.branch.filtered",
+        "mail.thread",
+        "mail.activity.mixin",
+        "website.searchable.mixin",
+    ]
     _hospital_branch_field = "branch_ids"
     _order = "name"
 
@@ -48,6 +53,39 @@ class HospitalDoctor(models.Model):
     )
     total_patients = fields.Integer(compute="_compute_metrics")
     completed_appointments = fields.Integer(compute="_compute_metrics")
+    website_url = fields.Char(compute="_compute_website_url")
+
+    def _compute_website_url(self):
+        for rec in self:
+            rec.website_url = f"/appointment/book?doctor_id={rec.id}"
+
+    @api.model
+    def _search_get_detail(self, website, order, options):
+        with_description = options.get("displayDescription")
+        search_fields = ["name", "specialization.name"]
+        fetch_fields = ["id", "name", "website_url"]
+        mapping = {
+            "name": {"name": "name", "type": "text", "match": True},
+            "website_url": {"name": "website_url", "type": "text", "truncate": False},
+        }
+        if with_description:
+            search_fields.append("description")
+            fetch_fields.append("description")
+            mapping["description"] = {
+                "name": "description",
+                "type": "text",
+                "match": True,
+            }
+        return {
+            "model": "hospital.doctor",
+            "requires_sudo": True,
+            "base_domain": [[("active", "=", True), ("is_unavailable", "=", False)]],
+            "search_fields": search_fields,
+            "fetch_fields": fetch_fields,
+            "mapping": mapping,
+            "icon": "fa-user-md",
+            "order": "name asc, id desc",
+        }
 
     @api.depends("appointment_ids.state", "appointment_ids.patient_id")
     def _compute_metrics(self):

@@ -32,8 +32,9 @@ class HospitalPatient(models.Model):
     allergies = fields.Text()
     branch_id = fields.Many2one(
         "hospital.branch",
-        required=True,
+        string="Preferred Branch",
         tracking=True,
+        help="Optional preferred branch. Leave empty for general patients who can book any branch.",
         default=lambda self: self.env.context.get("hospital_branch_id")
         or (self.env.user.branch_id.id if self.env.user.branch_id else False),
     )
@@ -72,11 +73,25 @@ class HospitalPatient(models.Model):
         for vals in vals_list:
             if vals.get("patient_code", "New") == "New":
                 vals["patient_code"] = seq.next_by_code("hospital.patient") or "New"
-            if not vals.get("branch_id") and default_branch:
+            if "branch_id" not in vals and default_branch:
                 vals["branch_id"] = default_branch
             if not vals.get("user_id"):
                 vals["user_id"] = user.id
         return super().create(vals_list)
+
+    def _record_matches_hospital_branch(self, user_branch):
+        """General patients (no preferred branch) are visible from any branch."""
+        self.ensure_one()
+        if not self.branch_id:
+            return True
+        return super()._record_matches_hospital_branch(user_branch)
+
+    @api.model
+    def _get_hospital_branch_search_domain(self):
+        domain = super()._get_hospital_branch_search_domain()
+        if not domain:
+            return domain
+        return ["|", ("branch_id", "=", False)] + domain
 
     @api.model
     def register_portal_patient(self, data):
@@ -88,7 +103,6 @@ class HospitalPatient(models.Model):
         phone = (data.get("phone") or "").strip()
         gender = data.get("gender")
         address = (data.get("address") or "").strip()
-        branch_id = int(data.get("branch_id") or 0)
         try:
             age = int(data.get("age") or 0)
         except (TypeError, ValueError):
@@ -110,9 +124,6 @@ class HospitalPatient(models.Model):
             raise UserError(_("Please enter a valid age."))
         if gender not in ("male", "female", "other"):
             raise UserError(_("Please select your gender."))
-        branch = self.env["hospital.branch"].sudo().browse(branch_id)
-        if not branch.exists() or not branch.active:
-            raise UserError(_("Please select a valid hospital branch."))
 
         Users = self.env["res.users"].sudo()
         if Users.search([("login", "=", email)], limit=1):
@@ -126,8 +137,6 @@ class HospitalPatient(models.Model):
             "email": email,
             "password": password,
             "phone": phone,
-            "branch_id": branch.id,
-            "allowed_branch_ids": [(6, 0, [branch.id])],
         }
         user = Users.with_context(no_reset_password=True)._create_user_from_template(user_vals)
         partner = user.partner_id
@@ -149,7 +158,7 @@ class HospitalPatient(models.Model):
                 "phone": phone,
                 "email": email,
                 "address": address or False,
-                "branch_id": branch.id,
+                "branch_id": False,
             }
         )
         return user, patient

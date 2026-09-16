@@ -198,7 +198,7 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
         return values
 
     @http.route(["/my/hospital", "/my/hospital/page/<int:page>"], type="http", auth="user", website=True)
-    def portal_my_hospital(self, page=1, filterby="all", **kw):
+    def portal_my_hospital(self, page=1, filterby="upcoming", **kw):
         values = self._prepare_hospital_portal_layout()
         partner = values["portal_partner"]
         Appointment = request.env["hospital.appointment"]
@@ -211,7 +211,7 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
             "cancelled": [("state", "=", "cancelled")],
         }
         if filterby not in filters:
-            filterby = "all"
+            filterby = "upcoming"
         list_domain = domain + filters[filterby]
         total = Appointment.search_count(domain)
         filtered_total = Appointment.search_count(list_domain)

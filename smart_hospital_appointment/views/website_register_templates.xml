@@ -85,19 +85,6 @@
                                             <option value="other" t-att-selected="post.get('gender') == 'other' and 'selected' or None">Other</option>
                                         </select>
                                     </div>
-                                    <div class="o_appt_form_group">
-                                        <label class="form-label" for="branch_id">Preferred branch <span class="text-danger">*</span></label>
-                                        <select class="form-select" name="branch_id" id="branch_id" required="required">
-                                            <option value="" disabled="disabled" t-att-selected="not post.get('branch_id') and 'selected' or None">Select a branch</option>
-                                            <t t-foreach="branches" t-as="branch">
-                                                <option t-att-value="branch.id"
-                                                        t-att-selected="str(post.get('branch_id') or '') == str(branch.id) and 'selected' or None">
-                                                    <t t-out="branch.name"/>
-                                                    <t t-if="branch.code"> (<t t-out="branch.code"/>)</t>
-                                                </option>
-                                            </t>
-                                        </select>
-                                    </div>
                                     <div class="o_appt_form_group o_appt_form_full">
                                         <label class="form-label" for="address">Address (optional)</label>
                                         <textarea class="form-control" name="address" id="address" rows="2"

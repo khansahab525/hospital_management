@@ -33,7 +33,7 @@ class IrRule(models.Model):
             ),
             "smart_hospital_appointment.hospital_patient_branch_rule": (
                 "Hospital Patient: receptionist current branch",
-                "[('branch_id', '=', hospital_branch_id)]",
+                "['|', ('branch_id', '=', False), ('branch_id', '=', hospital_branch_id)]",
             ),
             "smart_hospital_appointment.hospital_doctor_branch_rule": (
                 "Hospital Doctor: receptionist current branch",

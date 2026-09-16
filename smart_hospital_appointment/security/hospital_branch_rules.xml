@@ -18,7 +18,7 @@
     <record id="hospital_patient_branch_rule" model="ir.rule">
         <field name="name">Hospital Patient: receptionist current branch</field>
         <field name="model_id" ref="model_hospital_patient"/>
-        <field name="domain_force">[('branch_id', '=', hospital_branch_id)]</field>
+        <field name="domain_force">['|', ('branch_id', '=', False), ('branch_id', '=', hospital_branch_id)]</field>
         <field name="groups" eval="[(6, 0, [ref('group_hospital_receptionist')])]"/>
     </record>
 
