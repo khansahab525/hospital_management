@@ -156,6 +156,11 @@ class HospitalBookingMixin:
             "default_url": default_url,
         }
 
+    def _get_post_booking_url(self, appointment):
+        if appointment._has_to_be_paid():
+            return f"/my/hospital/appointment/{appointment.id}/pay"
+        return f"/my/hospital/appointment/{appointment.id}"
+
     def _submit_appointment_form(self, partner, post, appointment=None):
         doctor = request.env["hospital.doctor"].sudo().browse(int(post.get("doctor_id") or 0))
         branch = request.env["hospital.branch"].sudo().browse(int(post.get("branch_id") or 0))
@@ -206,7 +211,6 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
         filters = {
             "all": [],
             "upcoming": [("state", "=", "confirmed")],
-            "pending": [("state", "=", "draft")],
             "completed": [("state", "in", ("completed", "released"))],
             "cancelled": [("state", "=", "cancelled")],
         }
@@ -235,9 +239,6 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
                 "default_url": "/my/hospital",
                 "filterby": filterby,
                 "appointment_count": total,
-                "pending_count": Appointment.search_count(
-                    domain + [("state", "=", "draft")]
-                ),
                 "upcoming_count": Appointment.search_count(
                     domain + [("state", "=", "confirmed")]
                 ),
@@ -269,7 +270,7 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
         if request.httprequest.method == "POST" and post:
             try:
                 appt = self._submit_appointment_form(values["portal_partner"], post)
-                return request.redirect(f"/my/hospital/appointment/{appt.id}")
+                return request.redirect(self._get_post_booking_url(appt))
             except (UserError, ValidationError, AccessError, ValueError) as e:
                 values["error"] = {"message": str(e)}
                 values.update(
@@ -304,6 +305,40 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
         return request.render("smart_hospital_appointment.portal_hospital_appointment_detail", values)
 
     @http.route(
+        ["/my/hospital/appointment/<int:appointment_id>/live"],
+        type="http",
+        auth="user",
+        website=True,
+    )
+    def portal_hospital_appointment_live(self, appointment_id, **kw):
+        values = self._prepare_hospital_portal_layout(page_name="hospital_live")
+        try:
+            appt = self._get_portal_appointment(appointment_id)
+        except AccessError:
+            return request.redirect("/my/hospital")
+        values.update(
+            {
+                "appointment": appt,
+                "default_url": "/my/hospital",
+                "live_data_url": f"/my/hospital/appointment/{appointment_id}/live/data",
+            }
+        )
+        return request.render("smart_hospital_appointment.portal_hospital_appointment_live", values)
+
+    @http.route(
+        ["/my/hospital/appointment/<int:appointment_id>/live/data"],
+        type="http",
+        auth="user",
+        methods=["GET"],
+    )
+    def portal_hospital_appointment_live_data(self, appointment_id, **kw):
+        try:
+            appt = self._get_portal_appointment(appointment_id)
+        except AccessError:
+            return request.make_json_response({"error": "not_found"}, status=404)
+        return request.make_json_response(appt._get_live_queue_data())
+
+    @http.route(
         ["/my/hospital/appointment/<int:appointment_id>/edit"],
         type="http",
         auth="user",
@@ -316,7 +351,7 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
             appt = self._get_portal_appointment(appointment_id)
         except AccessError:
             return request.redirect("/my/hospital")
-        if appt.state not in ("draft", "confirmed"):
+        if appt.state not in ("draft", "confirmed") or appt._is_payment_locked():
             return request.redirect(f"/my/hospital/appointment/{appointment_id}")
         form_values = self._prepare_appointment_form_values(
             appointment=appt,
@@ -393,7 +428,7 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
     def portal_hospital_appointment_cancel(self, appointment_id, **post):
         try:
             appt = self._get_portal_appointment(appointment_id)
-            if appt.state in ("draft", "confirmed", "in_progress"):
+            if appt.state in ("draft", "confirmed", "in_progress") and not appt._is_payment_locked():
                 appt.action_cancel()
         except (AccessError, UserError):
             pass

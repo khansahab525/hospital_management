@@ -86,7 +86,7 @@ class HospitalWebsite(HospitalBookingMixin, http.Controller):
         if request.httprequest.method == "POST" and post:
             try:
                 appt = self._submit_appointment_form(values["portal_partner"], post)
-                return request.redirect(f"/my/hospital/appointment/{appt.id}")
+                return request.redirect(self._get_post_booking_url(appt))
             except (UserError, ValidationError, AccessError, ValueError) as e:
                 values["error"] = {"message": str(e)}
                 values.update(

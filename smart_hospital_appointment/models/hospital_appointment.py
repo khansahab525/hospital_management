@@ -73,6 +73,138 @@ class HospitalAppointment(models.Model):
         string="Released visits today (same doctor & branch)",
         compute="_compute_portal_released_today_count",
     )
+    currency_id = fields.Many2one(
+        "res.currency",
+        required=True,
+        default=lambda self: self.env.company.currency_id,
+    )
+    amount_total = fields.Monetary(
+        string="Consultation Fee",
+        currency_field="currency_id",
+        compute="_compute_amount_total",
+        store=True,
+        readonly=False,
+    )
+    transaction_ids = fields.Many2many(
+        "payment.transaction",
+        "hospital_appointment_transaction_rel",
+        "appointment_id",
+        "transaction_id",
+        string="Transactions",
+        copy=False,
+        readonly=True,
+        groups="base.group_system",
+    )
+    payment_state = fields.Selection(
+        [
+            ("not_required", "Not Required"),
+            ("not_paid", "Not Paid"),
+            ("pending", "Pending"),
+            ("authorized", "Authorized"),
+            ("paid", "Paid"),
+        ],
+        compute="_compute_payment_state",
+        store=True,
+        tracking=True,
+    )
+
+    @api.depends("doctor_id", "doctor_id.consultation_fee")
+    def _compute_amount_total(self):
+        for rec in self:
+            tx_states = set(rec.sudo().transaction_ids.mapped("state"))
+            if tx_states & {"pending", "authorized", "done"}:
+                rec.amount_total = rec.amount_total
+            else:
+                rec.amount_total = rec.doctor_id.consultation_fee or 0.0
+
+    @api.depends("amount_total", "transaction_ids.state")
+    def _compute_payment_state(self):
+        for rec in self:
+            states = set(rec.sudo().transaction_ids.mapped("state"))
+            if "done" in states:
+                rec.payment_state = "paid"
+            elif "authorized" in states:
+                rec.payment_state = "authorized"
+            elif "pending" in states:
+                rec.payment_state = "pending"
+            elif rec.currency_id.compare_amounts(rec.amount_total, 0.0) <= 0:
+                rec.payment_state = "not_required"
+            else:
+                rec.payment_state = "not_paid"
+
+    def _has_to_be_paid(self):
+        self.ensure_one()
+        return self.state in ("draft", "confirmed") and self.payment_state == "not_paid"
+
+    def _is_payment_locked(self):
+        self.ensure_one()
+        return self.payment_state in ("pending", "authorized", "paid")
+
+    def _get_live_queue_data(self):
+        """Return the doctor's queue for the appointment's day; exposes no other patient's identity."""
+        self.ensure_one()
+        day_start, day_end = self._appointment_day_bounds()
+        day_appointments = self.sudo().search(
+            [
+                ("doctor_id", "=", self.doctor_id.id),
+                ("branch_id", "=", self.branch_id.id),
+                ("appointment_datetime", ">=", day_start),
+                ("appointment_datetime", "<", day_end),
+            ],
+            order="create_date asc, id asc",
+        )
+        state_labels = dict(self._fields["state"]._description_selection(self.env))
+        active_states = ("draft", "confirmed", "in_progress")
+        tiles = []
+        for appt in day_appointments:
+            local_dt = fields.Datetime.context_timestamp(self, appt.appointment_datetime)
+            tiles.append(
+                {
+                    "name": appt.name,
+                    "queue_number": appt.queue_number,
+                    "state": appt.state,
+                    "state_label": state_labels.get(appt.state, appt.state),
+                    "time": local_dt.strftime("%H:%M"),
+                    "is_mine": appt.id == self.id,
+                }
+            )
+
+        in_progress = day_appointments.filtered(lambda a: a.state == "in_progress")
+        next_up = day_appointments.filtered(
+            lambda a: a.state in ("draft", "confirmed") and a.queue_number
+        ).sorted("queue_number")
+        serving = in_progress.sorted("queue_number")[:1] or next_up[:1]
+        ahead = 0
+        if self.state in active_states and self.queue_number:
+            ahead = len(
+                day_appointments.filtered(
+                    lambda a: a.state in active_states
+                    and a.queue_number
+                    and a.queue_number < self.queue_number
+                )
+            )
+        return {
+            "appointment": self.name,
+            "doctor": self.doctor_id.name,
+            "branch": self.branch_id.name,
+            "date": fields.Datetime.context_timestamp(self, self.appointment_datetime).strftime("%d %b %Y"),
+            "my_state": self.state,
+            "my_state_label": state_labels.get(self.state, self.state),
+            "my_number": self.queue_number,
+            "ahead": ahead,
+            "estimated_wait": self.estimated_wait_minutes if self.state in active_states else 0,
+            "now_serving": serving.queue_number if serving else 0,
+            "now_serving_in_progress": bool(in_progress),
+            "counts": {
+                "total": len(day_appointments.filtered(lambda a: a.state != "cancelled")),
+                "completed": len(day_appointments.filtered(lambda a: a.state in ("completed", "released"))),
+                "in_progress": len(in_progress),
+                "upcoming": len(day_appointments.filtered(lambda a: a.state in ("draft", "confirmed"))),
+                "cancelled": len(day_appointments.filtered(lambda a: a.state == "cancelled")),
+            },
+            "tiles": tiles,
+            "updated_at": fields.Datetime.context_timestamp(self, fields.Datetime.now()).strftime("%H:%M:%S"),
+        }
 
     @api.depends()
     def _compute_medicine_category_id(self):

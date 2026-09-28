@@ -77,17 +77,6 @@
                             </a>
                         </div>
                         <div class="col-6 col-lg">
-                            <a href="/my/hospital?filterby=pending" t-attf-class="o_appt_stat_card #{'active' if filterby == 'pending' else ''}">
-                                <div class="o_appt_stat_icon">
-                                    <i class="fa fa-hourglass-half" aria-hidden="true"/>
-                                </div>
-                                <div>
-                                    <div class="o_appt_stat_value" t-out="pending_count"/>
-                                    <p class="o_appt_stat_label">Pending</p>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-6 col-lg">
                             <a href="/my/hospital?filterby=completed" t-attf-class="o_appt_stat_card #{'active' if filterby == 'completed' else ''}">
                                 <div class="o_appt_stat_icon">
                                     <i class="fa fa-check-circle" aria-hidden="true"/>
@@ -143,7 +132,10 @@
                             <div class="o_appt_card_top">
                                 <a t-attf-href="/my/hospital/appointment/#{a.id}" class="o_appt_ref" t-out="a.name"/>
                                 <t t-set="appointment" t-value="a"/>
-                                <t t-call="smart_hospital_appointment.portal_appointment_status_badge"/>
+                                <span class="d-inline-flex gap-2 flex-wrap">
+                                    <t t-call="smart_hospital_appointment.portal_appointment_status_badge"/>
+                                    <t t-call="smart_hospital_appointment.portal_appointment_payment_badge"/>
+                                </span>
                             </div>
                             <div class="o_appt_meta_grid">
                                 <div class="o_appt_meta_item">
@@ -191,6 +183,10 @@
                                 </div>
                             </div>
                             <div class="o_appt_card_footer">
+                                <a t-if="a._has_to_be_paid()" t-attf-href="/my/hospital/appointment/#{a.id}/pay" class="o_appt_action_btn o_btn_success me-2">
+                                    <i class="fa fa-credit-card" aria-hidden="true"/>
+                                    Pay Now
+                                </a>
                                 <a t-attf-href="/my/hospital/appointment/#{a.id}" class="o_appt_open_btn">
                                     View Details
                                     <i class="fa fa-arrow-right" aria-hidden="true"/>
@@ -252,6 +248,19 @@
                                 <div class="o_appt_detail_label">Est. Wait (minutes)</div>
                                 <p class="o_appt_detail_value"><t t-out="appointment.estimated_wait_minutes"/></p>
                             </div>
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Consultation Fee</div>
+                                <p class="o_appt_detail_value">
+                                    <span t-field="appointment.amount_total"
+                                          t-options="{'widget': 'monetary', 'display_currency': appointment.currency_id}"/>
+                                </p>
+                            </div>
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Payment</div>
+                                <p class="o_appt_detail_value">
+                                    <t t-call="smart_hospital_appointment.portal_appointment_payment_badge"/>
+                                </p>
+                            </div>
                         </div>
                         <div t-if="appointment.notes" class="o_appt_notes_box">
                             <strong>Notes:</strong>
@@ -265,7 +274,15 @@
                         <i class="fa fa-arrow-left" aria-hidden="true"/>
                         Back to list
                     </a>
-                    <a t-if="appointment.state in ('draft', 'confirmed')" t-attf-href="/my/hospital/appointment/#{appointment.id}/edit" class="o_appt_action_btn o_btn_primary">
+                    <a t-if="appointment.state != 'cancelled'" t-attf-href="/my/hospital/appointment/#{appointment.id}/live" class="o_appt_action_btn o_btn_primary">
+                        <i class="fa fa-television" aria-hidden="true"/>
+                        Live Queue
+                    </a>
+                    <a t-if="appointment._has_to_be_paid()" t-attf-href="/my/hospital/appointment/#{appointment.id}/pay" class="o_appt_action_btn o_btn_success">
+                        <i class="fa fa-credit-card" aria-hidden="true"/>
+                        Pay Now
+                    </a>
+                    <a t-if="appointment.state in ('draft', 'confirmed') and not appointment._is_payment_locked()" t-attf-href="/my/hospital/appointment/#{appointment.id}/edit" class="o_appt_action_btn o_btn_primary">
                         <i class="fa fa-pencil" aria-hidden="true"/>
                         Edit
                     </a>
@@ -284,7 +301,7 @@
                         <i class="fa fa-file-text-o" aria-hidden="true"/>
                         Print medicine report
                     </a>
-                    <form t-if="appointment.state in ('draft', 'confirmed', 'in_progress')" t-attf-action="/my/hospital/appointment/#{appointment.id}/cancel" method="post" class="d-inline">
+                    <form t-if="appointment.state in ('draft', 'confirmed', 'in_progress') and not appointment._is_payment_locked()" t-attf-action="/my/hospital/appointment/#{appointment.id}/cancel" method="post" class="d-inline">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <button type="submit" class="o_appt_action_btn o_btn_warning" onclick="return confirm('Cancel this appointment?');">
                             <i class="fa fa-times" aria-hidden="true"/>

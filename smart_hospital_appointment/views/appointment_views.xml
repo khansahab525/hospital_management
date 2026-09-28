@@ -14,6 +14,12 @@
                     <field name="expected_turn_datetime" optional="show"/>
                     <field name="is_high_priority"/>
                     <field name="estimated_wait_minutes"/>
+                    <field name="currency_id" column_invisible="1"/>
+                    <field name="amount_total" optional="show"/>
+                    <field name="payment_state" widget="badge" optional="show"
+                           decoration-success="payment_state == 'paid'"
+                           decoration-warning="payment_state in ('pending', 'authorized')"
+                           decoration-danger="payment_state == 'not_paid'"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -29,6 +35,8 @@
                     <field name="doctor_id"/>
                     <field name="branch_id"/>
                     <field name="state"/>
+                    <filter name="not_paid" string="Not Paid" domain="[('payment_state', '=', 'not_paid')]"/>
+                    <filter name="paid" string="Paid" domain="[('payment_state', '=', 'paid')]"/>
                     <filter name="today" string="Today Onward" domain="[('appointment_datetime', '&gt;=', context_today())]"/>
                     <filter name="high_priority" string="High Priority" domain="[('is_high_priority', '=', True)]"/>
                     <group string="Group By">
@@ -80,6 +88,19 @@
                                 <field name="expected_turn_datetime" readonly="1"/>
                                 <field name="is_high_priority"/>
                                 <field name="estimated_wait_minutes" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Payment" name="payment">
+                            <group>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="amount_total" readonly="payment_state in ('pending', 'authorized', 'paid')"/>
+                                <field name="payment_state" widget="badge"
+                                       decoration-success="payment_state == 'paid'"
+                                       decoration-warning="payment_state in ('pending', 'authorized')"
+                                       decoration-danger="payment_state == 'not_paid'"/>
+                            </group>
+                            <group groups="base.group_system">
+                                <field name="transaction_ids" widget="many2many_tags"/>
                             </group>
                         </group>
                         <group>

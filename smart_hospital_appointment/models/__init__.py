@@ -10,4 +10,5 @@ from . import hospital_specialization
 from . import hospital_doctor
 from . import hospital_appointment_medicine_line
 from . import hospital_appointment
+from . import payment_transaction
 from . import hospital_home_content

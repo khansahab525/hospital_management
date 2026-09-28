@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_appointment_payment_badge" name="Appointment payment badge">
+        <span t-attf-class="o_appt_status o_pay_status_#{appointment.payment_state or 'not_paid'}">
+            <i class="fa fa-credit-card" aria-hidden="true"/>
+            <span t-field="appointment.payment_state"/>
+        </span>
+    </template>
+
+    <template id="portal_hospital_appointment_pay" name="Hospital appointment payment">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Payment</t>
+            </t>
+            <div class="container pb-5 o_hospital_appointments_page">
+                <div class="o_appt_detail_card">
+                    <div class="o_appt_detail_header">
+                        <h1 class="o_appt_detail_title">
+                            Pay for <t t-out="appointment.name"/>
+                        </h1>
+                        <t t-call="smart_hospital_appointment.portal_appointment_status_badge"/>
+                    </div>
+                    <div class="o_appt_detail_body">
+                        <div class="o_appt_detail_grid">
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Doctor</div>
+                                <p class="o_appt_detail_value"><span t-field="appointment.doctor_id.name"/></p>
+                            </div>
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Branch</div>
+                                <p class="o_appt_detail_value"><span t-field="appointment.branch_id.name"/></p>
+                            </div>
+                            <div class="o_appt_detail_item">
+                                <div class="o_appt_detail_label">Date &amp; Time</div>
+                                <p class="o_appt_detail_value"><span t-field="appointment.appointment_datetime"/></p>
+                            </div>
+                            <div class="o_appt_detail_item o_appt_amount_due">
+                                <div class="o_appt_detail_label">Amount Due</div>
+                                <p class="o_appt_detail_value">
+                                    <span t-field="appointment.amount_total"
+                                          t-options="{'widget': 'monetary', 'display_currency': appointment.currency_id}"/>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="o_appt_payment_box mt-4">
+                            <div t-if="company_mismatch">
+                                <t t-call="payment.company_mismatch_warning"/>
+                            </div>
+                            <div t-elif="not payment_methods_sudo and not tokens_sudo" class="alert alert-warning mb-0">
+                                <strong>No payment method is available right now.</strong><br/>
+                                Your appointment is confirmed. You can pay at the hospital, or contact us for assistance.
+                            </div>
+                            <t t-else="">
+                                <h3 class="o_appt_form_section_title">Pay with</h3>
+                                <t t-call="payment.form"/>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="o_appt_actions">
+                    <a t-attf-href="/my/hospital/appointment/#{appointment.id}" class="o_appt_action_btn o_btn_secondary">
+                        <i class="fa fa-arrow-left" aria-hidden="true"/>
+                        Pay later
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

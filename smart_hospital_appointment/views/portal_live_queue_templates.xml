@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_hospital_appointment_live" name="Hospital live queue dashboard">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Live Queue</t>
+            </t>
+            <div class="container pb-5 o_hospital_appointments_page o_live_queue"
+                 t-att-data-url="live_data_url">
+                <section class="o_appt_hero">
+                    <div class="o_appt_hero_inner">
+                        <div>
+                            <span class="o_appt_hero_badge">
+                                <span class="o_live_dot"/>
+                                Live check-up dashboard
+                            </span>
+                            <h1 class="o_appt_hero_title">
+                                Dr. <t t-out="appointment.doctor_id.name"/>
+                            </h1>
+                            <p class="o_appt_hero_subtitle mb-0">
+                                <t t-out="appointment.branch_id.name"/> —
+                                <span t-field="appointment.appointment_datetime" t-options="{'widget': 'date'}"/>
+                                · Updated <span class="o_live_updated">--:--:--</span>
+                            </p>
+                        </div>
+                        <div class="o_appt_hero_actions">
+                            <a t-attf-href="/my/hospital/appointment/#{appointment.id}" class="o_appt_btn_light">
+                                <i class="fa fa-arrow-left" aria-hidden="true"/>
+                                Back to appointment
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="o_live_highlight">
+                    <div class="o_live_big_card o_live_mine">
+                        <div class="o_live_big_label">Your Number</div>
+                        <div class="o_live_big_value" data-field="my_number">-</div>
+                        <div class="o_live_big_hint" data-field="my_hint"/>
+                    </div>
+                    <div class="o_live_big_card o_live_serving">
+                        <div class="o_live_big_label">Now Serving</div>
+                        <div class="o_live_big_value" data-field="now_serving">-</div>
+                        <div class="o_live_big_hint" data-field="serving_hint"/>
+                    </div>
+                    <div class="o_live_big_card">
+                        <div class="o_live_big_label">Patients Ahead of You</div>
+                        <div class="o_live_big_value" data-field="ahead">-</div>
+                        <div class="o_live_big_hint" data-field="wait_hint"/>
+                    </div>
+                </section>
+
+                <section class="o_live_counts">
+                    <div class="o_live_count"><span data-count="total">0</span><small>Total Today</small></div>
+                    <div class="o_live_count o_c_completed"><span data-count="completed">0</span><small>Completed</small></div>
+                    <div class="o_live_count o_c_in_progress"><span data-count="in_progress">0</span><small>In Consultation</small></div>
+                    <div class="o_live_count o_c_upcoming"><span data-count="upcoming">0</span><small>Remaining</small></div>
+                    <div class="o_live_count o_c_cancelled"><span data-count="cancelled">0</span><small>Cancelled</small></div>
+                </section>
+
+                <section class="o_live_grid_wrap">
+                    <div class="o_live_grid_head">
+                        <h3>Today's Queue</h3>
+                        <div class="o_live_legend">
+                            <span class="o_lg o_s_upcoming">Upcoming</span>
+                            <span class="o_lg o_s_in_progress">In Consultation</span>
+                            <span class="o_lg o_s_completed">Completed</span>
+                            <span class="o_lg o_s_cancelled">Cancelled</span>
+                        </div>
+                    </div>
+                    <div class="o_live_grid">
+                        <p class="text-muted mb-0">Loading queue…</p>
+                    </div>
+                </section>
+
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,6 +1,6 @@
 {
     "name": "Smart Hospital Appointment System",
-    "version": "17.3",
+    "version": "17.4",
     "category": "Healthcare",
     "summary": "Smart hospital workflow with appointments and queue management",
     "description": """
@@ -17,7 +17,7 @@ Production-ready hospital appointment management for Odoo 17:
     """,
     "author": "Custom",
     "license": "LGPL-3",
-    "depends": ["base", "mail", "contacts", "web", "product", "portal", "website"],
+    "depends": ["base", "mail", "contacts", "web", "product", "portal", "website", "payment"],
     "data": [
         "security/hospital_groups.xml",
         "security/ir.model.access.csv",
@@ -42,6 +42,8 @@ Production-ready hospital appointment management for Odoo 17:
         "views/hospital_home_content_views.xml",
         "views/menu_views.xml",
         "views/portal_templates.xml",
+        "views/portal_payment_templates.xml",
+        "views/portal_live_queue_templates.xml",
         "views/website_templates.xml",
         "views/website_appointment_templates.xml",
         "views/website_register_templates.xml",
@@ -63,6 +65,8 @@ Production-ready hospital appointment management for Odoo 17:
             "smart_hospital_appointment/static/src/scss/appointments_page.scss",
             "smart_hospital_appointment/static/src/scss/home_page.scss",
             "smart_hospital_appointment/static/src/scss/hospital_header.scss",
+            "smart_hospital_appointment/static/src/scss/live_queue.scss",
+            "smart_hospital_appointment/static/src/js/live_queue.js",
         ],
     },
 }

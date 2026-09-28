@@ -235,6 +235,44 @@
             background: #fef2f2;
             color: #b91c1c;
         }
+
+        &.o_pay_status_not_paid {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        &.o_pay_status_pending,
+        &.o_pay_status_authorized {
+            background: #fefce8;
+            color: #a16207;
+        }
+
+        &.o_pay_status_paid {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        &.o_pay_status_not_required {
+            background: #f1f5f9;
+            color: #475569;
+        }
+    }
+
+    .o_appt_amount_due {
+        background: rgba(25, 135, 84, 0.08);
+        border-color: rgba(25, 135, 84, 0.25);
+
+        .o_appt_detail_value {
+            color: #198754;
+            font-size: 1.25rem;
+        }
+    }
+
+    .o_appt_payment_box {
+        padding: 1.25rem;
+        border: 1px solid var(--hospital-border);
+        border-radius: 0.85rem;
+        background: #fff;
     }
 
     .o_appt_meta_grid {
