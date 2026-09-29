@@ -88,7 +88,6 @@ class HospitalWebsite(HospitalBookingMixin, http.Controller):
                 appt = self._submit_appointment_form(values["portal_partner"], post)
                 return request.redirect(self._get_post_booking_url(appt))
             except (UserError, ValidationError, AccessError, ValueError) as e:
-                values["error"] = {"message": str(e)}
                 values.update(
                     self._prepare_appointment_form_values(
                         post=post,
@@ -96,6 +95,7 @@ class HospitalWebsite(HospitalBookingMixin, http.Controller):
                         form_action="/appointment/book",
                     )
                 )
+                values["error"] = {"message": str(e)}
         return request.render("smart_hospital_appointment.website_appointment_book", values)
 
     @http.route(

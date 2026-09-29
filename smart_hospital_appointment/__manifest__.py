@@ -1,6 +1,6 @@
 {
     "name": "Smart Hospital Appointment System",
-    "version": "17.4",
+    "version": "17.5",
     "category": "Healthcare",
     "summary": "Smart hospital workflow with appointments and queue management",
     "description": """

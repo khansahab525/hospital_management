@@ -300,20 +300,69 @@ class HospitalAppointment(models.Model):
             if rec.branch_id and rec.doctor_id and rec.branch_id not in rec.doctor_id.branch_ids:
                 raise ValidationError(_("Doctor is not assigned to the selected branch."))
 
-    @api.constrains("appointment_datetime", "doctor_id", "state")
+    @api.constrains("appointment_datetime", "doctor_id", "patient_id", "state")
     def _check_double_booking(self):
+        """Patients share the doctor's shift start time and are ordered by queue number,
+        so the conflict to prevent is the same patient booking the same doctor twice a day."""
         for rec in self:
             if rec.state in ("cancelled", "released"):
                 continue
-            overlap_domain = [
-                ("id", "!=", rec.id),
-                ("doctor_id", "=", rec.doctor_id.id),
-                ("appointment_datetime", "=", rec.appointment_datetime),
-                ("state", "not in", ("cancelled", "released")),
-            ]
-            if self.search_count(overlap_domain):
-                raise ValidationError(_("Doctor already has an appointment at this date/time."))
+            if rec.state in ("draft", "confirmed", "in_progress") and rec.patient_id:
+                day_start, day_end = rec._appointment_day_bounds()
+                duplicate = self.sudo().search(
+                    [
+                        ("id", "!=", rec.id),
+                        ("patient_id", "=", rec.patient_id.id),
+                        ("doctor_id", "=", rec.doctor_id.id),
+                        ("appointment_datetime", ">=", day_start),
+                        ("appointment_datetime", "<", day_end),
+                        ("state", "in", ("draft", "confirmed", "in_progress")),
+                    ],
+                    limit=1,
+                )
+                if duplicate:
+                    raise ValidationError(
+                        _(
+                            "%(patient)s already has appointment %(ref)s with Dr. %(doctor)s on %(date)s. "
+                            "Please cancel that appointment first or choose another day.",
+                            patient=rec.patient_id.name,
+                            ref=duplicate.name,
+                            doctor=rec.doctor_id.name,
+                            date=fields.Datetime.context_timestamp(
+                                rec, duplicate.appointment_datetime
+                            ).strftime("%d %b %Y"),
+                        )
+                    )
             rec._check_availability_slot()
+
+    @api.constrains("appointment_datetime")
+    def _check_appointment_not_in_past(self):
+        today = fields.Date.context_today(self)
+        for rec in self:
+            if rec.state not in ("draft", "confirmed") or not rec.appointment_datetime:
+                continue
+            appt_date = fields.Datetime.context_timestamp(rec, rec.appointment_datetime).date()
+            if appt_date < today:
+                raise ValidationError(
+                    _("You cannot book an appointment on a past date (%s). Please choose today or a future date.")
+                    % appt_date.strftime("%d %b %Y")
+                )
+
+    @api.constrains("doctor_id", "branch_id")
+    def _check_doctor_branch_active(self):
+        for rec in self:
+            if rec.state not in ("draft", "confirmed"):
+                continue
+            if rec.doctor_id and not rec.doctor_id.active:
+                raise ValidationError(
+                    _("Dr. %s is no longer available for booking. Please choose another doctor.")
+                    % rec.doctor_id.name
+                )
+            if rec.branch_id and not rec.branch_id.active:
+                raise ValidationError(
+                    _("The %s branch is closed for booking. Please choose another branch.")
+                    % rec.branch_id.name
+                )
 
     def _check_availability_slot(self):
         for rec in self:

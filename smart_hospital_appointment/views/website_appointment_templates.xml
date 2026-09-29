@@ -95,6 +95,7 @@
                                     <div class="o_appt_form_group">
                                         <label class="form-label" for="appointment_date">Date <span class="text-danger">*</span></label>
                                         <input class="form-control" type="date" name="appointment_date" id="appointment_date" required="required"
+                                               t-att-min="min_booking_date"
                                                t-att-value="appointment_date_input or post.get('appointment_date') or ''"/>
                                     </div>
                                     <div class="o_appt_form_group">
