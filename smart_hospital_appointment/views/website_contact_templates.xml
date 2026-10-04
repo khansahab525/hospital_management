@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="hospital_contactus" inherit_id="website.contactus" name="Hospital Contact Us" priority="30">
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="class" add="o_hospital_contact_page" separator=" "/>
+        </xpath>
+
+        <xpath expr="//section[hasclass('s_title')]" position="replace">
+            <t t-set="company" t-value="website.company_id.sudo()"/>
+            <section class="o_hc_hero">
+                <span class="o_hc_blob o_hc_blob_1"/>
+                <span class="o_hc_blob o_hc_blob_2"/>
+                <div class="container">
+                    <span class="o_hc_badge"><i class="fa fa-comments" aria-hidden="true"/> We're here to help</span>
+                    <h1 class="o_hc_title">Contact Smart Hospital</h1>
+                    <p class="o_hc_lead">
+                        Questions about appointments, payments or our services? Send us a message and our patient
+                        support team will get back to you as soon as possible.
+                    </p>
+                </div>
+                <svg class="o_hc_wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M0,30 C360,80 720,0 1080,35 C1260,52 1380,40 1440,30 L1440,80 L0,80 Z"/>
+                </svg>
+            </section>
+            <section class="o_hc_quick">
+                <div class="container">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a t-att-href="company.phone and ('tel:%s' % company.phone) or '#'" class="o_hc_quick_card">
+                                <span class="o_hc_quick_icon o_hc_red"><i class="fa fa-phone" aria-hidden="true"/></span>
+                                <span>
+                                    <small>Emergency 24/7</small>
+                                    <strong t-out="company.phone or 'Call the hospital'"/>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a t-att-href="company.email and ('mailto:%s' % company.email) or '#'" class="o_hc_quick_card">
+                                <span class="o_hc_quick_icon"><i class="fa fa-envelope" aria-hidden="true"/></span>
+                                <span>
+                                    <small>Email us</small>
+                                    <strong t-out="company.email or 'Send a message'"/>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="/appointment/book" class="o_hc_quick_card">
+                                <span class="o_hc_quick_icon o_hc_teal"><i class="fa fa-calendar-check-o" aria-hidden="true"/></span>
+                                <span>
+                                    <small>Prefer to book?</small>
+                                    <strong>Book an appointment</strong>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+
+        <xpath expr="//div[hasclass('col-lg-8')]" position="attributes">
+            <attribute name="class" add="o_hc_form_col" separator=" "/>
+        </xpath>
+
+        <xpath expr="//div[hasclass('col-lg-8')]/p" position="replace">
+            <div class="o_hc_form_head">
+                <span class="o_hc_kicker">Send a message</span>
+                <h2>How can we help you?</h2>
+                <p>Fill in the form and we'll reply within one working day. Fields marked * are required.</p>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[hasclass('col-lg-4')]" position="replace">
+            <div class="col-lg-4 mt-4 mt-lg-0">
+                <div class="o_hc_info">
+                    <h3>Hospital information</h3>
+                    <ul>
+                        <li t-if="company.street or company.city">
+                            <span class="o_hc_info_icon"><i class="fa fa-map-marker" aria-hidden="true"/></span>
+                            <span>
+                                <small>Address</small>
+                                <t t-out="company.street"/><t t-if="company.street and company.city">, </t><t t-out="company.city"/>
+                                <t t-if="company.country_id"><br/><t t-out="company.country_id.name"/></t>
+                            </span>
+                        </li>
+                        <li t-if="company.phone">
+                            <span class="o_hc_info_icon"><i class="fa fa-phone" aria-hidden="true"/></span>
+                            <span>
+                                <small>Phone</small>
+                                <a t-attf-href="tel:#{company.phone}" t-out="company.phone"/>
+                            </span>
+                        </li>
+                        <li t-if="company.email">
+                            <span class="o_hc_info_icon"><i class="fa fa-envelope" aria-hidden="true"/></span>
+                            <span>
+                                <small>Email</small>
+                                <a t-attf-href="mailto:#{company.email}" t-out="company.email"/>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="o_hc_info_icon"><i class="fa fa-clock-o" aria-hidden="true"/></span>
+                            <span>
+                                <small>Opening hours</small>
+                                OPD: Mon – Sat, 8:00 – 20:00<br/>Emergency: 24/7
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="o_hc_emergency">
+                    <i class="fa fa-ambulance" aria-hidden="true"/>
+                    <div>
+                        <strong>Medical emergency?</strong>
+                        <p>Don't wait for a reply — call us now or visit the nearest branch.</p>
+                        <a t-if="company.phone" t-attf-href="tel:#{company.phone}" class="o_hp_btn o_hp_btn_light">
+                            <i class="fa fa-phone" aria-hidden="true"/> Call now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

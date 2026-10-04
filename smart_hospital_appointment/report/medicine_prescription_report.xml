@@ -24,8 +24,8 @@
                                     <strong>Date:</strong>
                                     <span t-field="o.appointment_datetime"/>
                                     <br/>
-                                    <strong>Queue #:</strong>
-                                    <span t-esc="o.queue_number or '-'"/>
+                                    <strong>Token #:</strong>
+                                    <span t-esc="o.token_number or '-'"/>
                                 </div>
                                 <div class="col-6">
                                     <strong>Patient:</strong>

@@ -31,7 +31,20 @@ class HospitalAppointment(models.Model):
     )
     appointment_datetime = fields.Datetime(required=True, tracking=True)
     duration_minutes = fields.Integer(default=30, required=True)
-    queue_number = fields.Integer(string="Number", readonly=True, copy=False, index=True)
+    queue_number = fields.Integer(
+        string="Queue Position",
+        readonly=True,
+        copy=False,
+        index=True,
+        help="Current position among active patients; recomputed as patients leave the queue.",
+    )
+    token_number = fields.Integer(
+        string="Token Number",
+        readonly=True,
+        copy=False,
+        index=True,
+        help="Fixed number given at booking for the doctor's day at this branch; never changes.",
+    )
     state = fields.Selection(
         [
             ("draft", "Draft"),
@@ -151,36 +164,39 @@ class HospitalAppointment(models.Model):
                 ("appointment_datetime", ">=", day_start),
                 ("appointment_datetime", "<", day_end),
             ],
-            order="create_date asc, id asc",
+            order="token_number asc, create_date asc, id asc",
         )
         state_labels = dict(self._fields["state"]._description_selection(self.env))
-        active_states = ("draft", "confirmed", "in_progress")
+        waiting_states = ("draft", "confirmed")
+        active_states = waiting_states + ("in_progress",)
         tiles = []
         for appt in day_appointments:
-            local_dt = fields.Datetime.context_timestamp(self, appt.appointment_datetime)
             tiles.append(
                 {
-                    "name": appt.name,
-                    "queue_number": appt.queue_number,
+                    "token_number": appt.token_number,
                     "state": appt.state,
-                    "state_label": state_labels.get(appt.state, appt.state),
-                    "time": local_dt.strftime("%H:%M"),
                     "is_mine": appt.id == self.id,
                 }
             )
 
         in_progress = day_appointments.filtered(lambda a: a.state == "in_progress")
-        next_up = day_appointments.filtered(
-            lambda a: a.state in ("draft", "confirmed") and a.queue_number
-        ).sorted("queue_number")
-        serving = in_progress.sorted("queue_number")[:1] or next_up[:1]
+        waiting = day_appointments.filtered(lambda a: a.state in waiting_states)
+        serving = in_progress[:1] or waiting[:1]
+
+        if self.state == "in_progress":
+            my_status = "in_progress"
+        elif self.state in waiting_states:
+            my_status = "waiting"
+        elif self.state == "cancelled":
+            my_status = "cancelled"
+        else:
+            my_status = "done"
+
         ahead = 0
-        if self.state in active_states and self.queue_number:
+        if my_status == "waiting":
             ahead = len(
                 day_appointments.filtered(
-                    lambda a: a.state in active_states
-                    and a.queue_number
-                    and a.queue_number < self.queue_number
+                    lambda a: a.state in active_states and a.token_number < self.token_number
                 )
             )
         return {
@@ -190,18 +206,12 @@ class HospitalAppointment(models.Model):
             "date": fields.Datetime.context_timestamp(self, self.appointment_datetime).strftime("%d %b %Y"),
             "my_state": self.state,
             "my_state_label": state_labels.get(self.state, self.state),
-            "my_number": self.queue_number,
+            "my_status": my_status,
+            "my_number": self.token_number,
             "ahead": ahead,
-            "estimated_wait": self.estimated_wait_minutes if self.state in active_states else 0,
-            "now_serving": serving.queue_number if serving else 0,
+            "estimated_wait": self.estimated_wait_minutes if my_status == "waiting" else 0,
+            "now_serving": serving.token_number if serving else 0,
             "now_serving_in_progress": bool(in_progress),
-            "counts": {
-                "total": len(day_appointments.filtered(lambda a: a.state != "cancelled")),
-                "completed": len(day_appointments.filtered(lambda a: a.state in ("completed", "released"))),
-                "in_progress": len(in_progress),
-                "upcoming": len(day_appointments.filtered(lambda a: a.state in ("draft", "confirmed"))),
-                "cancelled": len(day_appointments.filtered(lambda a: a.state == "cancelled")),
-            },
             "tiles": tiles,
             "updated_at": fields.Datetime.context_timestamp(self, fields.Datetime.now()).strftime("%H:%M:%S"),
         }
@@ -267,8 +277,53 @@ class HospitalAppointment(models.Model):
             if not vals.get("user_id"):
                 vals["user_id"] = user.id
         recs = super().create(vals_list)
+        recs._assign_token_number()
         recs._assign_queue_number()
         return recs
+
+    def _token_group_key(self):
+        self.ensure_one()
+        if not self.appointment_datetime or not self.doctor_id or not self.branch_id:
+            return None
+        day_start, _day_end = self._appointment_day_bounds()
+        return (self.doctor_id.id, self.branch_id.id, day_start)
+
+    def _assign_token_number(self, force=False):
+        for rec in self.sorted(lambda r: (r.create_date or fields.Datetime.now(), r.id)):
+            if rec.token_number and not force:
+                continue
+            if not rec._token_group_key():
+                continue
+            # Serialize token allocation per doctor/branch so concurrent bookings get distinct tokens.
+            self.env.cr.execute(
+                "SELECT pg_advisory_xact_lock(%s, %s)", [rec.doctor_id.id, rec.branch_id.id]
+            )
+            day_start, day_end = rec._appointment_day_bounds()
+            self.flush_model(["token_number", "doctor_id", "branch_id", "appointment_datetime"])
+            self.env.cr.execute(
+                """
+                SELECT COALESCE(MAX(token_number), 0)
+                  FROM hospital_appointment
+                 WHERE doctor_id = %s AND branch_id = %s
+                   AND appointment_datetime >= %s AND appointment_datetime < %s
+                   AND id != %s
+                """,
+                [rec.doctor_id.id, rec.branch_id.id, day_start, day_end, rec.id],
+            )
+            rec.sudo().write({"token_number": self.env.cr.fetchone()[0] + 1})
+
+    @api.model
+    def _backfill_token_numbers(self):
+        # Raw SQL: the branch-filter mixin would hide other branches' appointments from search().
+        self.env.cr.execute(
+            """
+            SELECT id FROM hospital_appointment
+             WHERE COALESCE(token_number, 0) = 0
+             ORDER BY create_date ASC, id ASC
+            """
+        )
+        ids = [row[0] for row in self.env.cr.fetchall()]
+        self.sudo().browse(ids)._assign_token_number()
 
     def unlink(self):
         privileged = self.env.user.has_group("base.group_system")
@@ -289,7 +344,12 @@ class HospitalAppointment(models.Model):
             not_done = self.filtered(lambda r: r.state != "completed")
             if not_done and vals.get("state") != "completed":
                 raise ValidationError(_("Prescribed medicines can only be edited after the appointment is completed."))
+        regroup = any(key in vals for key in ("appointment_datetime", "doctor_id", "branch_id"))
+        old_keys = {rec.id: rec._token_group_key() for rec in self} if regroup else {}
         result = super().write(vals)
+        if regroup:
+            moved = self.filtered(lambda r: r._token_group_key() != old_keys.get(r.id))
+            moved._assign_token_number(force=True)
         if any(key in vals for key in ("appointment_datetime", "doctor_id", "branch_id", "is_high_priority", "state")):
             self._assign_queue_number()
         return result

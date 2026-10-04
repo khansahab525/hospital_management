@@ -34,7 +34,31 @@
                     </div>
                 </section>
 
-                <section class="container pb-5">
+                <t t-set="selected_date" t-value="appointment_date_input or post.get('appointment_date') or ''"/>
+                <t t-set="selected_branch" t-value="branches.filtered(lambda b: b.id == selected_branch_id)[:1]"/>
+                <t t-set="selected_doctor" t-value="doctors.filtered(lambda d: d.id == selected_doctor_id)[:1] if doctors else False"/>
+                <t t-set="booking_steps" t-value="[
+                    ('Branch', 'fa-hospital-o', bool(selected_branch_id)),
+                    ('Specialization', 'fa-stethoscope', bool(selected_specialization_id)),
+                    ('Doctor', 'fa-user-md', bool(selected_doctor_id)),
+                    ('Date &amp; Time', 'fa-calendar', bool(selected_date)),
+                ]"/>
+                <section class="container pb-5 o_appt_book_body">
+                    <ol class="o_appt_steps">
+                        <t t-foreach="booking_steps" t-as="step">
+                            <li t-attf-class="o_appt_step #{step[2] and 'o_done' or ''}">
+                                <span class="o_appt_step_dot">
+                                    <i t-attf-class="fa #{step[2] and 'fa-check' or step[1]}" aria-hidden="true"/>
+                                </span>
+                                <span class="o_appt_step_label">
+                                    <small>Step <t t-out="step_index + 1"/></small>
+                                    <t t-out="step[0]"/>
+                                </span>
+                            </li>
+                        </t>
+                    </ol>
+                    <div class="row g-4">
+                    <div class="col-lg-8">
                     <div class="o_appt_form_card">
                         <div class="o_appt_form_header">
                             <h2 class="o_appt_form_title" t-if="appointment">Edit Appointment</h2>
@@ -153,6 +177,53 @@
                                 })();
                             </script>
                         </div>
+                    </div>
+                    </div>
+                    <aside class="col-lg-4">
+                        <div class="o_appt_summary">
+                            <div class="o_appt_summary_head">
+                                <i class="fa fa-clipboard" aria-hidden="true"/>
+                                Your booking
+                            </div>
+                            <div t-if="selected_doctor" class="o_appt_summary_doctor">
+                                <span class="o_appt_summary_avatar">
+                                    <img t-if="selected_doctor.image" t-attf-src="/web/image/hospital.doctor/#{selected_doctor.id}/image/160x160" t-att-alt="selected_doctor.name"/>
+                                    <span t-else="" t-out="''.join([p[0].upper() for p in selected_doctor.name.split()[:2] if p])"/>
+                                </span>
+                                <div>
+                                    <strong>Dr. <t t-out="selected_doctor.name"/></strong>
+                                    <small t-out="selected_doctor.specialization.name"/>
+                                </div>
+                            </div>
+                            <ul class="o_appt_summary_list">
+                                <li>
+                                    <span><i class="fa fa-hospital-o" aria-hidden="true"/> Branch</span>
+                                    <strong t-out="selected_branch.name or '—'"/>
+                                </li>
+                                <li>
+                                    <span><i class="fa fa-calendar" aria-hidden="true"/> Date</span>
+                                    <strong t-out="selected_date or '—'"/>
+                                </li>
+                                <li>
+                                    <span><i class="fa fa-clock-o" aria-hidden="true"/> Time</span>
+                                    <strong t-out="appointment_time_input or '—'"/>
+                                </li>
+                                <li t-if="selected_doctor" class="o_appt_summary_fee">
+                                    <span><i class="fa fa-credit-card" aria-hidden="true"/> Consultation fee</span>
+                                    <strong t-field="selected_doctor.consultation_fee" t-options="{'widget': 'monetary', 'display_currency': request.env.company.currency_id}"/>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="o_appt_tips">
+                            <h3>Good to know</h3>
+                            <ul>
+                                <li><i class="fa fa-ticket" aria-hidden="true"/> You get a fixed token number as soon as you confirm.</li>
+                                <li><i class="fa fa-television" aria-hidden="true"/> Follow the live queue from "My Appointments".</li>
+                                <li><i class="fa fa-lock" aria-hidden="true"/> Pay the fee securely online after booking.</li>
+                                <li><i class="fa fa-pencil" aria-hidden="true"/> Unpaid bookings can be edited or cancelled.</li>
+                            </ul>
+                        </div>
+                    </aside>
                     </div>
                 </section>
             </div>

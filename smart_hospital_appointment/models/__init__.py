@@ -11,4 +11,4 @@ from . import hospital_doctor
 from . import hospital_appointment_medicine_line
 from . import hospital_appointment
 from . import payment_transaction
-from . import hospital_home_content
+from . import hospital_home_slider

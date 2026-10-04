@@ -136,16 +136,21 @@ if Website:
     class HospitalWebsiteHome(Website):
         @http.route("/", auth="public", website=True, sitemap=True)
         def index(self, **kw):
-            HomeContent = request.env["hospital.home.content"]
-            home_contents = HomeContent.get_published_body_contents()
-            if home_contents:
-                return request.render(
-                    "smart_hospital_appointment.hospital_homepage",
-                    {
-                        "home_sections": HomeContent.prepare_home_sections(home_contents),
-                        "doctor_count": request.env["hospital.doctor"].sudo().search_count(
-                            [("active", "=", True), ("is_unavailable", "=", False)]
-                        ),
-                    },
-                )
-            return super().index(**kw)
+            env = request.env
+            doctor_domain = [("active", "=", True), ("is_unavailable", "=", False)]
+            Doctor = env["hospital.doctor"].sudo()
+            branches = env["hospital.branch"].sudo().search([("active", "=", True)], order="name")
+            return request.render(
+                "smart_hospital_appointment.hospital_homepage",
+                {
+                    "slides": env["hospital.home.slider"].get_website_slides(),
+                    "featured_doctors": Doctor.search(
+                        doctor_domain, order="rating desc, experience_years desc, name", limit=4
+                    ),
+                    "doctor_count": Doctor.search_count(doctor_domain),
+                    "specializations": env["hospital.specialization"].sudo().search([], order="name", limit=8),
+                    "specialization_count": env["hospital.specialization"].sudo().search_count([]),
+                    "branches": branches,
+                    "branch_count": len(branches),
+                },
+            )

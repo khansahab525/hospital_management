@@ -6,74 +6,120 @@
             <t t-call="portal.portal_searchbar">
                 <t t-set="title">Live Queue</t>
             </t>
-            <div class="container pb-5 o_hospital_appointments_page o_live_queue"
-                 t-att-data-url="live_data_url">
-                <section class="o_appt_hero">
-                    <div class="o_appt_hero_inner">
-                        <div>
-                            <span class="o_appt_hero_badge">
-                                <span class="o_live_dot"/>
-                                Live check-up dashboard
-                            </span>
-                            <h1 class="o_appt_hero_title">
-                                Dr. <t t-out="appointment.doctor_id.name"/>
-                            </h1>
-                            <p class="o_appt_hero_subtitle mb-0">
-                                <t t-out="appointment.branch_id.name"/> —
-                                <span t-field="appointment.appointment_datetime" t-options="{'widget': 'date'}"/>
-                                · Updated <span class="o_live_updated">--:--:--</span>
-                            </p>
+            <t t-set="doctor" t-value="appointment.doctor_id"/>
+            <t t-set="initials" t-value="''.join([part[0].upper() for part in (doctor.name or '').split()[:2] if part])"/>
+            <div class="container pb-5 o_live_queue" t-att-data-url="live_data_url" data-status="loading">
+                <section class="o_lq_hero o_lq_reveal">
+                    <span class="o_lq_blob o_lq_blob_1"/>
+                    <span class="o_lq_blob o_lq_blob_2"/>
+                    <span class="o_lq_blob o_lq_blob_3"/>
+                    <div class="o_lq_hero_inner">
+                        <div class="o_lq_doctor">
+                            <div class="o_lq_avatar">
+                                <img t-if="doctor.image"
+                                     t-attf-src="/web/image/hospital.doctor/#{doctor.id}/image/160x160"
+                                     t-att-alt="doctor.name"/>
+                                <span t-else="" t-out="initials"/>
+                            </div>
+                            <div>
+                                <span class="o_lq_live_pill">
+                                    <span class="o_lq_live_dot"/>
+                                    LIVE
+                                </span>
+                                <h1 class="o_lq_doctor_name">Dr. <t t-out="doctor.name"/></h1>
+                                <p class="o_lq_doctor_spec" t-if="doctor.specialization" t-out="doctor.specialization.name"/>
+                                <div class="o_lq_chips">
+                                    <span class="o_lq_chip">
+                                        <i class="fa fa-map-marker" aria-hidden="true"/>
+                                        <t t-out="appointment.branch_id.name"/>
+                                    </span>
+                                    <span class="o_lq_chip">
+                                        <i class="fa fa-calendar" aria-hidden="true"/>
+                                        <span t-field="appointment.appointment_datetime" t-options="{'widget': 'date'}"/>
+                                    </span>
+                                    <span class="o_lq_chip">
+                                        <i class="fa fa-ticket" aria-hidden="true"/>
+                                        <t t-out="appointment.name"/>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="o_appt_hero_actions">
-                            <a t-attf-href="/my/hospital/appointment/#{appointment.id}" class="o_appt_btn_light">
+                        <div class="o_lq_hero_side">
+                            <a t-attf-href="/my/hospital/appointment/#{appointment.id}" class="o_lq_back_btn">
                                 <i class="fa fa-arrow-left" aria-hidden="true"/>
                                 Back to appointment
                             </a>
+                            <div class="o_lq_sync">
+                                <i class="fa fa-refresh" aria-hidden="true"/>
+                                Updated <span class="o_live_updated">--:--:--</span>
+                            </div>
                         </div>
                     </div>
+                    <div class="o_lq_refresh_track"><span class="o_lq_refresh_bar"/></div>
                 </section>
 
-                <section class="o_live_highlight">
-                    <div class="o_live_big_card o_live_mine">
-                        <div class="o_live_big_label">Your Number</div>
-                        <div class="o_live_big_value" data-field="my_number">-</div>
-                        <div class="o_live_big_hint" data-field="my_hint"/>
-                    </div>
-                    <div class="o_live_big_card o_live_serving">
-                        <div class="o_live_big_label">Now Serving</div>
-                        <div class="o_live_big_value" data-field="now_serving">-</div>
-                        <div class="o_live_big_hint" data-field="serving_hint"/>
-                    </div>
-                    <div class="o_live_big_card">
-                        <div class="o_live_big_label">Patients Ahead of You</div>
-                        <div class="o_live_big_value" data-field="ahead">-</div>
-                        <div class="o_live_big_hint" data-field="wait_hint"/>
+                <section class="o_lq_turn_banner" role="status">
+                    <span class="o_lq_turn_icon"><i class="fa fa-bell" aria-hidden="true"/></span>
+                    <div>
+                        <strong>It's your turn!</strong>
+                        <span>Please proceed to Dr. <t t-out="doctor.name"/>'s room.</span>
                     </div>
                 </section>
 
-                <section class="o_live_counts">
-                    <div class="o_live_count"><span data-count="total">0</span><small>Total Today</small></div>
-                    <div class="o_live_count o_c_completed"><span data-count="completed">0</span><small>Completed</small></div>
-                    <div class="o_live_count o_c_in_progress"><span data-count="in_progress">0</span><small>In Consultation</small></div>
-                    <div class="o_live_count o_c_upcoming"><span data-count="upcoming">0</span><small>Remaining</small></div>
-                    <div class="o_live_count o_c_cancelled"><span data-count="cancelled">0</span><small>Cancelled</small></div>
+                <section class="o_lq_stats">
+                    <article class="o_lq_stat o_lq_stat_mine o_lq_reveal">
+                        <div class="o_lq_stat_head">
+                            <span class="o_lq_stat_icon"><i class="fa fa-user" aria-hidden="true"/></span>
+                            <span class="o_lq_stat_label">Your Number</span>
+                        </div>
+                        <div class="o_lq_stat_value" data-field="my_number">-</div>
+                        <span class="o_lq_status_pill" data-field="my_hint">Loading…</span>
+                    </article>
+                    <article class="o_lq_stat o_lq_stat_serving o_lq_reveal">
+                        <div class="o_lq_stat_head">
+                            <span class="o_lq_stat_icon"><i class="fa fa-stethoscope" aria-hidden="true"/></span>
+                            <span class="o_lq_stat_label">Now Serving</span>
+                        </div>
+                        <div class="o_lq_stat_value" data-field="now_serving">-</div>
+                        <div class="o_lq_stat_hint">
+                            <span class="o_lq_wave" aria-hidden="true"><i/><i/><i/><i/></span>
+                            <span data-field="serving_hint"/>
+                        </div>
+                    </article>
+                    <article class="o_lq_stat o_lq_stat_ahead o_lq_reveal">
+                        <div class="o_lq_stat_head">
+                            <span class="o_lq_stat_icon"><i class="fa fa-users" aria-hidden="true"/></span>
+                            <span class="o_lq_stat_label">Patients Ahead</span>
+                        </div>
+                        <div class="o_lq_stat_value" data-field="ahead">-</div>
+                        <div class="o_lq_stat_hint">
+                            <i class="fa fa-clock-o" aria-hidden="true"/>
+                            <span data-field="wait_hint"/>
+                        </div>
+                    </article>
                 </section>
 
-                <section class="o_live_grid_wrap">
-                    <div class="o_live_grid_head">
-                        <h3>Today's Queue</h3>
-                        <div class="o_live_legend">
-                            <span class="o_lg o_s_upcoming">Upcoming</span>
-                            <span class="o_lg o_s_in_progress">In Consultation</span>
-                            <span class="o_lg o_s_completed">Completed</span>
-                            <span class="o_lg o_s_cancelled">Cancelled</span>
+                <section class="o_lq_panel o_lq_reveal">
+                    <div class="o_lq_panel_head">
+                        <div>
+                            <h3>Today's Queue</h3>
+                            <p class="o_lq_panel_sub"><span data-field="progress_text">-</span></p>
+                        </div>
+                        <div class="o_lq_legend">
+                            <span class="o_lq_lg o_s_upcoming"><i/>Upcoming</span>
+                            <span class="o_lq_lg o_s_in_progress"><i/>In Consultation</span>
+                            <span class="o_lq_lg o_s_completed"><i/>Completed</span>
+                            <span class="o_lq_lg o_s_cancelled"><i/>Cancelled</span>
                         </div>
                     </div>
+                    <div class="o_lq_progress"><span class="o_lq_progress_bar"/></div>
                     <div class="o_live_grid">
-                        <p class="text-muted mb-0">Loading queue…</p>
+                        <div class="o_lq_skeleton"/>
+                        <div class="o_lq_skeleton"/>
+                        <div class="o_lq_skeleton"/>
+                        <div class="o_lq_skeleton"/>
                     </div>
                 </section>
-
             </div>
         </t>
     </template>

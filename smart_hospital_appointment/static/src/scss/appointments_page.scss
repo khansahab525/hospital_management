@@ -1,29 +1,70 @@
-.o_hospital_appointments_page {
-    --hospital-primary: #0d6efd;
-    --hospital-primary-dark: #0a58ca;
-    --hospital-accent: #20c997;
-    --hospital-surface: #f8fafc;
-    --hospital-border: #e2e8f0;
-    --hospital-text: #1e293b;
-    --hospital-muted: #64748b;
+$ap-ink: #0f172a;
+$ap-text: #334155;
+$ap-muted: #64748b;
+$ap-line: #e2e8f0;
+$ap-soft: #f5f8ff;
+$ap-blue: #2563eb;
+$ap-indigo: #4f46e5;
+$ap-teal: #14b8a6;
+$ap-green: #059669;
+$ap-red: #dc2626;
+$ap-orange: #ea580c;
+$ap-navy: #0b1f4d;
+$ap-ease: cubic-bezier(0.22, 1, 0.36, 1);
+$ap-wave: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80' preserveAspectRatio='none'%3E%3Cpath fill='%23f5f8ff' d='M0,30 C360,80 720,0 1080,35 C1260,52 1380,40 1440,30 L1440,80 L0,80 Z'/%3E%3C/svg%3E";
 
+.o_hospital_appointments_page {
+    --hospital-primary: #{$ap-blue};
+    --hospital-primary-dark: #{$ap-indigo};
+    --hospital-border: #{$ap-line};
+    --hospital-surface: #{$ap-soft};
+    --hospital-text: #{$ap-ink};
+    --hospital-muted: #{$ap-muted};
+    color: $ap-text;
+
+    // Hero (card inside the portal, full-width band on the booking page)
     .o_appt_hero {
-        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 55%, #084298 100%);
-        color: #fff;
-        border-radius: 1.25rem;
-        padding: 2.5rem 2rem;
-        margin-bottom: 1.75rem;
         position: relative;
         overflow: hidden;
+        margin: 0.5rem 0 1.75rem;
+        padding: 2.75rem 2.5rem;
+        border-radius: 1.5rem;
+        color: #fff;
+        background: radial-gradient(700px 300px at 90% -20%, rgba(56, 189, 248, 0.35), transparent 60%),
+            linear-gradient(135deg, #071537 0%, $ap-navy 45%, #1e3a8a 80%, $ap-indigo 100%);
+        box-shadow: 0 30px 60px -32px rgba(15, 23, 42, 0.7);
+        animation: o_ap_fade_up 0.7s $ap-ease both;
 
-        &::before {
+        &::before,
+        &::after {
             content: "";
             position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(circle at 90% 15%, rgba(255, 255, 255, 0.14) 0%, transparent 40%),
-                radial-gradient(circle at 5% 90%, rgba(32, 201, 151, 0.2) 0%, transparent 35%);
+            border-radius: 50%;
+            filter: blur(50px);
+            opacity: 0.45;
             pointer-events: none;
+            animation: o_ap_float 14s ease-in-out infinite;
+        }
+
+        &::before {
+            width: 280px;
+            height: 280px;
+            top: -120px;
+            right: 6%;
+            background: #38bdf8;
+        }
+
+        &::after {
+            width: 220px;
+            height: 220px;
+            bottom: -130px;
+            left: 25%;
+            background: #a78bfa;
+            animation-delay: -6s;
+        }
+
+        h1 {
+            color: #fff;
         }
 
         .o_appt_hero_inner {
@@ -33,361 +74,468 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 1.25rem;
+            gap: 1.5rem;
+        }
+    }
+
+    &#wrap > .o_appt_hero {
+        margin: 0 0 2.5rem;
+        padding: 4rem 0 6.5rem;
+        border-radius: 0;
+        box-shadow: none;
+        background-color: $ap-navy;
+
+        > .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        &::after {
+            filter: none;
+            opacity: 1;
+            border-radius: 0;
+            inset: auto 0 -1px 0;
+            width: auto;
+            height: 70px;
+            background: url($ap-wave) center bottom / 100% 100% no-repeat;
+            animation: none;
         }
     }
 
     .o_appt_hero_badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        padding: 0.3rem 0.75rem;
+        gap: 0.45rem;
+        margin-bottom: 0.9rem;
+        padding: 0.35rem 0.9rem;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.25);
         font-size: 0.8rem;
-        font-weight: 500;
-        margin-bottom: 0.65rem;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        backdrop-filter: blur(8px);
     }
 
     .o_appt_hero_title {
-        font-size: clamp(1.6rem, 3vw, 2.2rem);
-        font-weight: 700;
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.5rem;
+        font-size: clamp(1.9rem, 3.6vw, 2.75rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
     }
 
     .o_appt_hero_subtitle {
+        max-width: 34rem;
         margin: 0;
-        opacity: 0.92;
-        max-width: 520px;
-        line-height: 1.55;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.8);
     }
 
     .o_appt_hero_actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.65rem;
+        gap: 0.75rem;
     }
 
     .o_appt_btn_light,
     .o_appt_btn_primary {
+        position: relative;
+        overflow: hidden;
         display: inline-flex;
         align-items: center;
-        gap: 0.45rem;
-        padding: 0.7rem 1.15rem;
-        border-radius: 0.75rem;
-        font-weight: 600;
+        gap: 0.5rem;
+        padding: 0.8rem 1.35rem;
+        border-radius: 0.9rem;
+        font-weight: 700;
         text-decoration: none;
-        transition: transform 0.2s ease, opacity 0.2s ease;
-        border: none;
+        border: 1px solid transparent;
+        transition: transform 0.3s $ap-ease, box-shadow 0.3s $ap-ease, background 0.3s ease, color 0.3s ease;
 
         &:hover {
-            transform: translateY(-1px);
-            opacity: 0.95;
+            transform: translateY(-3px);
         }
     }
 
     .o_appt_btn_primary {
+        color: $ap-navy;
         background: #fff;
-        color: var(--hospital-primary-dark);
+        box-shadow: 0 14px 28px -14px rgba(0, 0, 0, 0.6);
+
+        &:hover {
+            color: $ap-blue;
+        }
     }
 
     .o_appt_btn_light {
-        background: rgba(255, 255, 255, 0.15);
         color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(8px);
 
         &:hover {
-            color: #fff;
+            color: $ap-navy;
+            background: #fff;
         }
     }
 
+    .o_appt_success_banner {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
+        border-radius: 0.8rem;
+        font-size: 0.92rem;
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(110, 231, 183, 0.45);
+    }
+
+    // Stat cards
     .o_appt_stats {
-        margin-bottom: 1.75rem;
+        margin-bottom: 2rem;
     }
 
     .o_appt_stat_card {
-        background: #fff;
-        border: 1px solid var(--hospital-border);
-        border-radius: 1rem;
-        padding: 1.1rem 1.25rem;
-        box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
-        height: 100%;
+        --stat: #{$ap-blue};
+        --stat-soft: rgba(37, 99, 235, 0.1);
+        position: relative;
+        overflow: hidden;
         display: flex;
         align-items: center;
-        gap: 0.9rem;
-        text-decoration: none;
+        gap: 1rem;
+        height: 100%;
+        padding: 1.25rem 1.35rem;
+        border-radius: 1.15rem;
         color: inherit;
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        text-decoration: none;
+        background: #fff;
+        border: 1px solid $ap-line;
+        box-shadow: 0 12px 30px -20px rgba(15, 23, 42, 0.3);
+        transition: transform 0.35s $ap-ease, box-shadow 0.35s $ap-ease, border-color 0.3s ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 4px;
+            background: var(--stat);
+            transform: scaleY(0);
+            transition: transform 0.35s $ap-ease;
+        }
 
         &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+            transform: translateY(-4px);
             color: inherit;
+            box-shadow: 0 20px 40px -22px rgba(15, 23, 42, 0.4);
+
+            .o_appt_stat_icon {
+                transform: rotate(-8deg) scale(1.06);
+            }
         }
 
         &.active {
-            border-color: var(--hospital-primary);
-            box-shadow: 0 8px 22px rgba(13, 110, 253, 0.18);
+            border-color: var(--stat);
+            box-shadow: 0 20px 40px -22px var(--stat);
+
+            &::before {
+                transform: scaleY(1);
+            }
+
+            .o_appt_stat_icon {
+                color: #fff;
+                background: var(--stat);
+            }
         }
+
+        &.o_stat_completed { --stat: #{$ap-green}; --stat-soft: rgba(5, 150, 105, 0.1); }
+        &.o_stat_cancelled { --stat: #{$ap-red}; --stat-soft: rgba(220, 38, 38, 0.1); }
+        &.o_stat_all { --stat: #{$ap-indigo}; --stat-soft: rgba(79, 70, 229, 0.1); }
     }
 
     .o_appt_stat_icon {
-        width: 2.75rem;
-        height: 2.75rem;
-        border-radius: 0.75rem;
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(13, 110, 253, 0.1);
-        color: var(--hospital-primary);
-        flex-shrink: 0;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.9rem;
+        font-size: 1.15rem;
+        color: var(--stat);
+        background: var(--stat-soft);
+        transition: transform 0.35s $ap-ease, background 0.3s ease, color 0.3s ease;
     }
 
     .o_appt_stat_value {
-        font-size: 1.35rem;
-        font-weight: 700;
-        color: var(--hospital-text);
-        line-height: 1.2;
+        font-size: 1.7rem;
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: $ap-ink;
     }
 
     .o_appt_stat_label {
-        font-size: 0.82rem;
-        color: var(--hospital-muted);
         margin: 0;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: $ap-muted;
     }
 
+    // Appointment cards
     .o_appt_card {
+        --accent: #{$ap-blue};
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 1.1rem;
+        padding: 1.4rem 1.6rem 1.4rem 1.85rem;
+        border-radius: 1.2rem;
         background: #fff;
-        border: 1px solid var(--hospital-border);
-        border-radius: 1.1rem;
-        padding: 1.25rem 1.35rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid $ap-line;
+        box-shadow: 0 10px 28px -22px rgba(15, 23, 42, 0.35);
+        animation: o_ap_fade_up 0.6s $ap-ease both;
+        transition: transform 0.35s $ap-ease, box-shadow 0.35s $ap-ease, border-color 0.3s ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 5px;
+            background: linear-gradient(180deg, var(--accent), rgba(255, 255, 255, 0));
+        }
 
         &:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+            transform: translateY(-4px);
+            border-color: rgba(37, 99, 235, 0.25);
+            box-shadow: 0 24px 44px -26px rgba(15, 23, 42, 0.45);
+        }
+
+        @for $i from 1 through 10 {
+            &:nth-of-type(#{$i}) {
+                animation-delay: #{$i * 0.05}s;
+            }
         }
     }
+
+    .o_appt_card_draft { --accent: #94a3b8; }
+    .o_appt_card_in_progress { --accent: #{$ap-orange}; }
+    .o_appt_card_completed,
+    .o_appt_card_released { --accent: #{$ap-green}; }
+    .o_appt_card_cancelled { --accent: #{$ap-red}; }
 
     .o_appt_card_top {
         display: flex;
         flex-wrap: wrap;
-        align-items: flex-start;
+        align-items: center;
         justify-content: space-between;
         gap: 0.75rem;
-        margin-bottom: 1rem;
-        padding-bottom: 0.85rem;
-        border-bottom: 1px dashed var(--hospital-border);
+        margin-bottom: 1.1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px dashed $ap-line;
     }
 
     .o_appt_ref {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: var(--hospital-text);
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: $ap-ink;
         text-decoration: none;
 
         &:hover {
-            color: var(--hospital-primary);
+            color: $ap-blue;
         }
     }
 
     .o_appt_status {
         display: inline-flex;
         align-items: center;
-        gap: 0.35rem;
-        padding: 0.3rem 0.7rem;
+        gap: 0.4rem;
+        padding: 0.32rem 0.8rem;
         border-radius: 999px;
-        font-size: 0.78rem;
-        font-weight: 700;
+        font-size: 0.74rem;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.05em;
 
-        &.o_status_draft {
-            background: #f1f5f9;
-            color: #475569;
-        }
-
-        &.o_status_confirmed {
-            background: rgba(13, 110, 253, 0.12);
-            color: #0a58ca;
-        }
-
-        &.o_status_in_progress {
-            background: #fff7ed;
-            color: #c2410c;
-        }
-
-        &.o_status_completed {
-            background: #ecfdf5;
-            color: #047857;
-        }
-
-        &.o_status_released {
-            background: #ecfeff;
-            color: #0e7490;
-        }
-
-        &.o_status_cancelled {
-            background: #fef2f2;
-            color: #b91c1c;
-        }
-
-        &.o_pay_status_not_paid {
-            background: #fff7ed;
-            color: #c2410c;
-        }
-
+        &.o_status_draft { background: #f1f5f9; color: #475569; }
+        &.o_status_confirmed { background: rgba(37, 99, 235, 0.1); color: #1d4ed8; }
+        &.o_status_in_progress { background: #fff7ed; color: #c2410c; }
+        &.o_status_completed { background: #ecfdf5; color: #047857; }
+        &.o_status_released { background: #ecfeff; color: #0e7490; }
+        &.o_status_cancelled { background: #fef2f2; color: #b91c1c; }
+        &.o_pay_status_not_paid { background: #fff7ed; color: #c2410c; }
         &.o_pay_status_pending,
-        &.o_pay_status_authorized {
-            background: #fefce8;
-            color: #a16207;
-        }
-
-        &.o_pay_status_paid {
-            background: #ecfdf5;
-            color: #047857;
-        }
-
-        &.o_pay_status_not_required {
-            background: #f1f5f9;
-            color: #475569;
-        }
-    }
-
-    .o_appt_amount_due {
-        background: rgba(25, 135, 84, 0.08);
-        border-color: rgba(25, 135, 84, 0.25);
-
-        .o_appt_detail_value {
-            color: #198754;
-            font-size: 1.25rem;
-        }
-    }
-
-    .o_appt_payment_box {
-        padding: 1.25rem;
-        border: 1px solid var(--hospital-border);
-        border-radius: 0.85rem;
-        background: #fff;
+        &.o_pay_status_authorized { background: #fefce8; color: #a16207; }
+        &.o_pay_status_paid { background: #ecfdf5; color: #047857; }
+        &.o_pay_status_not_required { background: #f1f5f9; color: #475569; }
     }
 
     .o_appt_meta_grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 0.85rem;
-        margin-bottom: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.1rem;
     }
 
     .o_appt_meta_item {
         display: flex;
         align-items: flex-start;
-        gap: 0.65rem;
-        font-size: 0.88rem;
-        color: var(--hospital-text);
+        gap: 0.7rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $ap-ink;
     }
 
     .o_appt_meta_icon {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 0.55rem;
-        background: var(--hospital-surface);
-        color: var(--hospital-primary);
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
-        font-size: 0.8rem;
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 0.7rem;
+        font-size: 0.85rem;
+        color: $ap-blue;
+        background: rgba(37, 99, 235, 0.08);
     }
 
     .o_appt_meta_label {
         display: block;
-        font-size: 0.72rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--hospital-muted);
         margin-bottom: 0.1rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: $ap-muted;
     }
 
     .o_appt_card_footer {
         display: flex;
+        flex-wrap: wrap;
         justify-content: flex-end;
+        gap: 0.5rem;
     }
 
     .o_appt_open_btn {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        padding: 0.5rem 1rem;
-        border-radius: 0.65rem;
-        background: linear-gradient(135deg, var(--hospital-primary), var(--hospital-primary-dark));
+        gap: 0.5rem;
+        padding: 0.6rem 1.15rem;
+        border-radius: 0.8rem;
+        font-size: 0.9rem;
+        font-weight: 700;
         color: #fff;
         text-decoration: none;
-        font-size: 0.88rem;
-        font-weight: 600;
+        background: linear-gradient(135deg, $ap-blue, $ap-indigo);
+        box-shadow: 0 10px 22px -12px rgba(37, 99, 235, 0.8);
+        transition: transform 0.3s $ap-ease, box-shadow 0.3s $ap-ease;
+
+        .fa-arrow-right {
+            transition: transform 0.3s $ap-ease;
+        }
 
         &:hover {
             color: #fff;
-            opacity: 0.95;
+            transform: translateY(-2px);
+
+            .fa-arrow-right {
+                transform: translateX(4px);
+            }
         }
     }
 
     .o_appt_empty {
+        padding: 4rem 2rem;
         text-align: center;
-        padding: 3.5rem 2rem;
-        background: #fff;
-        border: 1px dashed var(--hospital-border);
-        border-radius: 1.25rem;
+        border-radius: 1.5rem;
+        background: linear-gradient(180deg, $ap-soft, #fff);
+        border: 1px dashed #c7d2fe;
 
         .fa-calendar-times-o {
-            font-size: 3rem;
-            color: #cbd5e1;
-            margin-bottom: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 5rem;
+            height: 5rem;
+            margin-bottom: 1.25rem;
+            border-radius: 50%;
+            font-size: 2rem;
+            color: $ap-blue;
+            background: rgba(37, 99, 235, 0.1);
         }
 
         h3 {
-            color: var(--hospital-text);
             margin-bottom: 0.5rem;
+            font-weight: 800;
+            color: $ap-ink;
         }
 
         p {
-            color: var(--hospital-muted);
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: $ap-muted;
         }
     }
 
-    .o_appt_detail_card {
-        background: #fff;
-        border: 1px solid var(--hospital-border);
-        border-radius: 1.25rem;
+    // Detail page
+    .o_appt_detail_card,
+    .o_appt_form_card {
         overflow: hidden;
-        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
         margin-bottom: 1.5rem;
+        border-radius: 1.5rem;
+        background: #fff;
+        border: 1px solid $ap-line;
+        box-shadow: 0 24px 50px -32px rgba(15, 23, 42, 0.45);
+        animation: o_ap_fade_up 0.7s $ap-ease both;
     }
 
-    .o_appt_detail_header {
-        background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
-        padding: 1.5rem 1.75rem;
-        border-bottom: 1px solid var(--hospital-border);
+    .o_appt_detail_header,
+    .o_appt_form_header {
+        position: relative;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
+        padding: 1.6rem 1.9rem;
+        background: linear-gradient(180deg, $ap-soft 0%, #fff 100%);
+        border-bottom: 1px solid $ap-line;
+
+        &::after {
+            content: "";
+            position: absolute;
+            left: 1.9rem;
+            bottom: -1px;
+            width: 3.5rem;
+            height: 3px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, $ap-blue, $ap-teal);
+        }
     }
 
-    .o_appt_detail_title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--hospital-text);
+    .o_appt_form_header {
+        display: block;
+    }
+
+    .o_appt_detail_title,
+    .o_appt_form_title {
         margin: 0;
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: $ap-ink;
+    }
+
+    .o_appt_form_title {
+        margin-bottom: 0.35rem;
+    }
+
+    .o_appt_form_subtitle {
+        margin: 0;
+        font-size: 0.95rem;
+        color: $ap-muted;
     }
 
     .o_appt_detail_body {
-        padding: 1.5rem 1.75rem;
+        padding: 1.75rem 1.9rem;
     }
 
     .o_appt_detail_grid {
@@ -397,162 +545,195 @@
     }
 
     .o_appt_detail_item {
-        padding: 1rem;
-        border-radius: 0.85rem;
-        background: var(--hospital-surface);
-        border: 1px solid var(--hospital-border);
+        padding: 1.1rem 1.2rem;
+        border-radius: 1rem;
+        background: $ap-soft;
+        border: 1px solid $ap-line;
+        transition: border-color 0.3s ease, transform 0.3s $ap-ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
     }
 
     .o_appt_detail_label {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--hospital-muted);
         margin-bottom: 0.35rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: $ap-muted;
     }
 
     .o_appt_detail_value {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--hospital-text);
         margin: 0;
+        font-size: 1.02rem;
+        font-weight: 700;
+        color: $ap-ink;
+    }
+
+    .o_appt_amount_due {
+        background: rgba(5, 150, 105, 0.07);
+        border-color: rgba(5, 150, 105, 0.25);
+
+        .o_appt_detail_value {
+            font-size: 1.3rem;
+            color: $ap-green;
+        }
+    }
+
+    .o_appt_payment_box {
+        padding: 1.4rem;
+        border-radius: 1rem;
+        background: #fff;
+        border: 1px solid $ap-line;
     }
 
     .o_appt_notes_box {
-        margin-top: 1rem;
-        padding: 1rem 1.15rem;
-        border-radius: 0.85rem;
+        margin-top: 1.1rem;
+        padding: 1rem 1.2rem;
+        border-radius: 1rem;
+        color: #92400e;
         background: #fffbeb;
         border: 1px solid #fde68a;
-        color: #92400e;
     }
 
     .o_appt_actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.65rem;
+        gap: 0.7rem;
     }
 
     .o_appt_action_btn {
+        position: relative;
+        overflow: hidden;
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        padding: 0.65rem 1.1rem;
-        border-radius: 0.75rem;
-        font-weight: 600;
+        gap: 0.5rem;
+        padding: 0.75rem 1.3rem;
+        border-radius: 0.9rem;
+        font-weight: 700;
         text-decoration: none;
-        border: none;
+        border: 1px solid transparent;
         cursor: pointer;
-        transition: opacity 0.2s ease;
+        transition: transform 0.3s $ap-ease, box-shadow 0.3s $ap-ease, background 0.3s ease, color 0.3s ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -80%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.7s $ap-ease;
+        }
 
         &:hover {
-            opacity: 0.92;
+            transform: translateY(-2px);
+
+            &::before {
+                left: 130%;
+            }
         }
 
         &.o_btn_secondary {
+            color: $ap-ink;
             background: #fff;
-            color: var(--hospital-text);
-            border: 1px solid var(--hospital-border);
+            border-color: $ap-line;
+
+            &:hover {
+                color: $ap-blue;
+                border-color: rgba(37, 99, 235, 0.4);
+            }
         }
 
         &.o_btn_primary {
-            background: linear-gradient(135deg, var(--hospital-primary), var(--hospital-primary-dark));
             color: #fff;
+            background: linear-gradient(135deg, $ap-blue, $ap-indigo);
+            box-shadow: 0 12px 24px -12px rgba(37, 99, 235, 0.8);
         }
 
         &.o_btn_success {
-            background: #198754;
             color: #fff;
+            background: linear-gradient(135deg, #10b981, $ap-green);
+            box-shadow: 0 12px 24px -12px rgba(5, 150, 105, 0.8);
         }
 
         &.o_btn_info {
-            background: #0dcaf0;
-            color: #055160;
+            color: #fff;
+            background: linear-gradient(135deg, #22d3ee, #0891b2);
         }
 
         &.o_btn_warning {
-            background: #ffc107;
-            color: #664d03;
+            color: #fff;
+            background: linear-gradient(135deg, #f87171, $ap-red);
         }
     }
 
-    .o_appt_form_card {
-        background: #fff;
-        border: 1px solid var(--hospital-border);
-        border-radius: 1.25rem;
-        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
-        overflow: hidden;
-    }
-
-    .o_appt_form_header {
-        padding: 1.5rem 1.75rem;
-        border-bottom: 1px solid var(--hospital-border);
-        background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
-    }
-
-    .o_appt_form_title {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: var(--hospital-text);
-        margin: 0 0 0.35rem;
-    }
-
-    .o_appt_form_subtitle {
-        color: var(--hospital-muted);
-        margin: 0;
-        font-size: 0.95rem;
+    // Booking form
+    .o_appt_form_body {
+        padding: 1.9rem;
     }
 
     .o_appt_form_section_title {
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--hospital-text);
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
-        border-bottom: 1px solid var(--hospital-border);
-    }
-
-    .o_appt_success_banner {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        padding: 0.55rem 0.9rem;
-        border-radius: 0.65rem;
-        background: rgba(255, 255, 255, 0.18);
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        font-size: 0.92rem;
-    }
-
-    .o_appt_form_body {
-        padding: 1.75rem;
+        font-size: 1rem;
+        font-weight: 800;
+        color: $ap-ink;
+        border-bottom: 1px solid $ap-line;
     }
 
     .o_appt_form_grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 1.25rem;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.35rem;
     }
 
     .o_appt_form_group {
         .form-label {
-            font-size: 0.82rem;
-            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
-            color: var(--hospital-muted);
-            margin-bottom: 0.45rem;
+            letter-spacing: 0.07em;
+            color: $ap-muted;
         }
 
         .form-control,
         .form-select {
-            border-radius: 0.75rem;
-            border-color: var(--hospital-border);
-            padding: 0.7rem 0.9rem;
+            min-height: 3.1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.9rem;
+            border: 1.5px solid $ap-line;
+            font-weight: 500;
+            color: $ap-ink;
+            background-color: #fbfdff;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+
+            &:hover:not(:disabled):not([readonly]) {
+                border-color: #c7d2fe;
+            }
 
             &:focus {
-                border-color: var(--hospital-primary);
-                box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+                border-color: $ap-blue;
+                background-color: #fff;
+                box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.15);
             }
+
+            &:disabled,
+            &[readonly] {
+                color: $ap-muted;
+                background-color: #f1f5f9;
+                border-style: dashed;
+            }
+        }
+
+        textarea.form-control {
+            min-height: 7rem;
         }
     }
 
@@ -563,18 +744,997 @@
     .o_appt_form_footer {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.65rem;
-        margin-top: 1.5rem;
-        padding-top: 1.25rem;
-        border-top: 1px dashed var(--hospital-border);
+        gap: 0.75rem;
+        margin-top: 1.75rem;
+        padding-top: 1.4rem;
+        border-top: 1px dashed $ap-line;
     }
 
     .o_appt_alert {
-        border-radius: 0.85rem;
-        padding: 0.9rem 1.1rem;
-        margin-bottom: 1.25rem;
-        border: 1px solid #f5c2c7;
-        background: #f8d7da;
-        color: #842029;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 1.4rem;
+        padding: 1rem 1.2rem;
+        border-radius: 1rem;
+        font-weight: 600;
+        color: #991b1b;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-left: 4px solid $ap-red;
+        animation: o_ap_shake 0.5s ease;
+
+        &::before {
+            content: "\f071";
+            font-family: FontAwesome;
+            color: $ap-red;
+        }
     }
+
+    // Booking steps
+    .o_appt_book_body {
+        position: relative;
+        z-index: 2;
+        margin-top: -4.5rem;
+    }
+
+    .o_appt_steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+        margin: 0 0 1.75rem;
+        padding: 1.1rem;
+        list-style: none;
+        border-radius: 1.25rem;
+        background: #fff;
+        border: 1px solid $ap-line;
+        box-shadow: 0 24px 50px -30px rgba(15, 23, 42, 0.45);
+        animation: o_ap_fade_up 0.6s $ap-ease both;
+    }
+
+    .o_appt_step {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.9rem;
+        transition: background 0.3s ease;
+
+        &:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -0.55rem;
+            width: 0.4rem;
+            height: 0.4rem;
+            border-top: 2px solid #cbd5e1;
+            border-right: 2px solid #cbd5e1;
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        &.o_done {
+            background: rgba(16, 185, 129, 0.07);
+
+            .o_appt_step_dot {
+                color: #fff;
+                background: linear-gradient(135deg, #10b981, $ap-green);
+                border-color: transparent;
+                animation: o_ap_pop 0.5s $ap-ease;
+            }
+
+            .o_appt_step_label {
+                color: $ap-ink;
+            }
+        }
+
+        &:not(.o_done) + .o_appt_step:not(.o_done) .o_appt_step_dot {
+            opacity: 0.7;
+        }
+    }
+
+    .o_appt_step.o_done + .o_appt_step:not(.o_done),
+    .o_appt_step:first-child:not(.o_done) {
+        background: rgba(37, 99, 235, 0.07);
+
+        .o_appt_step_dot {
+            color: #fff;
+            background: linear-gradient(135deg, $ap-blue, $ap-indigo);
+            border-color: transparent;
+            animation: o_ap_ring 2s ease-out infinite;
+        }
+    }
+
+    .o_appt_step_dot {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        color: $ap-muted;
+        background: #fff;
+        border: 2px solid $ap-line;
+    }
+
+    .o_appt_step_label {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.92rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: $ap-muted;
+
+        small {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+        }
+    }
+
+    // Booking summary sidebar
+    .o_appt_summary,
+    .o_appt_tips {
+        margin-bottom: 1.25rem;
+        border-radius: 1.5rem;
+        animation: o_ap_fade_up 0.7s $ap-ease 0.15s both;
+    }
+
+    .o_appt_summary {
+        position: sticky;
+        top: 7rem;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid $ap-line;
+        box-shadow: 0 24px 50px -32px rgba(15, 23, 42, 0.45);
+    }
+
+    .o_appt_summary_head {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 1.1rem 1.4rem;
+        font-weight: 800;
+        color: #fff;
+        background: linear-gradient(135deg, $ap-navy, $ap-indigo);
+    }
+
+    .o_appt_summary_doctor {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 1.2rem 1.4rem;
+        border-bottom: 1px dashed $ap-line;
+
+        strong {
+            display: block;
+            color: $ap-ink;
+        }
+
+        small {
+            font-weight: 600;
+            color: $ap-blue;
+        }
+    }
+
+    .o_appt_summary_avatar {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 3.4rem;
+        height: 3.4rem;
+        overflow: hidden;
+        border-radius: 50%;
+        font-weight: 800;
+        color: #fff;
+        background: linear-gradient(135deg, $ap-blue, $ap-teal);
+        box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(37, 99, 235, 0.25);
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .o_appt_summary_list {
+        margin: 0;
+        padding: 0.6rem 1.4rem 1.2rem;
+        list-style: none;
+
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.92rem;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            span {
+                color: $ap-muted;
+
+                .fa {
+                    width: 1.1rem;
+                    color: $ap-blue;
+                }
+            }
+
+            strong {
+                color: $ap-ink;
+                text-align: right;
+            }
+        }
+
+        .o_appt_summary_fee {
+            margin-top: 0.4rem;
+            padding: 0.85rem 1rem;
+            border-radius: 0.9rem;
+            border-bottom: none;
+            background: rgba(5, 150, 105, 0.07);
+
+            strong {
+                font-size: 1.15rem;
+                color: $ap-green;
+            }
+        }
+    }
+
+    .o_appt_tips {
+        padding: 1.4rem;
+        color: #fff;
+        background: linear-gradient(135deg, #071537, $ap-navy 55%, #1e1b4b);
+
+        h3 {
+            margin-bottom: 0.9rem;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        li {
+            display: flex;
+            gap: 0.7rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.82);
+
+            .fa {
+                flex-shrink: 0;
+                margin-top: 0.2rem;
+                color: #5eead4;
+            }
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .o_appt_steps {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .o_appt_step::after {
+            display: none;
+        }
+
+        .o_appt_summary {
+            position: static;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .o_appt_hero {
+            padding: 2rem 1.5rem;
+        }
+
+        .o_appt_steps {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+}
+
+// Appointment detail page
+.o_hospital_appointments_page.o_appt_view {
+    .o_av_label {
+        display: block;
+        margin-bottom: 0.2rem;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: $ap-muted;
+    }
+
+    // Ticket header
+    .o_av_ticket {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        margin: 0.5rem 0 1.75rem;
+        border-radius: 1.75rem;
+        color: #fff;
+        background: radial-gradient(700px 320px at 0% 0%, rgba(56, 189, 248, 0.3), transparent 60%),
+            radial-gradient(500px 300px at 85% 120%, rgba(167, 139, 250, 0.35), transparent 60%),
+            linear-gradient(135deg, #071537 0%, $ap-navy 50%, #1e3a8a 100%);
+        box-shadow: 0 40px 80px -40px rgba(11, 31, 77, 0.8);
+        animation: o_ap_fade_up 0.7s $ap-ease both;
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.4px);
+            background-size: 22px 22px;
+            -webkit-mask-image: linear-gradient(90deg, #000, transparent 60%);
+            mask-image: linear-gradient(90deg, #000, transparent 60%);
+            pointer-events: none;
+        }
+    }
+
+    .o_av_glow {
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        filter: blur(70px);
+        opacity: 0.4;
+        pointer-events: none;
+        animation: o_ap_float 14s ease-in-out infinite;
+    }
+
+    .o_av_glow_1 { top: -140px; left: 30%; background: #38bdf8; }
+    .o_av_glow_2 { bottom: -150px; right: 25%; background: #a78bfa; animation-delay: -7s; }
+
+    .o_av_ticket_main {
+        position: relative;
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 2.25rem 2.5rem;
+    }
+
+    .o_av_kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .o_av_ref {
+        margin: 0.9rem 0 0.8rem;
+        font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: #fff;
+    }
+
+    .o_av_badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .o_av_quick {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem 1.5rem;
+        margin: 1.5rem 0 0;
+
+        li {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        i {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.65rem;
+            color: #7dd3fc;
+            background: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    // Token stub with a perforated edge and punched notches
+    .o_av_stub {
+        position: relative;
+        flex: 0 0 15rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.06);
+        border-left: 2px dashed rgba(255, 255, 255, 0.25);
+
+        &::before,
+        &::after {
+            content: "";
+            position: absolute;
+            left: -0.95rem;
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 50%;
+            background: $ap-soft;
+        }
+
+        &::before { top: -0.9rem; }
+        &::after { bottom: -0.9rem; }
+    }
+
+    .o_av_stub_label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.65);
+    }
+
+    .o_av_stub_number {
+        font-size: 3.6rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        background: linear-gradient(180deg, #fff 30%, #93c5fd);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: o_ap_pop 0.7s $ap-ease 0.3s both;
+    }
+
+    .o_av_stub_link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.6rem;
+        padding: 0.45rem 1rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: $ap-navy;
+        text-decoration: none;
+        background: #fff;
+        transition: transform 0.3s $ap-ease, box-shadow 0.3s $ap-ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.6);
+        }
+    }
+
+    .o_av_live_dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+        animation: o_av_pulse 1.8s ease-out infinite;
+    }
+
+    // Cards
+    .o_av_card {
+        margin-bottom: 1.5rem;
+        padding: 1.75rem;
+        border-radius: 1.5rem;
+        background: #fff;
+        border: 1px solid $ap-line;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 24px 50px -34px rgba(15, 23, 42, 0.45);
+        animation: o_ap_fade_up 0.7s $ap-ease 0.1s both;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    .o_av_card_head {
+        margin-bottom: 1.35rem;
+
+        h2 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: $ap-ink;
+        }
+    }
+
+    .o_av_card_hint {
+        font-size: 0.88rem;
+        color: $ap-muted;
+    }
+
+    .o_av_doctor {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        padding: 1.1rem 1.25rem;
+        border-radius: 1.15rem;
+        background: linear-gradient(120deg, rgba(37, 99, 235, 0.07), rgba(20, 184, 166, 0.07));
+        border: 1px solid rgba(37, 99, 235, 0.12);
+    }
+
+    .o_av_doctor_img {
+        flex-shrink: 0;
+        width: 4.25rem;
+        height: 4.25rem;
+        border-radius: 1.1rem;
+        object-fit: cover;
+        background: #fff;
+        box-shadow: 0 0 0 3px #fff, 0 12px 24px -12px rgba(15, 23, 42, 0.5);
+    }
+
+    .o_av_doctor_info {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .o_av_doctor_name {
+        display: block;
+        font-size: 1.15rem;
+        color: $ap-ink;
+    }
+
+    .o_av_doctor_meta {
+        font-size: 0.88rem;
+        color: $ap-muted;
+    }
+
+    .o_av_doctor_link {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.5rem 0.95rem;
+        border-radius: 0.8rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: $ap-blue;
+        text-decoration: none;
+        background: #fff;
+        border: 1px solid rgba(37, 99, 235, 0.2);
+        transition: background 0.3s ease, color 0.3s ease;
+
+        i {
+            transition: transform 0.3s $ap-ease;
+        }
+
+        &:hover {
+            color: #fff;
+            background: $ap-blue;
+
+            i {
+                transform: translateX(4px);
+            }
+        }
+    }
+
+    .o_av_info {
+        --av: #{$ap-blue};
+        --av-soft: rgba(37, 99, 235, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        height: 100%;
+        padding: 1rem 1.1rem;
+        border-radius: 1.1rem;
+        background: $ap-soft;
+        border: 1px solid $ap-line;
+        transition: transform 0.35s $ap-ease, border-color 0.3s ease, box-shadow 0.35s $ap-ease;
+
+        strong {
+            font-size: 1.02rem;
+            color: $ap-ink;
+        }
+
+        &:hover {
+            transform: translateY(-3px);
+            border-color: var(--av);
+            box-shadow: 0 16px 30px -22px var(--av);
+        }
+    }
+
+    .o_av_info_violet { --av: #7c3aed; --av-soft: rgba(124, 58, 237, 0.1); }
+    .o_av_info_teal { --av: #0d9488; --av-soft: rgba(13, 148, 136, 0.12); }
+    .o_av_info_green { --av: #{$ap-green}; --av-soft: rgba(5, 150, 105, 0.1); }
+
+    .o_av_info_icon {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 0.9rem;
+        font-size: 1.1rem;
+        color: var(--av);
+        background: var(--av-soft);
+    }
+
+    .o_av_notes {
+        display: flex;
+        gap: 0.9rem;
+        margin-top: 1.25rem;
+        padding: 1rem 1.2rem;
+        border-radius: 1.1rem;
+        color: #92400e;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+
+        > .fa {
+            margin-top: 0.15rem;
+            font-size: 1.15rem;
+        }
+
+        .o_av_label {
+            color: #b45309;
+        }
+
+        p {
+            margin: 0;
+            white-space: pre-line;
+        }
+    }
+
+    // Progress timeline
+    .o_av_timeline {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        margin: 0;
+    }
+
+    .o_av_step {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.2rem;
+        padding: 0 0.5rem;
+        text-align: center;
+
+        // Connector to the previous step
+        & + .o_av_step::before {
+            content: "";
+            position: absolute;
+            top: 1.45rem;
+            right: 50%;
+            width: 100%;
+            height: 3px;
+            border-radius: 3px;
+            background: $ap-line;
+        }
+
+        &.o_done + .o_av_step::before {
+            background: linear-gradient(90deg, $ap-green, $ap-blue);
+        }
+
+        strong {
+            margin-top: 0.6rem;
+            font-size: 0.95rem;
+            color: $ap-ink;
+        }
+
+        small {
+            font-size: 0.8rem;
+            color: $ap-muted;
+        }
+    }
+
+    .o_av_step_dot {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.9rem;
+        height: 2.9rem;
+        border-radius: 50%;
+        font-size: 1rem;
+        color: $ap-muted;
+        background: #fff;
+        border: 2px solid $ap-line;
+        transition: transform 0.35s $ap-ease;
+    }
+
+    .o_av_step.o_done .o_av_step_dot {
+        color: #fff;
+        border-color: transparent;
+        background: linear-gradient(135deg, #10b981, $ap-green);
+    }
+
+    .o_av_step.o_current {
+        .o_av_step_dot {
+            color: #fff;
+            border-color: transparent;
+            background: linear-gradient(135deg, $ap-blue, $ap-indigo);
+            transform: scale(1.12);
+            animation: o_ap_ring 2s ease-out infinite;
+        }
+
+        strong {
+            color: $ap-blue;
+        }
+    }
+
+    .o_av_step:not(.o_done):not(.o_current) {
+        opacity: 0.7;
+    }
+
+    .o_av_cancelled {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.1rem 1.25rem;
+        border-radius: 1.15rem;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+
+        > div {
+            flex: 1 1 14rem;
+        }
+
+        strong {
+            color: #991b1b;
+        }
+
+        p {
+            margin: 0.2rem 0 0;
+            font-size: 0.9rem;
+            color: #b91c1c;
+        }
+    }
+
+    .o_av_cancelled_icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.9rem;
+        height: 2.9rem;
+        border-radius: 0.9rem;
+        font-size: 1.2rem;
+        color: #fff;
+        background: linear-gradient(135deg, #f87171, $ap-red);
+    }
+
+    // Sidebar
+    .o_av_side {
+        position: sticky;
+        top: 7rem;
+    }
+
+    .o_av_actions {
+        animation-delay: 0.2s;
+
+        .o_appt_action_btn {
+            justify-content: center;
+            width: 100%;
+            padding: 0.85rem 1.2rem;
+        }
+
+        .o_btn_danger_soft {
+            color: $ap-red;
+            background: #fef2f2;
+            border-color: #fecaca;
+
+            &:hover {
+                color: #fff;
+                background: $ap-red;
+            }
+        }
+    }
+
+    .o_av_back {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 0.35rem;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $ap-muted;
+        text-decoration: none;
+
+        i {
+            transition: transform 0.3s $ap-ease;
+        }
+
+        &:hover {
+            color: $ap-blue;
+
+            i {
+                transform: translateX(-4px);
+            }
+        }
+    }
+
+    .o_av_help {
+        position: relative;
+        overflow: hidden;
+        margin-top: 1.5rem;
+        padding: 1.6rem;
+        border-radius: 1.5rem;
+        color: #fff;
+        background: linear-gradient(135deg, $ap-teal 0%, #0d9488 50%, #0e7490 100%);
+        box-shadow: 0 24px 48px -28px rgba(13, 148, 136, 0.8);
+        animation: o_ap_fade_up 0.7s $ap-ease 0.3s both;
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: -3rem;
+            right: -3rem;
+            width: 9rem;
+            height: 9rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        strong {
+            display: block;
+            margin-top: 0.9rem;
+            font-size: 1.1rem;
+        }
+
+        p {
+            margin: 0.3rem 0 1rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.85);
+        }
+    }
+
+    .o_av_help_icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 0.9rem;
+        font-size: 1.2rem;
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+    .o_av_help_link {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 1rem;
+        border-radius: 0.8rem;
+        font-weight: 800;
+        color: #0f766e;
+        text-decoration: none;
+        background: #fff;
+        transition: transform 0.3s $ap-ease;
+
+        &:hover {
+            color: #0f766e;
+            transform: translateY(-2px);
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .o_av_side {
+            position: static;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .o_av_ticket {
+            flex-direction: column;
+        }
+
+        .o_av_ticket_main {
+            padding: 1.75rem 1.5rem;
+        }
+
+        .o_av_stub {
+            flex-basis: auto;
+            border-left: none;
+            border-top: 2px dashed rgba(255, 255, 255, 0.25);
+
+            &::before,
+            &::after {
+                top: -0.95rem;
+                bottom: auto;
+            }
+
+            &::before { left: -0.9rem; }
+            &::after { left: auto; right: -0.9rem; }
+        }
+
+        .o_av_doctor {
+            flex-wrap: wrap;
+        }
+
+        .o_av_timeline {
+            grid-template-columns: repeat(2, 1fr);
+            row-gap: 1.5rem;
+        }
+
+        .o_av_step:nth-child(3)::before {
+            display: none;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+}
+
+@keyframes o_av_pulse {
+    0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+    70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+@keyframes o_ap_fade_up {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes o_ap_float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, 20px) scale(1.1); }
+}
+
+@keyframes o_ap_pop {
+    0% { transform: scale(0.6); }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+@keyframes o_ap_ring {
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); }
+    70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+
+@keyframes o_ap_shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
 }

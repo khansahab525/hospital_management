@@ -11,6 +11,17 @@ const STATE_CLASS = {
     cancelled: "o_s_cancelled",
 };
 
+const STATE_ICON = {
+    draft: "fa-clock-o",
+    confirmed: "fa-clock-o",
+    in_progress: "fa-stethoscope",
+    completed: "fa-check",
+    released: "fa-check",
+    cancelled: "fa-times",
+};
+
+const FINISHED_STATES = ["completed", "released", "cancelled"];
+
 function escapeHtml(value) {
     const div = document.createElement("div");
     div.textContent = value ?? "";
@@ -19,22 +30,41 @@ function escapeHtml(value) {
 
 function setField(root, name, value) {
     const el = root.querySelector(`[data-field="${name}"]`);
-    if (el) {
-        el.textContent = value;
+    if (!el) {
+        return;
     }
+    const text = String(value ?? "");
+    if (el.textContent === text) {
+        return;
+    }
+    el.textContent = text;
+    el.classList.remove("o_lq_bump");
+    void el.offsetWidth;
+    el.classList.add("o_lq_bump");
 }
 
-function render(root, data) {
-    const active = ["draft", "confirmed", "in_progress"].includes(data.my_state);
+function restartAnimation(el, className) {
+    if (!el) {
+        return;
+    }
+    el.classList.remove(className);
+    void el.offsetWidth;
+    el.classList.add(className);
+}
+
+function renderStats(root, data) {
+    const status = data.my_status;
+    root.dataset.status = status;
+    root.dataset.serving = data.now_serving_in_progress ? "in_progress" : data.now_serving ? "next" : "idle";
 
     setField(root, "my_number", data.my_number ? `#${data.my_number}` : "-");
-    if (data.my_state === "in_progress") {
-        setField(root, "my_hint", "It's your turn, please go in");
-    } else if (active) {
-        setField(root, "my_hint", data.ahead ? "Please wait for your turn" : "You are next");
-    } else {
-        setField(root, "my_hint", data.my_state_label);
-    }
+    const myHints = {
+        in_progress: "It's your turn",
+        waiting: data.ahead ? "Waiting for your turn" : "You are next",
+        done: "Visit complete",
+        cancelled: "Cancelled",
+    };
+    setField(root, "my_hint", myHints[status] || data.my_state_label);
 
     setField(root, "now_serving", data.now_serving ? `#${data.now_serving}` : "-");
     let servingHint = "No patients waiting";
@@ -45,51 +75,90 @@ function render(root, data) {
     }
     setField(root, "serving_hint", servingHint);
 
-    setField(root, "ahead", active ? data.ahead : "-");
-    setField(root, "wait_hint", active ? `≈ ${data.estimated_wait} min estimated wait` : "");
+    if (status === "waiting") {
+        setField(root, "ahead", data.ahead);
+        setField(root, "wait_hint", `About ${data.estimated_wait} min estimated wait`);
+    } else if (status === "cancelled") {
+        setField(root, "ahead", "-");
+        setField(root, "wait_hint", "Not in today's queue");
+    } else {
+        setField(root, "ahead", 0);
+        setField(root, "wait_hint", status === "done" ? "No more waiting" : "You are with the doctor");
+    }
 
     const updated = root.querySelector(".o_live_updated");
     if (updated) {
         updated.textContent = data.updated_at;
     }
+}
 
-    for (const [key, value] of Object.entries(data.counts)) {
-        const el = root.querySelector(`[data-count="${key}"]`);
-        if (el) {
-            el.textContent = value;
-        }
+function renderProgress(root, tiles) {
+    const total = tiles.length;
+    const finished = tiles.filter((tile) => FINISHED_STATES.includes(tile.state)).length;
+    const percent = total ? Math.round((finished / total) * 100) : 0;
+    const bar = root.querySelector(".o_lq_progress_bar");
+    if (bar) {
+        bar.style.width = `${percent}%`;
     }
+    setField(
+        root,
+        "progress_text",
+        total ? `${finished} of ${total} patients done · ${percent}% complete` : "No appointments today"
+    );
+}
 
+function renderGrid(root, tiles) {
     const grid = root.querySelector(".o_live_grid");
-    if (!data.tiles.length) {
-        grid.innerHTML = '<p class="text-muted mb-0">No appointments today.</p>';
+    const signature = JSON.stringify(tiles);
+    if (grid.dataset.signature === signature) {
         return;
     }
-    grid.innerHTML = data.tiles
-        .map((tile) => {
+    const firstRender = !grid.dataset.signature;
+    grid.dataset.signature = signature;
+
+    if (!tiles.length) {
+        grid.innerHTML = '<p class="o_lq_empty"><i class="fa fa-calendar-o" aria-hidden="true"></i> No appointments today.</p>';
+        return;
+    }
+    grid.innerHTML = tiles
+        .map((tile, index) => {
             const classes = ["o_live_tile", STATE_CLASS[tile.state] || ""];
             if (tile.is_mine) {
                 classes.push("o_live_tile_mine");
             }
-            const number = tile.queue_number ? `#${escapeHtml(tile.queue_number)}` : "&ndash;";
+            if (firstRender) {
+                classes.push("o_lq_tile_enter");
+            }
+            const number = tile.token_number ? `#${escapeHtml(tile.token_number)}` : "&ndash;";
+            const icon = STATE_ICON[tile.state] || "fa-circle-o";
             return `
-                <div class="${classes.join(" ")}">
+                <div class="${classes.join(" ")}" style="--i:${index}">
                     ${tile.is_mine ? '<span class="o_live_you">You</span>' : ""}
+                    <span class="o_lq_tile_icon"><i class="fa ${icon}" aria-hidden="true"></i></span>
                     <div class="o_live_tile_num">${number}</div>
-                    <div class="o_live_tile_ref">${escapeHtml(tile.name)}</div>
-                    <div class="o_live_tile_meta">${escapeHtml(tile.time)} · ${escapeHtml(tile.state_label)}</div>
                 </div>`;
         })
         .join("");
 }
 
+function render(root, data) {
+    renderStats(root, data);
+    renderProgress(root, data.tiles);
+    renderGrid(root, data.tiles);
+}
+
 function start(root) {
     const url = root.dataset.url;
+    const refreshBar = root.querySelector(".o_lq_refresh_bar");
     const refresh = () => {
         fetch(url, { credentials: "same-origin", headers: { Accept: "application/json" } })
             .then((response) => (response.ok ? response.json() : Promise.reject(response)))
-            .then((data) => render(root, data))
-            .catch(() => {});
+            .then((data) => {
+                root.classList.remove("o_lq_offline");
+                render(root, data);
+                restartAnimation(refreshBar, "o_lq_refresh_run");
+            })
+            .catch(() => root.classList.add("o_lq_offline"));
     };
     refresh();
     setInterval(() => {

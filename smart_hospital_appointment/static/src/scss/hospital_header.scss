@@ -1,130 +1,337 @@
-header.o_hospital_header_active {
-    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
-    background: #fff !important;
+$hh-ink: #0f172a;
+$hh-muted: #64748b;
+$hh-blue: #2563eb;
+$hh-indigo: #4f46e5;
+$hh-teal: #14b8a6;
+$hh-ease: cubic-bezier(0.22, 1, 0.36, 1);
+$hh-logo: 64px;
+$hh-logo-mobile: 52px;
 
-    .navbar {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-
-    #o_main_nav.o_hospital_main_nav {
-        min-height: 88px;
-        padding: 0.85rem 0;
-        align-items: center;
-    }
-
-    .navbar-brand,
-    .navbar-brand img,
-    .navbar-brand span img {
-        max-height: 72px !important;
-    }
-
-    .navbar-nav .nav-link {
-        font-size: 0.95rem;
-        font-weight: 700;
-        padding: 0.5rem 0.9rem !important;
-        color: #1a2b49 !important;
-        text-transform: capitalize;
-
-        &:hover,
-        &.active {
-            color: #0d6efd !important;
-        }
-    }
-
-    .btn-outline-secondary,
-    .o_navlink_background {
-        font-weight: 600;
-        font-size: 0.9rem;
-    }
-}
-
+// Top bar
 .o_hospital_topbar {
-    background: #0b2d5c;
+    position: relative;
+    overflow: hidden;
     color: #fff;
-    font-size: 0.84rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.82rem;
+    background: linear-gradient(100deg, #0b1f4d 0%, #0f3b8c 40%, #0e7490 75%, #0b1f4d 100%);
+    background-size: 220% 100%;
+    animation: o_hh_gradient 18s ease infinite;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(110deg, transparent 40%, rgba(255, 255, 255, 0.08) 50%, transparent 60%);
+        background-size: 250% 100%;
+        animation: o_hh_sheen 7s linear infinite;
+        pointer-events: none;
+    }
 
     .o_hospital_topbar_inner {
+        position: relative;
+        z-index: 1;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        gap: 0.5rem 1rem;
-        min-height: 38px;
-        padding: 0.5rem 0;
+        gap: 0.5rem 1.5rem;
+        min-height: 42px;
+        padding: 0.4rem 0;
+        animation: o_hh_fade_down 0.6s $hh-ease both;
     }
 
-    .o_hospital_topbar_items {
+    .o_hospital_topbar_items,
+    .o_hospital_topbar_side {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: 0.35rem 1.25rem;
-        flex: 1;
-        min-width: 0;
+        gap: 0.35rem 1.5rem;
     }
 
     .o_hospital_topbar_item {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.5rem;
         white-space: nowrap;
-        font-size: 0.82rem;
-        color: rgba(255, 255, 255, 0.95);
-
-        i {
-            color: #5eead4;
-            font-size: 0.9rem;
-        }
+        font-size: inherit;
+        color: rgba(255, 255, 255, 0.92);
+        text-decoration: none;
+        transition: color 0.2s ease;
 
         strong {
-            font-weight: 600;
-            margin-right: 0.15rem;
+            font-weight: 700;
+            margin-right: 0.2rem;
+            color: #fff;
         }
 
-        a {
+        &[href]:hover {
             color: #fff;
-            text-decoration: none;
 
-            &:hover {
-                opacity: 0.85;
+            .o_hospital_topbar_icon {
+                background: rgba(255, 255, 255, 0.28);
+                transform: scale(1.1);
             }
         }
     }
 
-    .o_hospital_topbar_divider {
-        width: 1px;
-        height: 16px;
-        background: rgba(255, 255, 255, 0.25);
-        flex-shrink: 0;
+    .o_hospital_topbar_icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.6rem;
+        height: 1.6rem;
+        border-radius: 50%;
+        font-size: 0.78rem;
+        color: #5eead4;
+        background: rgba(255, 255, 255, 0.12);
+        transition: background 0.25s ease, transform 0.25s $hh-ease;
+    }
+
+    .o_hospital_topbar_emergency .o_hospital_topbar_icon {
+        color: #fff;
+        background: #ef4444;
+        animation: o_hh_beacon 2s ease-out infinite;
+
+        .fa {
+            animation: o_hh_ring 2.4s ease-in-out infinite;
+        }
+    }
+
+    .o_hospital_topbar_cta {
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.28rem 0.9rem;
+        border-radius: 999px;
+        font-size: inherit;
+        font-weight: 700;
+        color: #0b1f4d;
+        background: #fff;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: transform 0.25s $hh-ease, box-shadow 0.25s $hh-ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -60%;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(20, 184, 166, 0.35), transparent);
+            transform: skewX(-20deg);
+            animation: o_hh_shine 3.5s ease-in-out infinite;
+        }
+
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+            color: $hh-blue;
+        }
     }
 
     @media (max-width: 991px) {
-        .o_hospital_topbar_items {
+        .o_hospital_topbar_items,
+        .o_hospital_topbar_side {
             width: 100%;
             justify-content: center;
-        }
-
-        .o_hospital_topbar_divider {
-            display: none;
         }
 
         .o_hospital_topbar_item {
             white-space: normal;
         }
     }
+
+    @media (max-width: 575px) {
+        .o_hospital_topbar_item:not(.o_hospital_topbar_emergency) {
+            display: none;
+        }
+    }
 }
 
+// Main header
+header.o_hospital_header_active {
+    position: relative;
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: saturate(180%) blur(14px);
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06), 0 10px 30px -18px rgba(15, 23, 42, 0.25);
+    animation: o_hh_fade_down 0.6s $hh-ease backwards;
+    transition: box-shadow 0.3s ease;
+
+    &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3px;
+        background: linear-gradient(90deg, $hh-blue, $hh-teal, $hh-indigo, $hh-blue);
+        background-size: 300% 100%;
+        animation: o_hh_gradient 8s linear infinite;
+    }
+
+    &.o_header_is_scrolled {
+        box-shadow: 0 12px 32px -14px rgba(15, 23, 42, 0.35);
+    }
+
+    .navbar {
+        padding-top: 0;
+        padding-bottom: 0;
+        background: transparent !important;
+    }
+
+    #o_main_nav.o_hospital_main_nav {
+        min-height: 84px;
+        padding: 0.6rem 0;
+        align-items: center;
+    }
+
+    .navbar-nav .nav-link {
+        position: relative;
+        font-size: 0.95rem;
+        font-weight: 600;
+        padding: 0.55rem 0.95rem !important;
+        color: #1e293b !important;
+        border-radius: 0.6rem;
+        transition: color 0.25s ease, background 0.25s ease;
+
+        &::after {
+            content: "";
+            position: absolute;
+            left: 0.95rem;
+            right: 0.95rem;
+            bottom: 0.25rem;
+            height: 2px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, $hh-blue, $hh-teal);
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.35s $hh-ease;
+        }
+
+        &:hover {
+            color: $hh-blue !important;
+            background: rgba(37, 99, 235, 0.06);
+
+            &::after {
+                transform: scaleX(1);
+            }
+        }
+
+        &.active {
+            color: $hh-blue !important;
+
+            &::after {
+                transform: scaleX(1);
+            }
+        }
+    }
+
+    .dropdown-toggle::after {
+        transition: transform 0.25s ease;
+    }
+
+    .dropdown.show > .dropdown-toggle::after,
+    .dropdown-toggle[aria-expanded="true"]::after {
+        transform: rotate(180deg);
+    }
+
+    .dropdown-menu {
+        border: 1px solid rgba(15, 23, 42, 0.06);
+        border-radius: 0.9rem;
+        padding: 0.4rem;
+        box-shadow: 0 18px 40px -16px rgba(15, 23, 42, 0.35);
+        animation: o_hh_pop 0.25s $hh-ease;
+
+        .dropdown-item {
+            border-radius: 0.55rem;
+            font-weight: 500;
+            transition: background 0.2s ease, color 0.2s ease, padding-left 0.2s ease;
+
+            &:hover {
+                background: rgba(37, 99, 235, 0.08);
+                color: $hh-blue;
+                padding-left: 1.25rem;
+            }
+        }
+    }
+
+    .btn_cta,
+    .btn-primary {
+        position: relative;
+        overflow: hidden;
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.6rem 1.35rem;
+        font-weight: 700;
+        color: #fff !important;
+        background: linear-gradient(135deg, $hh-blue, $hh-indigo) !important;
+        box-shadow: 0 10px 22px -10px rgba(37, 99, 235, 0.7);
+        transition: transform 0.25s $hh-ease, box-shadow 0.25s $hh-ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.6s $hh-ease;
+        }
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px -10px rgba(37, 99, 235, 0.8);
+
+            &::before {
+                left: 125%;
+            }
+        }
+    }
+
+    .o_navlink_background,
+    .btn-outline-secondary {
+        font-weight: 600;
+        border-radius: 999px;
+        transition: background 0.25s ease, transform 0.25s $hh-ease;
+
+        &:hover {
+            transform: translateY(-1px);
+        }
+    }
+
+    .o_header_search_btn,
+    .o_searchbar_form .btn,
+    a.rounded-circle,
+    .btn.rounded-circle {
+        transition: background 0.25s ease, color 0.25s ease, transform 0.25s $hh-ease;
+
+        &:hover {
+            transform: scale(1.08);
+            color: $hh-blue;
+        }
+    }
+}
+
+// Brand
 .o_hospital_brand {
     display: inline-flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 0.35rem !important;
-    text-decoration: none !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.85rem !important;
     padding: 0 !important;
     margin-right: 2rem !important;
-    max-width: 200px;
+    text-decoration: none !important;
     flex-shrink: 0;
+
+    &:hover .o_hospital_brand_logo_wrap {
+        transform: scale(1.06) rotate(-3deg);
+        box-shadow: 0 12px 24px -10px rgba(37, 99, 235, 0.55);
+    }
 }
 
 .o_hospital_brand_logo_wrap {
@@ -132,27 +339,34 @@ header.o_hospital_header_active {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 72px !important;
-    height: 72px !important;
-    min-width: 72px;
-    min-height: 72px;
-    max-width: 72px !important;
-    max-height: 72px !important;
-    border-radius: 0;
-    background: transparent;
-    border: none;
+    width: $hh-logo !important;
+    height: $hh-logo !important;
+    min-width: $hh-logo;
+    min-height: $hh-logo;
+    border-radius: 1rem;
+    background: #fff;
     overflow: hidden;
+    box-shadow: 0 6px 18px -8px rgba(15, 23, 42, 0.35);
+    transition: transform 0.4s $hh-ease, box-shadow 0.4s $hh-ease;
 }
 
 .o_hospital_brand_logo,
 .o_hospital_brand_logo_wrap img,
 .o_hospital_brand_logo_wrap span img {
-    width: 72px !important;
-    height: 72px !important;
-    max-width: 72px !important;
-    max-height: 72px !important;
+    width: $hh-logo !important;
+    height: $hh-logo !important;
+    max-width: $hh-logo !important;
+    max-height: $hh-logo !important;
     object-fit: contain !important;
     display: block;
+}
+
+.o_hospital_brand_text,
+.o_hospital_brand_text_wrap {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+    min-width: 0;
 }
 
 .o_hospital_brand_text {
@@ -160,42 +374,106 @@ header.o_hospital_header_active {
 }
 
 .o_hospital_brand_caption {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    background: linear-gradient(90deg, $hh-ink, $hh-blue, $hh-teal, $hh-ink);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: o_hh_gradient 10s linear infinite;
+}
+
+.o_hospital_brand_tagline {
+    margin-top: 0.2rem;
     font-size: 0.72rem;
     font-weight: 600;
-    color: #64748b;
-    line-height: 1.2;
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: $hh-muted;
     white-space: nowrap;
 }
 
 @media (max-width: 991px) {
     header.o_hospital_header_active #o_main_nav.o_hospital_main_nav {
-        min-height: 72px;
-        padding: 0.65rem 0;
+        min-height: 70px;
+        padding: 0.5rem 0;
+    }
+
+    .o_hospital_brand {
+        margin-right: 1rem !important;
     }
 
     .o_hospital_brand_logo_wrap {
-        width: 56px !important;
-        height: 56px !important;
-        min-width: 56px;
-        min-height: 56px;
-        max-width: 56px !important;
-        max-height: 56px !important;
+        width: $hh-logo-mobile !important;
+        height: $hh-logo-mobile !important;
+        min-width: $hh-logo-mobile;
+        min-height: $hh-logo-mobile;
     }
 
     .o_hospital_brand_logo,
     .o_hospital_brand_logo_wrap img,
     .o_hospital_brand_logo_wrap span img {
-        width: 56px !important;
-        height: 56px !important;
-        max-width: 56px !important;
-        max-height: 56px !important;
+        width: $hh-logo-mobile !important;
+        height: $hh-logo-mobile !important;
+        max-width: $hh-logo-mobile !important;
+        max-height: $hh-logo-mobile !important;
     }
 
-    .o_hospital_brand {
-        max-width: 140px;
-        margin-right: 1rem !important;
+    .o_hospital_brand_tagline {
+        display: none;
     }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .o_hospital_topbar,
+    .o_hospital_topbar *,
+    .o_hospital_topbar::after,
+    header.o_hospital_header_active,
+    header.o_hospital_header_active *,
+    header.o_hospital_header_active::after,
+    .o_hospital_brand_caption {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+@keyframes o_hh_gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes o_hh_sheen {
+    0% { background-position: 150% 0; }
+    100% { background-position: -150% 0; }
+}
+
+@keyframes o_hh_fade_down {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes o_hh_pop {
+    from { opacity: 0; transform: translateY(6px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes o_hh_beacon {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.65); }
+    70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@keyframes o_hh_ring {
+    0%, 60%, 100% { transform: rotate(0); }
+    65%, 75%, 85% { transform: rotate(-14deg); }
+    70%, 80%, 90% { transform: rotate(14deg); }
+}
+
+@keyframes o_hh_shine {
+    0% { left: -60%; }
+    60%, 100% { left: 130%; }
 }

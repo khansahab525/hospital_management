@@ -31,7 +31,7 @@
                                     <th>Branch</th>
                                     <th>Date/Time</th>
                                     <th>Status</th>
-                                    <th>Queue</th>
+                                    <th>Token</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -42,7 +42,7 @@
                                     <td><span t-esc="appt.branch_id.name"/></td>
                                     <td><span t-esc="appt.appointment_datetime"/></td>
                                     <td><span t-esc="appt.state"/></td>
-                                    <td><span t-esc="appt.queue_number"/></td>
+                                    <td><span t-esc="appt.token_number"/></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -2,37 +2,44 @@
 <odoo>
     <template id="hospital_layout_context" inherit_id="website.layout" name="Hospital Layout Context" priority="15">
         <xpath expr="//div[@id='wrapwrap']/header" position="before">
-            <t t-set="hospital_header" t-value="request.env['hospital.home.content'].sudo().get_published_by_type('header')"/>
-            <t t-set="hospital_footer" t-value="request.env['hospital.home.content'].sudo().get_published_by_type('footer')"/>
+            <t t-set="hospital_company" t-value="website.company_id.sudo()"/>
         </xpath>
     </template>
 
     <template id="hospital_header_active" inherit_id="website.layout" name="Hospital Header Active Class" priority="16">
         <xpath expr="//header" position="attributes">
-            <attribute name="t-attf-class" add="#{hospital_header and 'o_hospital_header_active' or ''}" separator=" "/>
+            <attribute name="t-attf-class" add="o_hospital_header_active" separator=" "/>
         </xpath>
     </template>
 
     <template id="hospital_header_topbar" inherit_id="website.layout" name="Hospital Header Topbar" priority="17">
         <xpath expr="//header" position="before">
-            <div t-if="hospital_header" class="o_hospital_topbar">
+            <div class="o_hospital_topbar">
                 <div class="container">
                     <div class="o_hospital_topbar_inner">
                         <div class="o_hospital_topbar_items">
-                            <span t-if="hospital_header.phone" class="o_hospital_topbar_item">
-                                <i class="fa fa-phone" aria-hidden="true"/>
-                                <span><strong>Emergency:</strong> <a t-attf-href="tel:#{hospital_header.phone}" t-out="hospital_header.phone"/></span>
+                            <a t-if="hospital_company.phone" t-attf-href="tel:#{hospital_company.phone}" class="o_hospital_topbar_item o_hospital_topbar_emergency">
+                                <span class="o_hospital_topbar_icon"><i class="fa fa-phone" aria-hidden="true"/></span>
+                                <span><strong>Emergency</strong> <t t-out="hospital_company.phone"/></span>
+                            </a>
+                            <span t-if="hospital_company.city" class="o_hospital_topbar_item">
+                                <span class="o_hospital_topbar_icon"><i class="fa fa-map-marker" aria-hidden="true"/></span>
+                                <span><strong>Location</strong> <t t-out="hospital_company.city"/></span>
                             </span>
-                            <span t-if="hospital_header.phone and hospital_header.address" class="o_hospital_topbar_divider"/>
-                            <span t-if="hospital_header.address" class="o_hospital_topbar_item">
-                                <i class="fa fa-map-marker" aria-hidden="true"/>
-                                <span><strong>Location:</strong> <t t-out="hospital_header.address"/></span>
+                            <span class="o_hospital_topbar_item">
+                                <span class="o_hospital_topbar_icon"><i class="fa fa-clock-o" aria-hidden="true"/></span>
+                                <span><strong>Open</strong> 24/7 Emergency Care</span>
                             </span>
-                            <span t-if="hospital_header.address and hospital_header.working_hours" class="o_hospital_topbar_divider"/>
-                            <span t-if="hospital_header.working_hours" class="o_hospital_topbar_item">
-                                <i class="fa fa-clock-o" aria-hidden="true"/>
-                                <span><strong>Time</strong> <t t-out="hospital_header.working_hours"/></span>
-                            </span>
+                        </div>
+                        <div class="o_hospital_topbar_side">
+                            <a t-if="hospital_company.email" t-attf-href="mailto:#{hospital_company.email}" class="o_hospital_topbar_item">
+                                <span class="o_hospital_topbar_icon"><i class="fa fa-envelope" aria-hidden="true"/></span>
+                                <span t-out="hospital_company.email"/>
+                            </a>
+                            <a href="/appointment/book" class="o_hospital_topbar_cta">
+                                <i class="fa fa-calendar-plus-o" aria-hidden="true"/>
+                                Book Now
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -47,102 +54,119 @@
     </template>
 
     <template id="hospital_hide_header_phone" inherit_id="website.template_header_default" name="Hospital Hide Header Phone" priority="26">
-        <xpath expr="//ul[hasclass('navbar-nav') and hasclass('align-items-center')]//t[@t-call='website.placeholder_header_text_element']" position="replace">
-            <t t-if="not hospital_header" t-call="website.placeholder_header_text_element"/>
-        </xpath>
+        <xpath expr="//ul[hasclass('navbar-nav') and hasclass('align-items-center')]//t[@t-call='website.placeholder_header_text_element']" position="replace"/>
     </template>
 
     <template id="hospital_header_brand" inherit_id="website.option_header_brand_logo" name="Hospital Header Brand" priority="20">
         <xpath expr="//a[@data-name='Navbar Logo']" position="replace">
-            <a t-if="hospital_header" data-name="Navbar Logo" href="/" t-attf-class="navbar-brand o_hospital_brand #{_link_class}">
+            <a data-name="Navbar Logo" href="/" t-attf-class="navbar-brand o_hospital_brand #{_link_class}">
                 <span class="o_hospital_brand_logo_wrap">
-                    <img t-if="hospital_header.image"
-                         t-attf-src="/web/image/hospital.home.content/#{hospital_header.id}/image"
-                         t-att-alt="hospital_header.image_alt or hospital_header.title or 'Hospital'"
+                    <img src="/smart_hospital_appointment/static/src/img/logo.jpg"
+                         alt="Smart Hospital"
                          class="o_hospital_brand_logo"
-                         width="72" height="72"
-                         style="max-width:72px;max-height:72px;object-fit:contain;"/>
-                    <span t-elif="not hospital_header.image" t-field="website.logo" t-options="{'widget': 'image', 'width': 72, 'height': 72}" role="img"/>
+                         width="64" height="64"/>
                 </span>
-                <span t-if="hospital_header.title" class="o_hospital_brand_caption" t-out="hospital_header.title"/>
-            </a>
-            <a t-else="" data-name="Navbar Logo" href="/" t-attf-class="navbar-brand logo #{_link_class}">
-                <span t-field="website.logo" t-options="{'widget': 'image', 'width': 95, 'height': 40}" role="img" t-att-aria-label="'Logo of %s' % website.name" t-att-title="website.name"/>
+                <span class="o_hospital_brand_text_wrap">
+                    <span class="o_hospital_brand_caption">Smart Hospital</span>
+                    <span class="o_hospital_brand_tagline">Care you can trust</span>
+                </span>
             </a>
         </xpath>
     </template>
 
     <template id="hospital_footer_content" name="Hospital Footer Content">
+        <section class="o_hospital_footer_cta">
+            <div class="container">
+                <div class="o_hospital_footer_cta_inner">
+                    <div>
+                        <h3>Need medical help today?</h3>
+                        <p>Book a consultation with our specialists in under a minute.</p>
+                    </div>
+                    <div class="o_hospital_footer_cta_actions">
+                        <a href="/appointment/book" class="o_hp_btn o_hp_btn_light">
+                            <i class="fa fa-calendar-check-o" aria-hidden="true"/>
+                            Book Appointment
+                        </a>
+                        <a t-if="hospital_company.phone" t-attf-href="tel:#{hospital_company.phone}" class="o_hp_btn o_hp_btn_ghost">
+                            <i class="fa fa-phone" aria-hidden="true"/>
+                            <t t-out="hospital_company.phone"/>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
         <section class="o_hospital_footer_main">
             <div class="container">
-                <div class="row g-4">
+                <div class="row g-5">
                     <div class="col-lg-4">
-                        <div class="o_hospital_footer_brand mb-3">
-                            <img t-if="hospital_footer.image"
-                                 t-attf-src="/web/image/hospital.home.content/#{hospital_footer.id}/image"
-                                 t-att-alt="hospital_footer.image_alt or hospital_footer.title or 'Hospital'"
-                                 class="o_hospital_footer_logo mb-3"/>
-                            <h5 t-if="hospital_footer.title" class="o_hospital_footer_title" t-out="hospital_footer.title"/>
+                        <a href="/" class="o_hospital_footer_brand">
+                            <img src="/smart_hospital_appointment/static/src/img/logo.jpg" alt="Smart Hospital" class="o_hospital_footer_logo"/>
+                            <span>Smart Hospital</span>
+                        </a>
+                        <p class="o_hospital_footer_about">
+                            Modern, patient-first healthcare. Book appointments online, pay securely,
+                            and follow your turn in the live queue from anywhere.
+                        </p>
+                        <div class="o_hospital_footer_social">
+                            <a t-if="website.social_facebook" t-att-href="website.social_facebook" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa fa-facebook" aria-hidden="true"/></a>
+                            <a t-if="website.social_twitter" t-att-href="website.social_twitter" target="_blank" rel="noopener" aria-label="Twitter"><i class="fa fa-twitter" aria-hidden="true"/></a>
+                            <a t-if="website.social_instagram" t-att-href="website.social_instagram" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa fa-instagram" aria-hidden="true"/></a>
+                            <a t-if="website.social_linkedin" t-att-href="website.social_linkedin" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa fa-linkedin" aria-hidden="true"/></a>
+                            <a t-if="website.social_youtube" t-att-href="website.social_youtube" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa fa-youtube-play" aria-hidden="true"/></a>
                         </div>
-                        <div t-if="hospital_footer.body_content" class="o_hospital_footer_about" t-field="hospital_footer.body_content"/>
                     </div>
-                    <div class="col-lg-4">
-                        <h5 class="o_hospital_footer_heading">Contact Us</h5>
-                        <ul class="o_hospital_footer_list list-unstyled">
-                            <li t-if="hospital_footer.address">
-                                <i class="fa fa-map-marker" aria-hidden="true"/>
-                                <span t-out="hospital_footer.address"/>
-                            </li>
-                            <li t-if="hospital_footer.phone">
-                                <i class="fa fa-phone" aria-hidden="true"/>
-                                <a t-attf-href="tel:#{hospital_footer.phone}" t-out="hospital_footer.phone"/>
-                            </li>
-                            <li t-if="hospital_footer.email">
-                                <i class="fa fa-envelope" aria-hidden="true"/>
-                                <a t-attf-href="mailto:#{hospital_footer.email}" t-out="hospital_footer.email"/>
-                            </li>
-                            <li t-if="hospital_footer.working_hours">
-                                <i class="fa fa-clock-o" aria-hidden="true"/>
-                                <span t-out="hospital_footer.working_hours"/>
-                            </li>
-                            <li t-if="hospital_footer.contact_url">
-                                <i class="fa fa-comment" aria-hidden="true"/>
-                                <a t-att-href="hospital_footer.contact_url">Contact us</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-4">
-                        <h5 class="o_hospital_footer_heading">Quick Links</h5>
+                    <div class="col-6 col-lg-2">
+                        <h5 class="o_hospital_footer_heading">Patients</h5>
                         <ul class="o_hospital_footer_links list-unstyled">
-                            <li><a href="/">Home</a></li>
                             <li><a href="/appointment/book">Book Appointment</a></li>
                             <li><a href="/my/hospital">My Appointments</a></li>
-                            <li><a href="/doctors">Doctors</a></li>
-                            <li t-if="hospital_footer.contact_url"><a t-att-href="hospital_footer.contact_url">Contact us</a></li>
+                            <li><a href="/doctors">Find a Doctor</a></li>
+                            <li><a href="/web/signup">Create Account</a></li>
                         </ul>
-                        <div t-if="hospital_footer.facebook_url or hospital_footer.twitter_url or hospital_footer.instagram_url or hospital_footer.linkedin_url"
-                             class="o_hospital_footer_social mt-3">
-                            <a t-if="hospital_footer.facebook_url" t-att-href="hospital_footer.facebook_url" target="_blank" aria-label="Facebook">
-                                <i class="fa fa-facebook" aria-hidden="true"/>
-                            </a>
-                            <a t-if="hospital_footer.twitter_url" t-att-href="hospital_footer.twitter_url" target="_blank" aria-label="Twitter">
-                                <i class="fa fa-twitter" aria-hidden="true"/>
-                            </a>
-                            <a t-if="hospital_footer.instagram_url" t-att-href="hospital_footer.instagram_url" target="_blank" aria-label="Instagram">
-                                <i class="fa fa-instagram" aria-hidden="true"/>
-                            </a>
-                            <a t-if="hospital_footer.linkedin_url" t-att-href="hospital_footer.linkedin_url" target="_blank" aria-label="LinkedIn">
-                                <i class="fa fa-linkedin" aria-hidden="true"/>
-                            </a>
-                        </div>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <h5 class="o_hospital_footer_heading">Hospital</h5>
+                        <ul class="o_hospital_footer_links list-unstyled">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/#services">Services</a></li>
+                            <li><a href="/#branches">Our Branches</a></li>
+                            <li><a href="/contactus">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <h5 class="o_hospital_footer_heading">Get in Touch</h5>
+                        <ul class="o_hospital_footer_list list-unstyled">
+                            <li t-if="hospital_company.street or hospital_company.city">
+                                <i class="fa fa-map-marker" aria-hidden="true"/>
+                                <span>
+                                    <t t-out="hospital_company.street"/>
+                                    <t t-if="hospital_company.street and hospital_company.city">, </t>
+                                    <t t-out="hospital_company.city"/>
+                                </span>
+                            </li>
+                            <li t-if="hospital_company.phone">
+                                <i class="fa fa-phone" aria-hidden="true"/>
+                                <a t-attf-href="tel:#{hospital_company.phone}" t-out="hospital_company.phone"/>
+                            </li>
+                            <li t-if="hospital_company.email">
+                                <i class="fa fa-envelope" aria-hidden="true"/>
+                                <a t-attf-href="mailto:#{hospital_company.email}" t-out="hospital_company.email"/>
+                            </li>
+                            <li>
+                                <i class="fa fa-clock-o" aria-hidden="true"/>
+                                <span>OPD: Mon – Sat, 8:00 – 20:00 · Emergency 24/7</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </section>
         <section class="o_hospital_footer_bottom">
-            <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
-                <span t-out="hospital_footer.copyright_text or '© Smart Hospital. All rights reserved.'"/>
-                <span class="o_hospital_footer_tagline" t-if="hospital_footer.subtitle" t-out="hospital_footer.subtitle"/>
+            <div class="container">
+                <span>© <t t-out="datetime.date.today().year"/> Smart Hospital. All rights reserved.</span>
+                <span class="o_hospital_footer_tagline">
+                    <i class="fa fa-heart" aria-hidden="true"/> Caring for our community
+                </span>
             </div>
         </section>
     </template>
@@ -150,33 +174,7 @@
     <template id="hospital_footer" inherit_id="website.footer_custom" name="Hospital Footer" priority="20">
         <xpath expr="//div[@id='footer']" position="replace">
             <div id="footer" class="oe_structure oe_structure_solo o_hospital_footer_wrap" t-ignore="true" t-if="not no_footer">
-                <t t-if="hospital_footer" t-call="smart_hospital_appointment.hospital_footer_content"/>
-                <section t-else="" class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Text">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-2 pt24 pb24">
-                                <h5 class="mb-3">Useful Links</h5>
-                                <ul class="list-unstyled">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/appointment/book">Book Appointment</a></li>
-                                    <li><a href="/my/hospital">My Appointments</a></li>
-                                    <li><a href="/doctors">Doctors</a></li>
-                                    <li><a href="/contactus">Contact us</a></li>
-                                </ul>
-                            </div>
-                            <div class="col-lg-5 pt24 pb24">
-                                <h5 class="mb-3">About us</h5>
-                                <p>We are a team of passionate people whose goal is to improve everyone's life through disruptive products.</p>
-                            </div>
-                            <div class="col-lg-4 offset-lg-1 pt24 pb24">
-                                <h5 class="mb-3">Connect with us</h5>
-                                <ul class="list-unstyled">
-                                    <li><i class="fa fa-comment fa-fw me-2"/><span><a href="/contactus">Contact us</a></span></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                <t t-call="smart_hospital_appointment.hospital_footer_content"/>
             </div>
         </xpath>
     </template>

@@ -1,148 +1,535 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="hospital_home_section_hero" name="Hospital Home: Hero">
-        <t t-set="section" t-value="section_item"/>
-        <section t-attf-class="o_home_section o_home_hero o_bg_#{section.background_style or 'primary'}">
-            <div class="container">
-                <div class="o_home_hero_inner">
-                    <div>
-                        <span t-if="section.subtitle" class="o_home_badge">
-                            <i class="fa fa-heartbeat" aria-hidden="true"/>
-                            <t t-out="section.subtitle"/>
-                        </span>
-                        <h1 t-if="section.title" class="o_home_title" t-out="section.title"/>
-                        <div t-if="section.body_content" class="o_home_body" t-field="section.body_content"/>
-                        <div t-if="section.button_text or section.button_text_2" class="o_home_actions">
-                            <a t-if="section.button_text" t-att-href="section.button_url or '#'" class="o_home_btn_primary">
-                                <i class="fa fa-calendar-check-o" aria-hidden="true"/>
-                                <t t-out="section.button_text"/>
-                            </a>
-                            <a t-if="section.button_text_2" t-att-href="section.button_url_2 or '#'" class="o_home_btn_secondary">
-                                <t t-out="section.button_text_2"/>
-                            </a>
-                        </div>
-                    </div>
-                    <div t-if="section.image" class="o_home_hero_image">
-                        <img t-attf-src="/web/image/hospital.home.content/#{section.id}/image"
-                             t-att-alt="section.image_alt or section.title or 'Hospital'"/>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </template>
-
-    <template id="hospital_home_section_content" name="Hospital Home: Content">
-        <t t-set="section" t-value="section_item"/>
-        <section t-attf-class="o_home_section o_bg_#{section.background_style or 'white'}">
-            <div class="container">
-                <div t-attf-class="o_home_content_grid o_layout_#{section.layout or 'image_right'}">
-                    <div t-if="section.image and section.layout in ('image_left', 'image_top')" class="o_home_content_image">
-                        <img t-attf-src="/web/image/hospital.home.content/#{section.id}/image"
-                             t-att-alt="section.image_alt or section.title or 'Hospital'"/>
-                    </div>
-                    <div>
-                        <h2 t-if="section.title" class="o_home_section_title" t-out="section.title"/>
-                        <p t-if="section.subtitle" class="o_home_subtitle" t-out="section.subtitle"/>
-                        <div t-if="section.body_content" class="o_home_body" t-field="section.body_content"/>
-                        <div t-if="section.button_text" class="o_home_actions mt-3">
-                            <a t-att-href="section.button_url or '#'" class="o_home_btn_primary" style="background: linear-gradient(135deg, #0d6efd, #0a58ca); color: #fff;">
-                                <t t-out="section.button_text"/>
-                            </a>
-                        </div>
-                    </div>
-                    <div t-if="section.image and section.layout == 'image_right'" class="o_home_content_image">
-                        <img t-attf-src="/web/image/hospital.home.content/#{section.id}/image"
-                             t-att-alt="section.image_alt or section.title or 'Hospital'"/>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </template>
-
-    <template id="hospital_home_section_features" name="Hospital Home: Features">
-        <section class="o_home_section o_bg_light">
-            <div class="container">
-                <div class="o_home_features_grid">
-                    <t t-foreach="section_items" t-as="feature">
-                        <article class="o_home_feature_card">
-                            <div t-if="feature.icon" class="o_home_feature_icon">
-                                <i t-attf-class="fa #{feature.icon}" aria-hidden="true"/>
-                            </div>
-                            <div t-else="" class="o_home_feature_icon">
-                                <i class="fa fa-medkit" aria-hidden="true"/>
-                            </div>
-                            <h3 t-if="feature.title" class="o_home_feature_title" t-out="feature.title"/>
-                            <p t-if="feature.subtitle" class="text-muted mb-2" t-out="feature.subtitle"/>
-                            <div t-if="feature.body_content" t-field="feature.body_content"/>
-                        </article>
-                    </t>
-                </div>
-            </div>
-        </section>
-    </template>
-
-    <template id="hospital_home_section_stats" name="Hospital Home: Stats">
-        <section class="o_home_section o_bg_primary">
-            <div class="container">
-                <div class="o_home_stats_grid">
-                    <t t-foreach="section_items" t-as="stat">
-                        <div class="o_home_stat_card">
-                            <div class="o_home_stat_value" t-out="stat.stat_value or stat.title"/>
-                            <p class="o_home_stat_label" t-out="stat.stat_label or stat.subtitle or stat.body_content"/>
-                        </div>
-                    </t>
-                </div>
-            </div>
-        </section>
-    </template>
-
-    <template id="hospital_home_section_cta" name="Hospital Home: CTA">
-        <t t-set="section" t-value="section_item"/>
-        <section t-attf-class="o_home_section o_bg_#{section.background_style or 'accent'}">
-            <div class="container">
-                <div class="o_home_cta">
-                    <h2 t-if="section.title" class="o_home_section_title" t-out="section.title"/>
-                    <p t-if="section.subtitle" class="o_home_subtitle" t-out="section.subtitle"/>
-                    <div t-if="section.body_content" class="o_home_body" t-field="section.body_content"/>
-                    <div t-if="section.button_text or section.button_text_2" class="o_home_actions">
-                        <a t-if="section.button_text" t-att-href="section.button_url or '#'" class="o_home_btn_primary">
-                            <t t-out="section.button_text"/>
-                        </a>
-                        <a t-if="section.button_text_2" t-att-href="section.button_url_2 or '#'" class="o_home_btn_secondary">
-                            <t t-out="section.button_text_2"/>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </template>
-
     <template id="hospital_homepage" name="Hospital Homepage">
         <t t-call="website.layout">
-            <div id="wrap" class="oe_structure o_hospital_homepage">
-                <t t-if="not home_sections">
-                    <div class="o_home_fallback">
-                        <h2>Welcome to Smart Hospital</h2>
-                        <p>Publish home page content from the backend to customize this page.</p>
-                        <a href="/doctors" class="btn btn-primary mt-3">Meet Our Doctors</a>
+            <t t-set="pageName" t-value="'homepage'"/>
+            <t t-set="company" t-value="website.company_id.sudo()"/>
+            <t t-set="service_icons" t-value="['fa-heartbeat', 'fa-stethoscope', 'fa-user-md', 'fa-medkit', 'fa-ambulance', 'fa-plus-square', 'fa-hospital-o', 'fa-eye']"/>
+            <div id="wrap" class="o_hospital_homepage">
+
+                <!-- Slider -->
+                <section t-if="slides" class="o_hp_slider">
+                    <div id="o_hp_carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="6500" data-bs-pause="hover">
+                        <div t-if="len(slides) &gt; 1" class="carousel-indicators o_hp_slider_indicators">
+                            <t t-foreach="slides" t-as="slide">
+                                <button type="button" data-bs-target="#o_hp_carousel" t-att-data-bs-slide-to="slide_index"
+                                        t-att-class="slide_first and 'active' or None"
+                                        t-att-aria-current="slide_first and 'true' or None"
+                                        t-attf-aria-label="Slide #{slide_index + 1}"/>
+                            </t>
+                        </div>
+                        <div class="carousel-inner">
+                            <t t-foreach="slides" t-as="slide">
+                                <t t-set="is_video" t-value="slide.media_type == 'video' and slide.video_kind"/>
+                                <t t-set="poster" t-value="slide.image and '/web/image/hospital.home.slider/%s/image' % slide.id or None"/>
+                                <div t-attf-class="carousel-item #{slide_first and 'active' or ''} #{is_video and 'o_hp_slide_video' or ''}"
+                                     t-att-data-bs-interval="is_video and '12000' or None">
+                                    <t t-if="is_video">
+                                        <img t-if="poster" class="o_hp_slide_poster" t-att-src="poster" t-att-alt="slide.title or slide.name"
+                                             t-att-loading="not slide_first and 'lazy' or None"/>
+                                        <video t-if="slide.video_kind == 'file'" class="o_hp_slide_media" muted="muted" loop="loop" playsinline="playsinline"
+                                               t-att-autoplay="slide_first and 'autoplay' or None"
+                                               t-att-preload="slide_first and 'auto' or 'none'" t-att-poster="poster" aria-hidden="true">
+                                            <source t-att-src="slide.video_src" t-att-type="slide.video_mimetype"/>
+                                        </video>
+                                        <iframe t-else="" class="o_hp_slide_media o_hp_slide_embed" t-att-data-src="slide.video_src"
+                                                allow="autoplay; encrypted-media; picture-in-picture" tabindex="-1"
+                                                t-att-title="slide.title or slide.name" aria-hidden="true"/>
+                                    </t>
+                                    <img t-else="" class="o_hp_slide_img" t-att-src="poster"
+                                         t-att-alt="slide.title or slide.name" t-att-loading="not slide_first and 'lazy' or None"/>
+                                    <span class="o_hp_slide_overlay"/>
+                                    <div class="container o_hp_slide_container">
+                                        <div t-attf-class="o_hp_slide_caption text-#{slide.caption_align} o_align_#{slide.caption_align}">
+                                            <span t-if="slide.badge" class="o_hp_eyebrow">
+                                                <span class="o_hp_eyebrow_dot"/>
+                                                <t t-out="slide.badge"/>
+                                            </span>
+                                            <h1 t-if="slide.title" class="o_hp_slide_title" t-out="slide.title"/>
+                                            <p t-if="slide.subtitle" class="o_hp_slide_text" t-out="slide.subtitle"/>
+                                            <div t-if="slide.button_text or slide.button_text_2" class="o_hp_slide_actions">
+                                                <a t-if="slide.button_text" t-att-href="slide.button_url or '/appointment/book'" class="o_hp_btn o_hp_btn_primary">
+                                                    <i class="fa fa-calendar-check-o" aria-hidden="true"/>
+                                                    <t t-out="slide.button_text"/>
+                                                </a>
+                                                <a t-if="slide.button_text_2" t-att-href="slide.button_url_2 or '/doctors'" class="o_hp_btn o_hp_btn_outline">
+                                                    <t t-out="slide.button_text_2"/>
+                                                    <i class="fa fa-arrow-right" aria-hidden="true"/>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                        <t t-if="len(slides) &gt; 1">
+                            <button class="carousel-control-prev o_hp_slider_ctrl" type="button" data-bs-target="#o_hp_carousel" data-bs-slide="prev">
+                                <span class="o_hp_slider_ctrl_icon"><i class="fa fa-chevron-left" aria-hidden="true"/></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next o_hp_slider_ctrl" type="button" data-bs-target="#o_hp_carousel" data-bs-slide="next">
+                                <span class="o_hp_slider_ctrl_icon"><i class="fa fa-chevron-right" aria-hidden="true"/></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            <div class="o_hp_slider_progress"><span/></div>
+                        </t>
                     </div>
-                </t>
-                <t t-foreach="home_sections" t-as="block">
-                    <t t-if="block['kind'] == 'single'">
-                        <t t-set="section_item" t-value="block['item']"/>
-                        <t t-if="block['item'].section_type == 'hero'" t-call="smart_hospital_appointment.hospital_home_section_hero"/>
-                        <t t-if="block['item'].section_type == 'content'" t-call="smart_hospital_appointment.hospital_home_section_content"/>
-                        <t t-if="block['item'].section_type == 'cta'" t-call="smart_hospital_appointment.hospital_home_section_cta"/>
-                    </t>
-                    <t t-if="block['kind'] == 'feature'">
-                        <t t-set="section_items" t-value="block['items']"/>
-                        <t t-call="smart_hospital_appointment.hospital_home_section_features"/>
-                    </t>
-                    <t t-if="block['kind'] == 'stats'">
-                        <t t-set="section_items" t-value="block['items']"/>
-                        <t t-call="smart_hospital_appointment.hospital_home_section_stats"/>
-                    </t>
-                </t>
+                    <svg class="o_hp_hero_wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+                        <path d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,45 L1440,90 L0,90 Z"/>
+                    </svg>
+                </section>
+
+                <!-- Hero (shown when no slides are published) -->
+                <section t-else="" class="o_hp_hero">
+                    <span class="o_hp_blob o_hp_blob_1"/>
+                    <span class="o_hp_blob o_hp_blob_2"/>
+                    <span class="o_hp_blob o_hp_blob_3"/>
+                    <div class="container">
+                        <div class="o_hp_hero_grid">
+                            <div class="o_hp_hero_copy">
+                                <span class="o_hp_eyebrow o_hp_reveal">
+                                    <span class="o_hp_eyebrow_dot"/>
+                                    Trusted healthcare since day one
+                                </span>
+                                <h1 class="o_hp_hero_title o_hp_reveal">
+                                    Your Health,
+                                    <span class="o_hp_gradient_text">Our Priority</span>
+                                </h1>
+                                <p class="o_hp_hero_lead o_hp_reveal">
+                                    Providing trusted, accessible and compassionate healthcare for every patient.
+                                    Book a specialist online, pay securely, and follow your turn live — no more waiting rooms.
+                                </p>
+                                <div class="o_hp_hero_actions o_hp_reveal">
+                                    <a href="/appointment/book" class="o_hp_btn o_hp_btn_primary">
+                                        <i class="fa fa-calendar-check-o" aria-hidden="true"/>
+                                        Book Appointment
+                                    </a>
+                                    <a href="/doctors" class="o_hp_btn o_hp_btn_outline">
+                                        <i class="fa fa-user-md" aria-hidden="true"/>
+                                        Find a Doctor
+                                    </a>
+                                </div>
+                                <ul class="o_hp_trust o_hp_reveal">
+                                    <li><i class="fa fa-check-circle" aria-hidden="true"/> Certified specialists</li>
+                                    <li><i class="fa fa-check-circle" aria-hidden="true"/> Secure online payment</li>
+                                    <li><i class="fa fa-check-circle" aria-hidden="true"/> Live queue tracking</li>
+                                </ul>
+                            </div>
+                            <div class="o_hp_hero_visual o_hp_reveal">
+                                <div class="o_hp_hero_image">
+                                    <img src="/smart_hospital_appointment/static/src/img/hero.jpg" alt="Doctor caring for a patient" loading="eager"/>
+                                </div>
+                                <div class="o_hp_float_card o_hp_float_1">
+                                    <span class="o_hp_float_icon o_hp_icon_green"><i class="fa fa-check" aria-hidden="true"/></span>
+                                    <div>
+                                        <strong>Appointment confirmed</strong>
+                                        <small>Token #4 · Today 08:00</small>
+                                    </div>
+                                </div>
+                                <div class="o_hp_float_card o_hp_float_2">
+                                    <span class="o_hp_float_icon o_hp_icon_orange"><i class="fa fa-stethoscope" aria-hidden="true"/></span>
+                                    <div>
+                                        <strong>Now serving #2</strong>
+                                        <small>You are next in line</small>
+                                    </div>
+                                </div>
+                                <div class="o_hp_float_card o_hp_float_3">
+                                    <span class="o_hp_stars">
+                                        <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                                    </span>
+                                    <small>Rated by our patients</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <svg class="o_hp_hero_wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+                        <path d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,45 L1440,90 L0,90 Z"/>
+                    </svg>
+                </section>
+
+                <!-- Quick actions -->
+                <section class="o_hp_quick">
+                    <div class="container">
+                        <div class="row g-4">
+                            <div class="col-sm-6 col-xl-3">
+                                <a href="/appointment/book" class="o_hp_quick_card o_qa_blue o_hp_reveal">
+                                    <span class="o_hp_quick_step">01</span>
+                                    <span class="o_hp_quick_icon"><i class="fa fa-calendar-plus-o" aria-hidden="true"/></span>
+                                    <strong class="o_hp_quick_title">Book Appointment</strong>
+                                    <span class="o_hp_quick_text">Choose a doctor, branch and a time that suits you.</span>
+                                    <span class="o_hp_quick_link">Book now <i class="fa fa-long-arrow-right" aria-hidden="true"/></span>
+                                </a>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <a href="/doctors" class="o_hp_quick_card o_qa_violet o_hp_reveal">
+                                    <span class="o_hp_quick_step">02</span>
+                                    <span class="o_hp_quick_icon"><i class="fa fa-user-md" aria-hidden="true"/></span>
+                                    <strong class="o_hp_quick_title">Find a Doctor</strong>
+                                    <span class="o_hp_quick_text">Search specialists by name, speciality or branch.</span>
+                                    <span class="o_hp_quick_link">Browse doctors <i class="fa fa-long-arrow-right" aria-hidden="true"/></span>
+                                </a>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <a href="/my/hospital" class="o_hp_quick_card o_qa_teal o_hp_reveal">
+                                    <span class="o_hp_quick_step">03</span>
+                                    <span class="o_hp_quick_icon"><i class="fa fa-clipboard" aria-hidden="true"/></span>
+                                    <strong class="o_hp_quick_title">My Appointments</strong>
+                                    <span class="o_hp_quick_text">Pay online, reschedule and track your queue live.</span>
+                                    <span class="o_hp_quick_link">Open portal <i class="fa fa-long-arrow-right" aria-hidden="true"/></span>
+                                </a>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <a t-att-href="company.phone and ('tel:%s' % company.phone) or '/contactus'" class="o_hp_quick_card o_hp_quick_emergency o_hp_reveal">
+                                    <span class="o_hp_quick_live"><span class="o_hp_quick_live_dot"/>Open 24/7</span>
+                                    <span class="o_hp_quick_icon"><i class="fa fa-ambulance" aria-hidden="true"/></span>
+                                    <strong class="o_hp_quick_title">Emergency Care</strong>
+                                    <span class="o_hp_quick_text">Immediate help, day and night.</span>
+                                    <span class="o_hp_quick_phone">
+                                        <i class="fa fa-phone" aria-hidden="true"/>
+                                        <t t-out="company.phone or 'Contact us'"/>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Stats -->
+                <section class="o_hp_stats">
+                    <div class="container">
+                        <div class="o_hp_stats_band">
+                            <span class="o_hp_stats_glow o_hp_stats_glow_1"/>
+                            <span class="o_hp_stats_glow o_hp_stats_glow_2"/>
+                            <div class="row g-0 position-relative">
+                                <div class="col-6 col-lg-3">
+                                    <div class="o_hp_stat o_hp_reveal">
+                                        <span class="o_hp_stat_icon"><i class="fa fa-user-md" aria-hidden="true"/></span>
+                                        <span class="o_hp_stat_value"><span class="o_hp_counter" t-att-data-target="doctor_count">0</span><sup>+</sup></span>
+                                        <span class="o_hp_stat_label">Expert Doctors</span>
+                                        <span class="o_hp_stat_hint">Experienced specialists</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3">
+                                    <div class="o_hp_stat o_hp_reveal">
+                                        <span class="o_hp_stat_icon"><i class="fa fa-stethoscope" aria-hidden="true"/></span>
+                                        <span class="o_hp_stat_value"><span class="o_hp_counter" t-att-data-target="specialization_count">0</span><sup>+</sup></span>
+                                        <span class="o_hp_stat_label">Specialities</span>
+                                        <span class="o_hp_stat_hint">Departments under one roof</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3">
+                                    <div class="o_hp_stat o_hp_reveal">
+                                        <span class="o_hp_stat_icon"><i class="fa fa-hospital-o" aria-hidden="true"/></span>
+                                        <span class="o_hp_stat_value"><span class="o_hp_counter" t-att-data-target="branch_count">0</span></span>
+                                        <span class="o_hp_stat_label">Hospital Branches</span>
+                                        <span class="o_hp_stat_hint">Care close to home</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3">
+                                    <div class="o_hp_stat o_hp_reveal">
+                                        <span class="o_hp_stat_icon"><i class="fa fa-heartbeat" aria-hidden="true"/></span>
+                                        <span class="o_hp_stat_value">24<small>/</small>7</span>
+                                        <span class="o_hp_stat_label">Emergency Care</span>
+                                        <span class="o_hp_stat_hint">Always open, every day</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- About -->
+                <section class="o_hp_section o_hp_about" id="about">
+                    <div class="container">
+                        <div class="o_hp_about_grid">
+                            <div class="o_hp_about_visual o_hp_reveal">
+                                <img src="/smart_hospital_appointment/static/src/img/about.jpg" alt="Our medical team" loading="lazy"/>
+                                <div class="o_hp_about_badge">
+                                    <i class="fa fa-shield" aria-hidden="true"/>
+                                    <div>
+                                        <strong>Patient-first</strong>
+                                        <small>Care, safety &amp; privacy</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_hp_reveal">
+                                <span class="o_hp_kicker">About Smart Hospital</span>
+                                <h2 class="o_hp_section_title">Comprehensive Healthcare for Everyone</h2>
+                                <p class="o_hp_section_lead">
+                                    Discover modern healthcare services designed around the needs of our patients.
+                                    From routine check-ups to specialist consultations, our team combines clinical
+                                    excellence with technology that respects your time.
+                                </p>
+                                <ul class="o_hp_checklist">
+                                    <li><i class="fa fa-check" aria-hidden="true"/> Experienced, certified consultants across specialities</li>
+                                    <li><i class="fa fa-check" aria-hidden="true"/> Book at any branch with a single patient account</li>
+                                    <li><i class="fa fa-check" aria-hidden="true"/> Transparent consultation fees, paid securely online</li>
+                                    <li><i class="fa fa-check" aria-hidden="true"/> Digital prescriptions and visit history in your portal</li>
+                                </ul>
+                                <a href="/doctors" class="o_hp_btn o_hp_btn_primary">
+                                    Meet our doctors
+                                    <i class="fa fa-arrow-right" aria-hidden="true"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Services / specialities -->
+                <section class="o_hp_section o_hp_soft" id="services">
+                    <div class="container">
+                        <div class="o_hp_section_head o_hp_reveal">
+                            <span class="o_hp_kicker">Our Specialities</span>
+                            <h2 class="o_hp_section_title">Care for every stage of life</h2>
+                            <p class="o_hp_section_lead">Expert departments staffed by specialists you can book online today.</p>
+                        </div>
+                        <div class="o_hp_services_grid">
+                            <t t-if="specializations">
+                                <t t-foreach="specializations" t-as="spec">
+                                    <a t-att-href="spec.website_url" class="o_hp_service o_hp_reveal">
+                                        <span class="o_hp_service_icon">
+                                            <i t-attf-class="fa #{service_icons[spec_index % len(service_icons)]}" aria-hidden="true"/>
+                                        </span>
+                                        <h3 t-out="spec.name"/>
+                                        <p>See available specialists and book a consultation.</p>
+                                        <span class="o_hp_service_link">View doctors <i class="fa fa-long-arrow-right" aria-hidden="true"/></span>
+                                    </a>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <div class="o_hp_service o_hp_reveal">
+                                    <span class="o_hp_service_icon"><i class="fa fa-heartbeat" aria-hidden="true"/></span>
+                                    <h3>Cardiology</h3>
+                                    <p>Heart health check-ups, diagnostics and long-term care.</p>
+                                </div>
+                                <div class="o_hp_service o_hp_reveal">
+                                    <span class="o_hp_service_icon"><i class="fa fa-stethoscope" aria-hidden="true"/></span>
+                                    <h3>General Medicine</h3>
+                                    <p>Everyday care, consultations and preventive health.</p>
+                                </div>
+                                <div class="o_hp_service o_hp_reveal">
+                                    <span class="o_hp_service_icon"><i class="fa fa-child" aria-hidden="true"/></span>
+                                    <h3>Paediatrics</h3>
+                                    <p>Gentle, specialised care for infants and children.</p>
+                                </div>
+                                <div class="o_hp_service o_hp_reveal">
+                                    <span class="o_hp_service_icon"><i class="fa fa-ambulance" aria-hidden="true"/></span>
+                                    <h3>Emergency</h3>
+                                    <p>Round-the-clock emergency response and trauma care.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- How it works -->
+                <section class="o_hp_section">
+                    <div class="container">
+                        <div class="o_hp_section_head o_hp_reveal">
+                            <span class="o_hp_kicker">How It Works</span>
+                            <h2 class="o_hp_section_title">From booking to check-up in four steps</h2>
+                        </div>
+                        <div class="o_hp_steps">
+                            <div class="o_hp_step o_hp_reveal">
+                                <span class="o_hp_step_num">01</span>
+                                <span class="o_hp_step_icon"><i class="fa fa-user-plus" aria-hidden="true"/></span>
+                                <h3>Create your account</h3>
+                                <p>One patient profile works at every branch.</p>
+                            </div>
+                            <div class="o_hp_step o_hp_reveal">
+                                <span class="o_hp_step_num">02</span>
+                                <span class="o_hp_step_icon"><i class="fa fa-user-md" aria-hidden="true"/></span>
+                                <h3>Choose a doctor</h3>
+                                <p>Pick the specialist, branch and day that suit you.</p>
+                            </div>
+                            <div class="o_hp_step o_hp_reveal">
+                                <span class="o_hp_step_num">03</span>
+                                <span class="o_hp_step_icon"><i class="fa fa-credit-card" aria-hidden="true"/></span>
+                                <h3>Pay securely</h3>
+                                <p>Settle the consultation fee online in seconds.</p>
+                            </div>
+                            <div class="o_hp_step o_hp_reveal">
+                                <span class="o_hp_step_num">04</span>
+                                <span class="o_hp_step_icon"><i class="fa fa-television" aria-hidden="true"/></span>
+                                <h3>Track your turn live</h3>
+                                <p>Watch the live queue and arrive right on time.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Doctors -->
+                <section class="o_hp_section o_hp_soft" t-if="featured_doctors">
+                    <div class="container">
+                        <div class="o_hp_section_head o_hp_head_split o_hp_reveal">
+                            <div>
+                                <span class="o_hp_kicker">Our Specialists</span>
+                                <h2 class="o_hp_section_title">Meet our expert doctors</h2>
+                            </div>
+                            <a href="/doctors" class="o_hp_btn o_hp_btn_outline_dark">
+                                View all doctors <i class="fa fa-arrow-right" aria-hidden="true"/>
+                            </a>
+                        </div>
+                        <div class="o_hp_doctors_grid">
+                            <t t-foreach="featured_doctors" t-as="doctor">
+                                <t t-set="initials" t-value="''.join([part[0].upper() for part in (doctor.name or '').split()[:2] if part])"/>
+                                <article class="o_hp_doctor o_hp_reveal">
+                                    <div class="o_hp_doctor_photo">
+                                        <img t-if="doctor.image" t-attf-src="/web/image/hospital.doctor/#{doctor.id}/image/400x400" t-att-alt="doctor.name" loading="lazy"/>
+                                        <span t-else="" class="o_hp_doctor_initials" t-out="initials"/>
+                                        <span t-if="doctor.rating" class="o_hp_doctor_rating">
+                                            <i class="fa fa-star" aria-hidden="true"/> <t t-out="'%.1f' % doctor.rating"/>
+                                        </span>
+                                    </div>
+                                    <div class="o_hp_doctor_body">
+                                        <h3>Dr. <t t-out="doctor.name"/></h3>
+                                        <p class="o_hp_doctor_spec" t-out="doctor.specialization.name"/>
+                                        <ul class="o_hp_doctor_meta">
+                                            <li t-if="doctor.experience_years"><i class="fa fa-briefcase" aria-hidden="true"/> <t t-out="doctor.experience_years"/>+ yrs</li>
+                                            <li t-if="doctor.branch_ids"><i class="fa fa-map-marker" aria-hidden="true"/> <t t-out="', '.join(doctor.branch_ids.mapped('name'))"/></li>
+                                        </ul>
+                                        <a t-att-href="doctor.website_url" class="o_hp_doctor_btn">
+                                            Book appointment <i class="fa fa-arrow-right" aria-hidden="true"/>
+                                        </a>
+                                    </div>
+                                </article>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Live queue highlight -->
+                <section class="o_hp_section o_hp_dark">
+                    <span class="o_hp_blob o_hp_blob_dark"/>
+                    <div class="container">
+                        <div class="o_hp_live_grid">
+                            <div class="o_hp_reveal">
+                                <span class="o_hp_kicker o_hp_kicker_light">Live Queue</span>
+                                <h2 class="o_hp_section_title text-white">Know exactly when it's your turn</h2>
+                                <p class="o_hp_section_lead o_hp_lead_light">
+                                    Every appointment gets a fixed token number. Follow the doctor's queue in real time
+                                    from your phone and walk in just when you're needed.
+                                </p>
+                                <ul class="o_hp_checklist o_hp_checklist_light">
+                                    <li><i class="fa fa-check" aria-hidden="true"/> Fixed token for every booking</li>
+                                    <li><i class="fa fa-check" aria-hidden="true"/> Live "now serving" updates</li>
+                                    <li><i class="fa fa-check" aria-hidden="true"/> Estimated waiting time</li>
+                                </ul>
+                                <a href="/my/hospital" class="o_hp_btn o_hp_btn_light">
+                                    <i class="fa fa-television" aria-hidden="true"/>
+                                    Open my appointments
+                                </a>
+                            </div>
+                            <div class="o_hp_live_mock o_hp_reveal" aria-hidden="true">
+                                <div class="o_hp_mock_head">
+                                    <span class="o_hp_mock_live"><span/>LIVE</span>
+                                    <span>Today's Queue</span>
+                                </div>
+                                <div class="o_hp_mock_cards">
+                                    <div><small>Your number</small><strong>#4</strong></div>
+                                    <div class="o_hp_mock_serving"><small>Now serving</small><strong>#3</strong></div>
+                                    <div><small>Ahead</small><strong>0</strong></div>
+                                </div>
+                                <div class="o_hp_mock_tiles">
+                                    <span class="o_done">#1</span>
+                                    <span class="o_done">#2</span>
+                                    <span class="o_now">#3</span>
+                                    <span class="o_mine">#4</span>
+                                    <span>#5</span>
+                                    <span>#6</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Testimonials -->
+                <section class="o_hp_section">
+                    <div class="container">
+                        <div class="o_hp_section_head o_hp_reveal">
+                            <span class="o_hp_kicker">Testimonials</span>
+                            <h2 class="o_hp_section_title">What our patients say</h2>
+                        </div>
+                        <div class="o_hp_testimonials">
+                            <figure class="o_hp_quote o_hp_reveal">
+                                <span class="o_hp_stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/></span>
+                                <blockquote>Booking took less than a minute and I could see the queue from home. I walked in exactly when it was my turn.</blockquote>
+                                <figcaption><span class="o_hp_avatar">AK</span><div><strong>Ayesha K.</strong><small>Cardiology patient</small></div></figcaption>
+                            </figure>
+                            <figure class="o_hp_quote o_hp_reveal">
+                                <span class="o_hp_stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/></span>
+                                <blockquote>The doctors were attentive and the online payment was simple. My prescription was ready in my portal.</blockquote>
+                                <figcaption><span class="o_hp_avatar">MR</span><div><strong>Muhammad R.</strong><small>General medicine</small></div></figcaption>
+                            </figure>
+                            <figure class="o_hp_quote o_hp_reveal">
+                                <span class="o_hp_stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star-half-o"/></span>
+                                <blockquote>One account for every branch is a big help for our family. Highly recommended for busy parents.</blockquote>
+                                <figcaption><span class="o_hp_avatar">SB</span><div><strong>Sara B.</strong><small>Paediatrics parent</small></div></figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Branches -->
+                <section class="o_hp_section o_hp_soft" id="branches" t-if="branches">
+                    <div class="container">
+                        <div class="o_hp_section_head o_hp_reveal">
+                            <span class="o_hp_kicker">Locations</span>
+                            <h2 class="o_hp_section_title">Visit a branch near you</h2>
+                        </div>
+                        <div class="o_hp_branches">
+                            <t t-foreach="branches" t-as="branch">
+                                <div class="o_hp_branch o_hp_reveal">
+                                    <span class="o_hp_branch_icon"><i class="fa fa-hospital-o" aria-hidden="true"/></span>
+                                    <div>
+                                        <h3 t-out="branch.name"/>
+                                        <p t-if="branch.address"><i class="fa fa-map-marker" aria-hidden="true"/> <t t-out="branch.address"/></p>
+                                        <p t-if="branch.phone"><i class="fa fa-phone" aria-hidden="true"/> <a t-attf-href="tel:#{branch.phone}" t-out="branch.phone"/></p>
+                                        <p t-if="branch.email"><i class="fa fa-envelope" aria-hidden="true"/> <a t-attf-href="mailto:#{branch.email}" t-out="branch.email"/></p>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FAQ -->
+                <section class="o_hp_section">
+                    <div class="container">
+                        <div class="o_hp_faq_grid">
+                            <div class="o_hp_reveal">
+                                <span class="o_hp_kicker">FAQ</span>
+                                <h2 class="o_hp_section_title">Frequently asked questions</h2>
+                                <p class="o_hp_section_lead">Can't find what you're looking for? Our team is happy to help.</p>
+                                <a href="/contactus" class="o_hp_btn o_hp_btn_outline_dark">
+                                    <i class="fa fa-comments" aria-hidden="true"/> Contact us
+                                </a>
+                            </div>
+                            <div class="o_hp_faq o_hp_reveal">
+                                <details open="open">
+                                    <summary>How do I book an appointment?</summary>
+                                    <p>Create a free patient account, choose a doctor, branch and day on the booking page, and confirm. You'll receive a token number right away.</p>
+                                </details>
+                                <details>
+                                    <summary>Can I book at any branch?</summary>
+                                    <p>Yes. Your patient account is shared across all our branches, so you can book any available doctor at any location.</p>
+                                </details>
+                                <details>
+                                    <summary>How do I pay the consultation fee?</summary>
+                                    <p>After confirming your booking, click "Pay Now" and use any of the active online payment methods. Your appointment is marked as paid instantly.</p>
+                                </details>
+                                <details>
+                                    <summary>What is the live queue?</summary>
+                                    <p>Open your appointment and click "Live Queue" to see the token currently being served, how many patients are ahead of you, and your estimated wait.</p>
+                                </details>
+                                <details>
+                                    <summary>Can I change or cancel my appointment?</summary>
+                                    <p>Unpaid appointments can be edited or cancelled from "My Appointments". For paid appointments, please contact the branch.</p>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </t>
     </template>

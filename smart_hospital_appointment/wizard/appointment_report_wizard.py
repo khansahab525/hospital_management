@@ -56,7 +56,7 @@ class AppointmentReportWizard(models.TransientModel):
             "Branch",
             "Date/Time",
             "State",
-            "Queue",
+            "Token",
             "Priority",
             "Estimated Wait (min)",
         ]
@@ -75,7 +75,7 @@ class AppointmentReportWizard(models.TransientModel):
                 date_format,
             )
             worksheet.write(row, 5, dict(appt._fields["state"].selection).get(appt.state))
-            worksheet.write(row, 6, appt.queue_number or 0)
+            worksheet.write(row, 6, appt.token_number or 0)
             worksheet.write(row, 7, "Yes" if appt.is_high_priority else "No")
             worksheet.write(row, 8, appt.estimated_wait_minutes or 0)
 

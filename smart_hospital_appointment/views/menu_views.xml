@@ -27,9 +27,6 @@
                   groups="smart_hospital_appointment.group_hospital_receptionist"/>
         <menuitem id="menu_hospital_branches" name="Branches" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_branch" sequence="30"
                   groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
-        <menuitem id="menu_hospital_home_content" name="Home Page Contents" parent="menu_hospital_masters" action="smart_hospital_appointment.action_hospital_home_content" sequence="40"
-                  groups="smart_hospital_appointment.group_hospital_admin,base.group_system"/>
-
         <!-- Doctor workspace -->
         <menuitem id="menu_hospital_doctor_workspace" name="My Clinic" parent="menu_hospital_root" sequence="5"
                   groups="smart_hospital_appointment.group_hospital_doctor"/>

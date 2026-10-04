@@ -1,0 +1,430 @@
+$cp-ink: #0f172a;
+$cp-text: #334155;
+$cp-muted: #64748b;
+$cp-line: #e2e8f0;
+$cp-soft: #f5f8ff;
+$cp-blue: #2563eb;
+$cp-indigo: #4f46e5;
+$cp-teal: #14b8a6;
+$cp-red: #dc2626;
+$cp-navy: #0b1f4d;
+$cp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+.o_hospital_contact_page {
+    color: $cp-text;
+
+    .o_hc_hero {
+        position: relative;
+        overflow: hidden;
+        padding: 4.5rem 0 8rem;
+        color: #fff;
+        background: radial-gradient(900px 400px at 85% -20%, rgba(56, 189, 248, 0.35), transparent 60%),
+            linear-gradient(135deg, #071537 0%, $cp-navy 45%, #1e3a8a 80%, $cp-indigo 100%);
+
+        .container {
+            position: relative;
+            z-index: 1;
+            animation: o_cp_fade_up 0.7s $cp-ease both;
+        }
+    }
+
+    .o_hc_blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(70px);
+        opacity: 0.4;
+        pointer-events: none;
+        animation: o_cp_float 14s ease-in-out infinite;
+    }
+
+    .o_hc_blob_1 { width: 360px; height: 360px; top: -150px; right: -60px; background: #a78bfa; }
+    .o_hc_blob_2 { width: 260px; height: 260px; bottom: -120px; left: 20%; background: $cp-teal; animation-delay: -6s; }
+
+    .o_hc_wave {
+        position: absolute;
+        left: 0;
+        bottom: -1px;
+        width: 100%;
+        height: 70px;
+
+        path {
+            fill: $cp-soft;
+        }
+    }
+
+    .o_hc_badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin-bottom: 1.1rem;
+        padding: 0.4rem 0.95rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        backdrop-filter: blur(8px);
+    }
+
+    .o_hc_title {
+        margin-bottom: 0.9rem;
+        font-size: clamp(2.2rem, 4.6vw, 3.4rem);
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        color: #fff;
+    }
+
+    .o_hc_lead {
+        max-width: 40rem;
+        margin: 0;
+        font-size: 1.1rem;
+        line-height: 1.75;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    // Quick contact cards
+    .o_hc_quick {
+        position: relative;
+        z-index: 2;
+        margin-top: -5rem;
+
+        .col-md-4 {
+            animation: o_cp_fade_up 0.6s $cp-ease both;
+
+            &:nth-child(2) { animation-delay: 0.1s; }
+            &:nth-child(3) { animation-delay: 0.2s; }
+        }
+    }
+
+    .o_hc_quick_card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        height: 100%;
+        padding: 1.35rem 1.5rem;
+        border-radius: 1.25rem;
+        color: $cp-ink;
+        text-decoration: none;
+        background: #fff;
+        border: 1px solid $cp-line;
+        box-shadow: 0 24px 48px -30px rgba(15, 23, 42, 0.5);
+        transition: transform 0.35s $cp-ease, box-shadow 0.35s $cp-ease;
+
+        small {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: $cp-muted;
+        }
+
+        strong {
+            font-size: 1.02rem;
+            word-break: break-word;
+        }
+
+        &:hover {
+            transform: translateY(-5px);
+            color: $cp-ink;
+            box-shadow: 0 30px 56px -30px rgba(37, 99, 235, 0.55);
+
+            .o_hc_quick_icon {
+                transform: rotate(-8deg) scale(1.06);
+            }
+        }
+    }
+
+    .o_hc_quick_icon {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 3.2rem;
+        height: 3.2rem;
+        border-radius: 1rem;
+        font-size: 1.2rem;
+        color: #fff;
+        background: linear-gradient(135deg, $cp-blue, $cp-indigo);
+        transition: transform 0.35s $cp-ease;
+
+        &.o_hc_red {
+            background: linear-gradient(135deg, #f87171, $cp-red);
+            animation: o_cp_beacon 2.2s ease-out infinite;
+        }
+
+        &.o_hc_teal {
+            background: linear-gradient(135deg, #2dd4bf, #0d9488);
+        }
+    }
+
+    // Main block
+    .s_text_block {
+        padding-top: 2.5rem !important;
+        padding-bottom: 5rem !important;
+    }
+
+    .o_hc_form_col {
+        padding: 2.25rem;
+        border-radius: 1.5rem;
+        background: #fff;
+        border: 1px solid $cp-line;
+        box-shadow: 0 24px 50px -32px rgba(15, 23, 42, 0.45);
+        animation: o_cp_fade_up 0.7s $cp-ease 0.2s both;
+
+        > .s_website_form > .container {
+            padding: 0;
+        }
+    }
+
+    .o_hc_form_head {
+        margin-bottom: 1.25rem;
+
+        h2 {
+            margin: 0 0 0.5rem;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: $cp-ink;
+        }
+
+        p {
+            margin: 0;
+            color: $cp-muted;
+        }
+    }
+
+    .o_hc_kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.6rem;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: $cp-blue;
+
+        &::before {
+            content: "";
+            width: 1.6rem;
+            height: 2px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, $cp-blue, $cp-teal);
+        }
+    }
+
+    // Stack Odoo form labels above the inputs.
+    .s_website_form_rows {
+        row-gap: 0.25rem;
+    }
+
+    .s_website_form_field > .row {
+        flex-direction: column;
+    }
+
+    .s_website_form_label {
+        width: auto !important;
+        padding-bottom: 0.4rem;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: $cp-muted;
+    }
+
+    .s_website_form_mark {
+        color: $cp-red;
+    }
+
+    .s_website_form_input {
+        min-height: 3rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.9rem;
+        border: 1.5px solid $cp-line;
+        background-color: #fbfdff;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease;
+
+        &:focus {
+            border-color: $cp-blue;
+            background-color: #fff;
+            box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.15);
+        }
+    }
+
+    textarea.s_website_form_input {
+        min-height: 8rem;
+    }
+
+    .s_website_form_submit {
+        margin-top: 0.75rem;
+
+        > .s_website_form_label {
+            display: none;
+        }
+
+        .s_website_form_send {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            border: none;
+            border-radius: 0.9rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, $cp-blue, $cp-indigo);
+            box-shadow: 0 14px 28px -12px rgba(37, 99, 235, 0.8);
+            transition: transform 0.3s $cp-ease, box-shadow 0.3s $cp-ease;
+
+            &::after {
+                content: "\f1d8";
+                font-family: FontAwesome;
+            }
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 18px 34px -12px rgba(37, 99, 235, 0.9);
+            }
+        }
+    }
+
+    // Info sidebar
+    .o_hc_info,
+    .o_hc_emergency {
+        border-radius: 1.5rem;
+        animation: o_cp_fade_up 0.7s $cp-ease 0.3s both;
+    }
+
+    .o_hc_info {
+        margin-bottom: 1.25rem;
+        padding: 1.75rem;
+        background: #fff;
+        border: 1px solid $cp-line;
+        box-shadow: 0 24px 50px -32px rgba(15, 23, 42, 0.45);
+
+        h3 {
+            margin-bottom: 1.25rem;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: $cp-ink;
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        li {
+            display: flex;
+            gap: 0.9rem;
+            margin-bottom: 1.15rem;
+            line-height: 1.55;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            small {
+                display: block;
+                font-size: 0.7rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.07em;
+                color: $cp-muted;
+            }
+
+            a {
+                color: $cp-ink;
+                font-weight: 600;
+
+                &:hover {
+                    color: $cp-blue;
+                }
+            }
+        }
+    }
+
+    .o_hc_info_icon {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 0.8rem;
+        color: $cp-blue;
+        background: rgba(37, 99, 235, 0.08);
+    }
+
+    .o_hc_emergency {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        gap: 1rem;
+        padding: 1.6rem;
+        color: #fff;
+        background: linear-gradient(135deg, #b91c1c, $cp-red 55%, #f97316);
+        box-shadow: 0 24px 48px -26px rgba(220, 38, 38, 0.7);
+
+        > .fa {
+            flex-shrink: 0;
+            font-size: 2rem;
+            animation: o_cp_drive 3s ease-in-out infinite;
+        }
+
+        strong {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 1.1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        .o_hp_btn {
+            padding: 0.6rem 1.2rem;
+            color: $cp-red !important;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .o_hc_form_col {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+}
+
+@keyframes o_cp_fade_up {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes o_cp_float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-30px, 25px) scale(1.1); }
+}
+
+@keyframes o_cp_beacon {
+    0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.55); }
+    70% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+@keyframes o_cp_drive {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(6px); }
+}

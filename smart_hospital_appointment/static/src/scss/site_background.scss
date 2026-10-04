@@ -1,0 +1,16 @@
+// Hero wave dividers are filled with $sb-base, so the first screen must stay plain.
+$sb-base: #f5f8ff;
+$sb-plain-until: 760px;
+
+#wrapwrap > main {
+    background-color: $sb-base;
+    background-image:
+        linear-gradient(180deg, $sb-base 0, $sb-base $sb-plain-until, rgba(245, 248, 255, 0) ($sb-plain-until + 280px)),
+        radial-gradient(900px 620px at 0% 900px, rgba(37, 99, 235, 0.09), transparent 70%),
+        radial-gradient(820px 600px at 100% 1500px, rgba(20, 184, 166, 0.08), transparent 70%),
+        radial-gradient(900px 640px at 15% 2300px, rgba(79, 70, 229, 0.07), transparent 70%),
+        radial-gradient(820px 600px at 95% 3100px, rgba(56, 189, 248, 0.08), transparent 70%),
+        radial-gradient(rgba(37, 99, 235, 0.07) 1px, transparent 1.4px);
+    background-size: 100% 100%, 100% 3600px, 100% 3600px, 100% 3600px, 100% 3600px, 26px 26px;
+    background-repeat: no-repeat, repeat-y, repeat-y, repeat-y, repeat-y, repeat;
+}
