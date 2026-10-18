@@ -4,15 +4,15 @@ $hh-blue: #2563eb;
 $hh-indigo: #4f46e5;
 $hh-teal: #14b8a6;
 $hh-ease: cubic-bezier(0.22, 1, 0.36, 1);
-$hh-logo: 64px;
-$hh-logo-mobile: 52px;
+$hh-logo: 48px;
+$hh-logo-mobile: 42px;
 
 // Top bar
 .o_hospital_topbar {
     position: relative;
     overflow: hidden;
     color: #fff;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     background: linear-gradient(100deg, #0b1f4d 0%, #0f3b8c 40%, #0e7490 75%, #0b1f4d 100%);
     background-size: 220% 100%;
     animation: o_hh_gradient 18s ease infinite;
@@ -35,8 +35,8 @@ $hh-logo-mobile: 52px;
         align-items: center;
         justify-content: space-between;
         gap: 0.5rem 1.5rem;
-        min-height: 42px;
-        padding: 0.4rem 0;
+        min-height: 34px;
+        padding: 0.25rem 0;
         animation: o_hh_fade_down 0.6s $hh-ease both;
     }
 
@@ -183,16 +183,30 @@ header.o_hospital_header_active {
     }
 
     #o_main_nav.o_hospital_main_nav {
-        min-height: 84px;
-        padding: 0.6rem 0;
+        min-height: 64px;
+        padding: 0.35rem 0;
         align-items: center;
+        gap: 0.75rem;
+    }
+
+    // Keep brand, menu and actions as one tight bar (less empty mid-space).
+    .o_main_nav_wrap,
+    .navbar > .container,
+    .navbar > .container-fluid {
+        gap: 0.5rem 1rem;
+    }
+
+    #top_menu {
+        margin-left: 0 !important;
+        margin-right: auto;
+        column-gap: 0.1rem;
     }
 
     .navbar-nav .nav-link {
         position: relative;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 600;
-        padding: 0.55rem 0.95rem !important;
+        padding: 0.4rem 0.7rem !important;
         color: #1e293b !important;
         border-radius: 0.6rem;
         transition: color 0.25s ease, background 0.25s ease;
@@ -324,7 +338,7 @@ header.o_hospital_header_active {
     align-items: center !important;
     gap: 0.85rem !important;
     padding: 0 !important;
-    margin-right: 2rem !important;
+    margin-right: 1rem !important;
     text-decoration: none !important;
     flex-shrink: 0;
 
@@ -374,7 +388,7 @@ header.o_hospital_header_active {
 }
 
 .o_hospital_brand_caption {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     font-weight: 800;
     letter-spacing: -0.01em;
     white-space: nowrap;

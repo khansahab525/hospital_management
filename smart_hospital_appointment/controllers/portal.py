@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 from datetime import datetime
 
 import pytz
@@ -74,6 +75,16 @@ class HospitalBookingMixin:
             order="start_time",
         )
 
+    _WEEKDAY_LABELS = {
+        "0": "Monday",
+        "1": "Tuesday",
+        "2": "Wednesday",
+        "3": "Thursday",
+        "4": "Friday",
+        "5": "Saturday",
+        "6": "Sunday",
+    }
+
     def _float_hours_to_time_str(self, value):
         if value is False or value is None:
             return ""
@@ -85,27 +96,66 @@ class HospitalBookingMixin:
         hours %= 24
         return f"{hours:02d}:{minutes:02d}"
 
-    def _get_doctor_start_time(self, doctor, branch, date_value=None):
-        if not doctor or not branch:
+    def _format_float_time_ampm(self, value):
+        time_str = self._float_hours_to_time_str(value)
+        if not time_str:
             return ""
-        slots = request.env["hospital.doctor.availability"].sudo().search(
+        hours, minutes = map(int, time_str.split(":"))
+        period = "AM" if hours < 12 else "PM"
+        hours12 = hours % 12 or 12
+        return f"{hours12:02d}:{minutes:02d} {period}"
+
+    def _get_doctor_branch_slots(self, doctor, branch):
+        if not doctor or not branch:
+            return request.env["hospital.doctor.availability"]
+        return request.env["hospital.doctor.availability"].sudo().search(
             [
                 ("doctor_id", "=", doctor.id),
                 ("branch_id", "=", branch.id),
             ],
             order="day_of_week, start_time",
         )
+
+    def _get_doctor_available_weekdays(self, doctor, branch):
+        """Weekday numbers (0=Mon … 6=Sun) the doctor works at the branch."""
+        slots = self._get_doctor_branch_slots(doctor, branch)
+        return sorted({int(day) for day in slots.mapped("day_of_week")}, key=int)
+
+    def _get_doctor_available_weekday_labels(self, doctor, branch):
+        return [
+            self._WEEKDAY_LABELS[str(day)]
+            for day in self._get_doctor_available_weekdays(doctor, branch)
+        ]
+
+    def _get_doctor_day_time_display(self, doctor, branch, date_value):
+        """Human-readable start–end windows for the doctor on that date."""
+        slots = self._get_doctor_day_slots(doctor, branch, date_value)
         if not slots:
             return ""
+        return ", ".join(
+            f"{self._format_float_time_ampm(slot.start_time)} – {self._format_float_time_ampm(slot.end_time)}"
+            for slot in slots
+        )
+
+    def _get_doctor_start_time(self, doctor, branch, date_value=None):
+        if not doctor or not branch:
+            return ""
         if date_value:
-            try:
-                day = str(datetime.strptime(date_value, "%Y-%m-%d").weekday())
-                slots = slots.filtered(lambda slot: slot.day_of_week == day)
-            except ValueError:
-                pass
+            slots = self._get_doctor_day_slots(doctor, branch, date_value)
+        else:
+            slots = self._get_doctor_branch_slots(doctor, branch)
         if not slots:
             return ""
         return self._float_hours_to_time_str(slots[0].start_time)
+
+    def _is_available_booking_date(self, doctor, branch, date_value):
+        if not date_value or not doctor or not branch:
+            return False
+        try:
+            day = datetime.strptime(date_value, "%Y-%m-%d").weekday()
+        except ValueError:
+            return False
+        return day in self._get_doctor_available_weekdays(doctor, branch)
 
     def _get_booking_branches(self):
         return request.env["hospital.branch"].sudo().search([("active", "=", True)], order="name")
@@ -175,13 +225,27 @@ class HospitalBookingMixin:
             ctx_dt = fields.Datetime.context_timestamp(appointment, appointment.appointment_datetime)
             appointment_date_input = ctx_dt.strftime("%Y-%m-%d")
             appointment_time_input = appointment_time_input or ctx_dt.strftime("%H:%M")
+        available_weekdays = self._get_doctor_available_weekdays(doctor, branch)
+        if appointment_date_input and doctor and branch and not self._is_available_booking_date(
+            doctor, branch, appointment_date_input
+        ):
+            # Clear a date that falls on a day the doctor does not work.
+            appointment_date_input = ""
+            appointment_time_input = ""
         start_time = self._get_doctor_start_time(doctor, branch, appointment_date_input)
         if start_time and (not appointment or post.get("doctor_id") or post.get("appointment_date")):
             appointment_time_input = start_time
+        appointment_time_display = self._get_doctor_day_time_display(
+            doctor, branch, appointment_date_input
+        )
         return {
             "appointment": appointment,
             "appointment_date_input": appointment_date_input,
             "appointment_time_input": appointment_time_input,
+            "appointment_time_display": appointment_time_display,
+            "available_weekdays": available_weekdays,
+            "available_weekdays_json": json.dumps(available_weekdays),
+            "available_weekday_labels": self._get_doctor_available_weekday_labels(doctor, branch),
             "portal_partner": partner,
             "doctors": doctors,
             "branches": branches,
@@ -361,7 +425,11 @@ class HospitalPortal(HospitalBookingMixin, CustomerPortal):
             appt = self._get_portal_appointment(appointment_id)
         except AccessError:
             return request.redirect("/my/hospital")
+        date_value = fields.Datetime.context_timestamp(appt, appt.appointment_datetime).strftime("%Y-%m-%d")
         values["appointment"] = appt
+        values["doctor_hours_display"] = self._get_doctor_day_time_display(
+            appt.doctor_id, appt.branch_id, date_value
+        )
         values["default_url"] = "/my/hospital"
         return request.render("smart_hospital_appointment.portal_hospital_appointment_detail", values)
 

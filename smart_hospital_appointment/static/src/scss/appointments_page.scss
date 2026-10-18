@@ -487,6 +487,49 @@ $ap-wave: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox=
         animation: o_ap_fade_up 0.7s $ap-ease both;
     }
 
+    // Booking form panel — soft medical wash + faint photo accent
+    .o_appt_form_card {
+        position: relative;
+        isolation: isolate;
+        background-color: #f4f7ff;
+        background-image:
+            linear-gradient(145deg, rgba(244, 247, 255, 0.94) 0%, rgba(255, 255, 255, 0.9) 45%, rgba(236, 253, 245, 0.88) 100%),
+            radial-gradient(520px 280px at 100% 0%, rgba(37, 99, 235, 0.14), transparent 70%),
+            radial-gradient(420px 260px at 0% 100%, rgba(20, 184, 166, 0.12), transparent 70%),
+            url("/smart_hospital_appointment/static/src/img/hero.jpg");
+        background-size: auto, auto, auto, cover;
+        background-position: center, top right, bottom left, right center;
+        background-repeat: no-repeat;
+        border-color: rgba(37, 99, 235, 0.14);
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image: radial-gradient(rgba(37, 99, 235, 0.07) 1px, transparent 1.2px);
+            background-size: 18px 18px;
+            -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+            mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+        }
+
+        > * {
+            position: relative;
+            z-index: 1;
+        }
+    }
+
+    .o_appt_form_header {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.35) 100%) !important;
+        border-bottom-color: rgba(37, 99, 235, 0.1);
+        backdrop-filter: blur(6px);
+    }
+
+    .o_appt_form_body {
+        background: transparent;
+    }
+
     .o_appt_detail_header,
     .o_appt_form_header {
         position: relative;
@@ -741,6 +784,172 @@ $ap-wave: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox=
         grid-column: 1 / -1;
     }
 
+    // Booking calendar — compact month grid, only working days selectable
+    .o_booking_calendar {
+        max-width: 22rem;
+        padding: 0.75rem 0.85rem 0.85rem;
+        border-radius: 0.9rem;
+        background: #fbfdff;
+        border: 1px solid $ap-line;
+    }
+
+    .o_bc_toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-bottom: 0.55rem;
+
+        strong {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: $ap-ink;
+        }
+    }
+
+    .o_bc_nav {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.85rem;
+        height: 1.85rem;
+        border: 1px solid $ap-line;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        color: $ap-ink;
+        background: #fff;
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+
+        &:hover {
+            color: $ap-blue;
+            border-color: rgba(37, 99, 235, 0.4);
+            background: rgba(37, 99, 235, 0.06);
+        }
+    }
+
+    .o_bc_grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.2rem;
+    }
+
+    .o_bc_dow {
+        padding: 0.15rem 0;
+        text-align: center;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: $ap-muted;
+    }
+
+    .o_bc_day {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 1.9rem;
+        border: none;
+        border-radius: 0.45rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: $ap-ink;
+        background: #fff;
+        box-shadow: inset 0 0 0 1px $ap-line;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+
+        &:hover:not(:disabled) {
+            color: $ap-blue;
+            box-shadow: inset 0 0 0 1.5px $ap-blue;
+        }
+
+        &.o_bc_selected {
+            color: #fff;
+            background: linear-gradient(135deg, $ap-blue, $ap-indigo);
+            box-shadow: none;
+        }
+
+        &.o_bc_today:not(.o_bc_selected) {
+            box-shadow: inset 0 0 0 1.5px rgba(37, 99, 235, 0.55);
+        }
+
+        &.o_bc_disabled,
+        &:disabled {
+            color: #cbd5e1;
+            background: transparent;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.45;
+            font-weight: 500;
+        }
+
+        &.o_bc_empty {
+            background: transparent;
+            box-shadow: none;
+            cursor: default;
+        }
+    }
+
+    .o_bc_hint {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin: 0.55rem 0 0;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: $ap-muted;
+
+        .fa {
+            color: $ap-blue;
+        }
+    }
+
+    .o_bc_empty_state {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        min-height: 3.25rem;
+        padding: 0.7rem 0.85rem;
+        border-radius: 0.7rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: $ap-muted;
+        background: #f1f5f9;
+        border: 1px dashed #cbd5e1;
+
+        .fa {
+            font-size: 1.05rem;
+            color: $ap-blue;
+        }
+    }
+
+    .o_appt_date_hours {
+        align-items: flex-start;
+    }
+
+    .o_appt_time_display {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        min-height: 2.6rem;
+        max-width: 18rem;
+        padding: 0.55rem 0.9rem;
+        border-radius: 0.7rem;
+        border: 1px dashed rgba(37, 99, 235, 0.35);
+        background: linear-gradient(120deg, rgba(37, 99, 235, 0.06), rgba(20, 184, 166, 0.08));
+        color: $ap-ink;
+
+        .fa {
+            color: $ap-blue;
+        }
+
+        strong {
+            font-size: 0.95rem;
+            letter-spacing: -0.01em;
+        }
+    }
+
     .o_appt_form_footer {
         display: flex;
         flex-wrap: wrap;
@@ -948,12 +1157,17 @@ $ap-wave: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox=
 
         li {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
             gap: 1rem;
             padding: 0.7rem 0;
             border-bottom: 1px solid #f1f5f9;
             font-size: 0.92rem;
+
+            strong {
+                text-align: right;
+                line-height: 1.4;
+            }
 
             &:last-child {
                 border-bottom: none;

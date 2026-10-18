@@ -17,9 +17,9 @@ $hp-radius: 1.25rem;
     overflow: hidden;
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
-    padding: 0.85rem 1.6rem;
-    border-radius: 0.9rem;
+    gap: 0.45rem;
+    padding: 0.7rem 1.25rem;
+    border-radius: 0.75rem;
     font-weight: 700;
     font-size: 0.98rem;
     text-decoration: none !important;
@@ -307,17 +307,18 @@ $hp-radius: 1.25rem;
         position: absolute;
         left: 0;
         bottom: -1px;
+        z-index: 2;
         width: 100%;
-        height: 90px;
+        height: 48px;
 
         path {
             fill: $hp-soft;
         }
     }
 
-    // Slider
+    // Slider — standard full-width hero (16:9 streaming area)
     .o_hp_slider {
-        --hp-slide-h: clamp(520px, 82vh, 720px);
+        --hp-slide-h: clamp(480px, 56.25vw, 720px); // 16:9 of viewport width, capped
         position: relative;
         overflow: hidden;
         background: $hp-navy;
@@ -339,15 +340,14 @@ $hp-radius: 1.25rem;
         pointer-events: none;
     }
 
-    // Cover the slide with a 16:9 embedded player, whichever side overflows.
+    // Fill the hero with a standard 16:9 stream (cover the frame, no zoom-crop).
+    // Quote max() so libsass does not treat it as a Sass function.
     .o_hp_slide_embed {
         inset: auto;
         top: 50%;
         left: 50%;
-        width: calc(var(--hp-slide-h) * 16 / 9);
-        min-width: 100%;
-        height: calc(100vw * 9 / 16);
-        min-height: 100%;
+        width: #{'max(100%, calc(var(--hp-slide-h) * 16 / 9))'};
+        height: #{'max(100%, calc(100vw * 9 / 16))'};
         border: 0;
         transform: translate(-50%, -50%);
     }
@@ -376,21 +376,24 @@ $hp-radius: 1.25rem;
     .o_hp_slide_overlay {
         position: absolute;
         inset: 0;
-        background: linear-gradient(100deg, rgba(7, 21, 55, 0.92) 0%, rgba(11, 31, 77, 0.7) 45%, rgba(30, 58, 138, 0.25) 100%),
-            linear-gradient(0deg, rgba(7, 21, 55, 0.55), transparent 40%);
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(105deg, rgba(7, 21, 55, 0.88) 0%, rgba(11, 31, 77, 0.62) 42%, rgba(7, 21, 55, 0.35) 100%),
+            linear-gradient(0deg, rgba(7, 21, 55, 0.5) 0%, transparent 45%);
     }
 
     .o_hp_slide_container {
         position: relative;
-        z-index: 1;
+        z-index: 2;
         display: flex;
         align-items: center;
         height: 100%;
+        padding-top: 2rem;
         padding-bottom: 5rem;
     }
 
     .o_hp_slide_caption {
-        max-width: 40rem;
+        max-width: 36rem;
         color: #fff;
 
         &.o_align_center {
@@ -423,18 +426,20 @@ $hp-radius: 1.25rem;
     }
 
     .o_hp_slide_title {
-        margin: 1.2rem 0 1rem;
-        font-size: clamp(2.2rem, 5vw, 3.8rem);
+        margin: 0.75rem 0 0.65rem;
+        font-size: clamp(1.85rem, 4vw, 3rem);
         font-weight: 800;
-        line-height: 1.07;
-        letter-spacing: -0.035em;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
         color: #fff;
-        text-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        text-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     }
 
     .o_hp_slide_text {
-        font-size: 1.15rem;
-        line-height: 1.75;
+        max-width: 32rem;
+        margin-bottom: 0;
+        font-size: 1.02rem;
+        line-height: 1.6;
         color: rgba(255, 255, 255, 0.85);
         white-space: pre-line;
     }
@@ -442,12 +447,12 @@ $hp-radius: 1.25rem;
     .o_hp_slide_actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.9rem;
-        margin-top: 2rem;
+        gap: 0.7rem;
+        margin-top: 1.25rem;
     }
 
     .o_hp_slider_ctrl {
-        width: 5rem;
+        width: 3.25rem;
         opacity: 1;
         z-index: 3;
 
@@ -534,92 +539,58 @@ $hp-radius: 1.25rem;
         }
     }
 
-    // Quick actions
+    // Quick actions — compact horizontal link cards (hospital-site standard)
     .o_hp_quick {
         position: relative;
         z-index: 2;
-        margin-top: -5.5rem;
+        margin-top: -2.75rem;
     }
 
     .o_hp_quick_card {
         --qa: #{$hp-blue};
         --qa-2: #{$hp-indigo};
         --qa-soft: rgba(37, 99, 235, 0.1);
-        --qa-shadow: rgba(37, 99, 235, 0.6);
+        --qa-shadow: rgba(37, 99, 235, 0.45);
         position: relative;
-        isolation: isolate;
-        overflow: hidden;
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        gap: 0.85rem;
         height: 100%;
-        padding: 1.75rem 1.6rem 1.5rem;
-        border-radius: 1.5rem;
+        min-height: 4.5rem;
+        padding: 0.9rem 1rem;
+        border-radius: 1rem;
         color: $hp-ink;
         text-decoration: none !important;
         background: #fff;
-        border: 1px solid rgba(226, 232, 240, 0.9);
-        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 30px 60px -32px rgba(15, 23, 42, 0.45);
-        transition: transform 0.45s $hp-ease, box-shadow 0.45s $hp-ease, color 0.35s ease;
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        box-shadow: 0 12px 28px -18px rgba(15, 23, 42, 0.4);
+        transition: transform 0.3s $hp-ease, box-shadow 0.3s $hp-ease, border-color 0.25s ease;
 
-        // Accent bar along the top edge
         &::before {
             content: "";
             position: absolute;
-            inset: 0 0 auto;
-            height: 4px;
-            background: linear-gradient(90deg, var(--qa), var(--qa-2));
-            transform: scaleX(0.22);
-            transform-origin: left;
-            transition: transform 0.55s $hp-ease;
-        }
-
-        // Colour sweep revealed on hover
-        &::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            z-index: -1;
-            background: radial-gradient(400px 200px at 100% 0%, rgba(255, 255, 255, 0.18), transparent 60%),
-                linear-gradient(135deg, var(--qa), var(--qa-2));
-            clip-path: circle(0% at 100% 0%);
-            transition: clip-path 0.65s $hp-ease;
+            left: 0;
+            top: 18%;
+            bottom: 18%;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+            background: linear-gradient(180deg, var(--qa), var(--qa-2));
         }
 
         &:hover,
         &:focus-visible {
-            color: #fff;
-            transform: translateY(-10px);
-            box-shadow: 0 40px 70px -30px var(--qa-shadow);
+            color: $hp-ink;
+            transform: translateY(-3px);
+            border-color: rgba(37, 99, 235, 0.28);
+            box-shadow: 0 18px 34px -18px var(--qa-shadow);
 
-            &::before {
-                transform: scaleX(1);
-            }
-
-            &::after {
-                clip-path: circle(160% at 100% 0%);
+            .o_hp_quick_chevron {
+                color: var(--qa);
+                transform: translateX(3px);
             }
 
             .o_hp_quick_icon {
-                color: #fff;
-                background: rgba(255, 255, 255, 0.18);
-                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
-                transform: rotate(-8deg) scale(1.06);
-            }
-
-            .o_hp_quick_text {
-                color: rgba(255, 255, 255, 0.85);
-            }
-
-            .o_hp_quick_step {
-                color: rgba(255, 255, 255, 0.2);
-            }
-
-            .o_hp_quick_link {
-                color: #fff;
-
-                i {
-                    transform: translateX(6px);
-                }
+                transform: scale(1.05);
             }
         }
     }
@@ -628,158 +599,104 @@ $hp-radius: 1.25rem;
         --qa: #7c3aed;
         --qa-2: #c026d3;
         --qa-soft: rgba(124, 58, 237, 0.1);
-        --qa-shadow: rgba(124, 58, 237, 0.6);
+        --qa-shadow: rgba(124, 58, 237, 0.45);
     }
 
     .o_qa_teal {
         --qa: #0d9488;
         --qa-2: #0ea5e9;
         --qa-soft: rgba(13, 148, 136, 0.12);
-        --qa-shadow: rgba(13, 148, 136, 0.6);
-    }
-
-    .o_hp_quick_step {
-        position: absolute;
-        top: 1rem;
-        right: 1.35rem;
-        font-size: 2.8rem;
-        font-weight: 800;
-        line-height: 1;
-        letter-spacing: -0.05em;
-        color: rgba(15, 23, 42, 0.06);
-        transition: color 0.35s ease;
+        --qa-shadow: rgba(13, 148, 136, 0.45);
     }
 
     .o_hp_quick_icon {
+        flex-shrink: 0;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 3.6rem;
-        height: 3.6rem;
-        border-radius: 1.1rem;
-        font-size: 1.45rem;
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 0.75rem;
+        font-size: 1.15rem;
         color: var(--qa);
         background: var(--qa-soft);
-        transition: transform 0.45s $hp-ease, background 0.35s ease, color 0.35s ease;
+        transition: transform 0.3s $hp-ease;
+    }
+
+    .o_hp_quick_body {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
     }
 
     .o_hp_quick_title {
-        margin-top: 1.25rem;
-        font-size: 1.12rem;
+        font-size: 0.95rem;
         font-weight: 700;
         letter-spacing: -0.01em;
+        line-height: 1.25;
     }
 
     .o_hp_quick_text {
-        flex-grow: 1;
-        margin-top: 0.35rem;
-        font-size: 0.9rem;
-        line-height: 1.6;
+        font-size: 0.8rem;
+        line-height: 1.35;
         color: $hp-muted;
-        transition: color 0.35s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
-    .o_hp_quick_link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        margin-top: 1.25rem;
-        font-size: 0.88rem;
-        font-weight: 700;
-        color: var(--qa);
-        transition: color 0.35s ease;
-
-        i {
-            transition: transform 0.35s $hp-ease;
-        }
+    .o_hp_quick_chevron {
+        flex-shrink: 0;
+        color: #94a3b8;
+        transition: color 0.25s ease, transform 0.25s $hp-ease;
     }
 
     .o_hp_quick_emergency {
-        --qa-shadow: rgba(220, 38, 38, 0.7);
+        --qa: #dc2626;
+        --qa-2: #b91c1c;
+        --qa-soft: rgba(255, 255, 255, 0.18);
+        --qa-shadow: rgba(220, 38, 38, 0.55);
         color: #fff;
         border-color: transparent;
-        background: radial-gradient(380px 220px at 100% 0%, rgba(255, 255, 255, 0.22), transparent 60%),
-            linear-gradient(140deg, #ef4444 0%, #dc2626 45%, #9f1239 100%);
-        box-shadow: 0 30px 60px -30px rgba(220, 38, 38, 0.75);
+        background: linear-gradient(135deg, #ef4444, #b91c1c);
 
-        &::before,
-        &::after {
+        &::before {
             display: none;
         }
 
         .o_hp_quick_icon {
             color: #fff;
             background: rgba(255, 255, 255, 0.18);
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
-            animation: o_hp_quick_ring 2.2s ease-out infinite;
         }
 
-        .o_hp_quick_text {
-            color: rgba(255, 255, 255, 0.85);
+        .o_hp_quick_text,
+        .o_hp_quick_chevron {
+            color: rgba(255, 255, 255, 0.88);
         }
-    }
 
-    .o_hp_quick_live {
-        position: absolute;
-        top: 1.35rem;
-        right: 1.35rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        padding: 0.3rem 0.7rem;
-        border-radius: 999px;
-        font-size: 0.7rem;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        background: rgba(255, 255, 255, 0.16);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .o_hp_quick_live_dot {
-        width: 0.45rem;
-        height: 0.45rem;
-        border-radius: 50%;
-        background: #fff;
-        animation: o_hp_quick_blink 1.4s ease-in-out infinite;
-    }
-
-    .o_hp_quick_phone {
-        display: inline-flex;
-        align-items: center;
-        align-self: flex-start;
-        gap: 0.55rem;
-        margin-top: 1.1rem;
-        padding: 0.55rem 1rem;
-        border-radius: 0.9rem;
-        font-size: 1rem;
-        font-weight: 800;
-        letter-spacing: 0.01em;
-        color: #b91c1c;
-        background: #fff;
-        box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.45);
-        transition: transform 0.35s $hp-ease;
-    }
-
-    .o_hp_quick_emergency:hover .o_hp_quick_phone {
-        transform: scale(1.04);
+        &:hover,
+        &:focus-visible {
+            color: #fff;
+        }
     }
 
     // Stats
     .o_hp_stats {
-        padding: 3.5rem 0 1rem;
+        padding: 2rem 0 0.5rem;
     }
 
     .o_hp_stats_band {
         position: relative;
         overflow: hidden;
-        padding: 2.75rem 1.25rem;
-        border-radius: 2rem;
+        padding: 1.35rem 1rem;
+        border-radius: 1.15rem;
         color: #fff;
         background: radial-gradient(700px 320px at 0% 0%, rgba(56, 189, 248, 0.28), transparent 60%),
             radial-gradient(600px 300px at 100% 100%, rgba(167, 139, 250, 0.28), transparent 60%),
             linear-gradient(135deg, #071537 0%, $hp-navy 50%, #1e3a8a 100%);
-        box-shadow: 0 40px 80px -40px rgba(11, 31, 77, 0.75);
+        box-shadow: 0 24px 48px -30px rgba(11, 31, 77, 0.65);
 
         &::before {
             content: "";
@@ -820,47 +737,51 @@ $hp-radius: 1.25rem;
     .o_hp_stat {
         position: relative;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
         height: 100%;
-        padding: 0.75rem 1rem;
-        text-align: center;
+        padding: 0.55rem 0.75rem;
+        text-align: left;
 
         &:hover .o_hp_stat_icon {
-            transform: translateY(-4px) rotate(-6deg);
+            transform: translateY(-2px);
             background: linear-gradient(135deg, #38bdf8, $hp-indigo);
         }
     }
 
     .o_hp_stat_icon {
+        flex-shrink: 0;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 3.25rem;
-        height: 3.25rem;
-        margin-bottom: 0.9rem;
-        border-radius: 1rem;
-        font-size: 1.3rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        margin-bottom: 0;
+        border-radius: 0.75rem;
+        font-size: 1.05rem;
         color: #fff;
         background: rgba(255, 255, 255, 0.1);
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(6px);
-        transition: transform 0.45s $hp-ease, background 0.45s ease;
+        transition: transform 0.35s $hp-ease, background 0.35s ease;
     }
 
     .o_hp_stat_value {
-        font-size: clamp(2.3rem, 4vw, 3.1rem);
+        display: block;
+        font-size: clamp(1.5rem, 2.4vw, 1.9rem);
         font-weight: 800;
         line-height: 1;
-        letter-spacing: -0.04em;
+        letter-spacing: -0.03em;
         background: linear-gradient(180deg, #fff 30%, #bfdbfe);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
 
         sup {
-            top: -0.9em;
-            margin-left: 0.1em;
+            top: -0.7em;
+            margin-left: 0.05em;
             font-size: 0.5em;
             color: #5eead4;
         }
@@ -872,48 +793,51 @@ $hp-radius: 1.25rem;
     }
 
     .o_hp_stat_label {
-        margin-top: 0.6rem;
-        font-size: 0.8rem;
+        display: block;
+        margin-top: 0.2rem;
+        font-size: 0.68rem;
         font-weight: 800;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: #fff;
+        color: rgba(255, 255, 255, 0.78);
     }
 
     .o_hp_stat_hint {
-        margin-top: 0.25rem;
-        font-size: 0.82rem;
-        color: rgba(255, 255, 255, 0.55);
+        display: none;
     }
 
     @media (max-width: 991.98px) {
         .o_hp_stats_band {
-            padding: 2rem 0.75rem;
+            padding: 1.1rem 0.6rem;
 
             .row {
-                row-gap: 1.75rem;
+                row-gap: 0.85rem;
             }
 
             .row > [class*="col-"]:nth-child(odd) .o_hp_stat::before {
                 display: none;
             }
         }
+
+        .o_hp_stat {
+            justify-content: flex-start;
+        }
     }
 
     @media (max-width: 575.98px) {
         .o_hp_quick {
-            margin-top: -4rem;
+            margin-top: -2rem;
         }
 
-        .o_hp_stat_hint {
-            display: none;
+        .o_hp_quick_text {
+            white-space: normal;
         }
     }
 
     // Sections
     .o_hp_section {
         position: relative;
-        padding: 6rem 0;
+        padding: 3.75rem 0;
     }
 
     .o_hp_soft {
@@ -921,8 +845,8 @@ $hp-radius: 1.25rem;
     }
 
     .o_hp_section_head {
-        max-width: 40rem;
-        margin: 0 auto 3.25rem;
+        max-width: 38rem;
+        margin: 0 auto 2.25rem;
         text-align: center;
 
         &.o_hp_head_split {
@@ -961,11 +885,11 @@ $hp-radius: 1.25rem;
     }
 
     .o_hp_section_title {
-        margin: 0 0 1rem;
-        font-size: clamp(1.9rem, 3.4vw, 2.75rem);
+        margin: 0 0 0.65rem;
+        font-size: clamp(1.65rem, 2.8vw, 2.25rem);
         font-weight: 800;
-        line-height: 1.15;
-        letter-spacing: -0.03em;
+        line-height: 1.2;
+        letter-spacing: -0.025em;
     }
 
     .o_hp_section_lead {
@@ -1691,7 +1615,7 @@ $hp-radius: 1.25rem;
         }
 
         .o_hp_section {
-            padding: 4.5rem 0;
+            padding: 3rem 0;
         }
     }
 

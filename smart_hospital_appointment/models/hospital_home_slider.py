@@ -89,7 +89,8 @@ class HospitalHomeSlider(models.Model):
                     kind = "youtube"
                     src = (
                         f"https://www.youtube-nocookie.com/embed/{vid}?autoplay=1&mute=1&loop=1"
-                        f"&playlist={vid}&controls=0&rel=0&playsinline=1&modestbranding=1&disablekb=1"
+                        f"&playlist={vid}&controls=0&rel=0&playsinline=1&modestbranding=1"
+                        f"&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0&showinfo=0"
                     )
                 elif vimeo:
                     kind = "vimeo"

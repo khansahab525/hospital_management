@@ -1,6 +1,6 @@
 {
     "name": "Smart Hospital Appointment System",
-    "version": "17.7",
+    "version": "17.8",
     "category": "Healthcare",
     "summary": "Smart hospital workflow with appointments and queue management",
     "description": """
@@ -72,6 +72,7 @@ Production-ready hospital appointment management for Odoo 17:
             "smart_hospital_appointment/static/src/scss/site_background.scss",
             "smart_hospital_appointment/static/src/js/live_queue.js",
             "smart_hospital_appointment/static/src/js/home_page.js",
+            "smart_hospital_appointment/static/src/js/booking_calendar.js",
         ],
     },
 }

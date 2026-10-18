@@ -41,19 +41,19 @@
                                     <span class="o_hp_slide_overlay"/>
                                     <div class="container o_hp_slide_container">
                                         <div t-attf-class="o_hp_slide_caption text-#{slide.caption_align} o_align_#{slide.caption_align}">
-                                            <span t-if="slide.badge" class="o_hp_eyebrow">
+                                            <span class="o_hp_eyebrow">
                                                 <span class="o_hp_eyebrow_dot"/>
-                                                <t t-out="slide.badge"/>
+                                                <t t-out="slide.badge or 'Smart Hospital'"/>
                                             </span>
-                                            <h1 t-if="slide.title" class="o_hp_slide_title" t-out="slide.title"/>
-                                            <p t-if="slide.subtitle" class="o_hp_slide_text" t-out="slide.subtitle"/>
-                                            <div t-if="slide.button_text or slide.button_text_2" class="o_hp_slide_actions">
-                                                <a t-if="slide.button_text" t-att-href="slide.button_url or '/appointment/book'" class="o_hp_btn o_hp_btn_primary">
+                                            <h1 class="o_hp_slide_title" t-out="slide.title or 'Care you can trust'"/>
+                                            <p class="o_hp_slide_text" t-out="slide.subtitle or 'Book specialists online, pay securely, and follow your turn live.'"/>
+                                            <div class="o_hp_slide_actions">
+                                                <a t-att-href="(slide.button_text and slide.button_url) or '/appointment/book'" class="o_hp_btn o_hp_btn_primary">
                                                     <i class="fa fa-calendar-check-o" aria-hidden="true"/>
-                                                    <t t-out="slide.button_text"/>
+                                                    <t t-out="slide.button_text or 'Book Appointment'"/>
                                                 </a>
-                                                <a t-if="slide.button_text_2" t-att-href="slide.button_url_2 or '/doctors'" class="o_hp_btn o_hp_btn_outline">
-                                                    <t t-out="slide.button_text_2"/>
+                                                <a t-att-href="(slide.button_text_2 and slide.button_url_2) or '/doctors'" class="o_hp_btn o_hp_btn_outline">
+                                                    <t t-out="slide.button_text_2 or 'Find a Doctor'"/>
                                                     <i class="fa fa-arrow-right" aria-hidden="true"/>
                                                 </a>
                                             </div>
@@ -150,44 +150,45 @@
                 <!-- Quick actions -->
                 <section class="o_hp_quick">
                     <div class="container">
-                        <div class="row g-4">
+                        <div class="row g-3">
                             <div class="col-sm-6 col-xl-3">
                                 <a href="/appointment/book" class="o_hp_quick_card o_qa_blue o_hp_reveal">
-                                    <span class="o_hp_quick_step">01</span>
                                     <span class="o_hp_quick_icon"><i class="fa fa-calendar-plus-o" aria-hidden="true"/></span>
-                                    <strong class="o_hp_quick_title">Book Appointment</strong>
-                                    <span class="o_hp_quick_text">Choose a doctor, branch and a time that suits you.</span>
-                                    <span class="o_hp_quick_link">Book now <i class="fa fa-long-arrow-right" aria-hidden="true"/></span>
+                                    <span class="o_hp_quick_body">
+                                        <strong class="o_hp_quick_title">Book Appointment</strong>
+                                        <span class="o_hp_quick_text">Doctor, branch and time</span>
+                                    </span>
+                                    <i class="fa fa-angle-right o_hp_quick_chevron" aria-hidden="true"/>
                                 </a>
                             </div>
                             <div class="col-sm-6 col-xl-3">
                                 <a href="/doctors" class="o_hp_quick_card o_qa_violet o_hp_reveal">
-                                    <span class="o_hp_quick_step">02</span>
                                     <span class="o_hp_quick_icon"><i class="fa fa-user-md" aria-hidden="true"/></span>
-                                    <strong class="o_hp_quick_title">Find a Doctor</strong>
-                                    <span class="o_hp_quick_text">Search specialists by name, speciality or branch.</span>
-                                    <span class="o_hp_quick_link">Browse doctors <i class="fa fa-long-arrow-right" aria-hidden="true"/></span>
+                                    <span class="o_hp_quick_body">
+                                        <strong class="o_hp_quick_title">Find a Doctor</strong>
+                                        <span class="o_hp_quick_text">Search by speciality</span>
+                                    </span>
+                                    <i class="fa fa-angle-right o_hp_quick_chevron" aria-hidden="true"/>
                                 </a>
                             </div>
                             <div class="col-sm-6 col-xl-3">
                                 <a href="/my/hospital" class="o_hp_quick_card o_qa_teal o_hp_reveal">
-                                    <span class="o_hp_quick_step">03</span>
                                     <span class="o_hp_quick_icon"><i class="fa fa-clipboard" aria-hidden="true"/></span>
-                                    <strong class="o_hp_quick_title">My Appointments</strong>
-                                    <span class="o_hp_quick_text">Pay online, reschedule and track your queue live.</span>
-                                    <span class="o_hp_quick_link">Open portal <i class="fa fa-long-arrow-right" aria-hidden="true"/></span>
+                                    <span class="o_hp_quick_body">
+                                        <strong class="o_hp_quick_title">My Appointments</strong>
+                                        <span class="o_hp_quick_text">Pay and track live</span>
+                                    </span>
+                                    <i class="fa fa-angle-right o_hp_quick_chevron" aria-hidden="true"/>
                                 </a>
                             </div>
                             <div class="col-sm-6 col-xl-3">
                                 <a t-att-href="company.phone and ('tel:%s' % company.phone) or '/contactus'" class="o_hp_quick_card o_hp_quick_emergency o_hp_reveal">
-                                    <span class="o_hp_quick_live"><span class="o_hp_quick_live_dot"/>Open 24/7</span>
                                     <span class="o_hp_quick_icon"><i class="fa fa-ambulance" aria-hidden="true"/></span>
-                                    <strong class="o_hp_quick_title">Emergency Care</strong>
-                                    <span class="o_hp_quick_text">Immediate help, day and night.</span>
-                                    <span class="o_hp_quick_phone">
-                                        <i class="fa fa-phone" aria-hidden="true"/>
-                                        <t t-out="company.phone or 'Contact us'"/>
+                                    <span class="o_hp_quick_body">
+                                        <strong class="o_hp_quick_title">Emergency 24/7</strong>
+                                        <span class="o_hp_quick_text" t-out="company.phone or 'Call us any time'"/>
                                     </span>
+                                    <i class="fa fa-phone o_hp_quick_chevron" aria-hidden="true"/>
                                 </a>
                             </div>
                         </div>
@@ -206,7 +207,6 @@
                                         <span class="o_hp_stat_icon"><i class="fa fa-user-md" aria-hidden="true"/></span>
                                         <span class="o_hp_stat_value"><span class="o_hp_counter" t-att-data-target="doctor_count">0</span><sup>+</sup></span>
                                         <span class="o_hp_stat_label">Expert Doctors</span>
-                                        <span class="o_hp_stat_hint">Experienced specialists</span>
                                     </div>
                                 </div>
                                 <div class="col-6 col-lg-3">
@@ -214,7 +214,6 @@
                                         <span class="o_hp_stat_icon"><i class="fa fa-stethoscope" aria-hidden="true"/></span>
                                         <span class="o_hp_stat_value"><span class="o_hp_counter" t-att-data-target="specialization_count">0</span><sup>+</sup></span>
                                         <span class="o_hp_stat_label">Specialities</span>
-                                        <span class="o_hp_stat_hint">Departments under one roof</span>
                                     </div>
                                 </div>
                                 <div class="col-6 col-lg-3">
@@ -222,7 +221,6 @@
                                         <span class="o_hp_stat_icon"><i class="fa fa-hospital-o" aria-hidden="true"/></span>
                                         <span class="o_hp_stat_value"><span class="o_hp_counter" t-att-data-target="branch_count">0</span></span>
                                         <span class="o_hp_stat_label">Hospital Branches</span>
-                                        <span class="o_hp_stat_hint">Care close to home</span>
                                     </div>
                                 </div>
                                 <div class="col-6 col-lg-3">
@@ -230,7 +228,6 @@
                                         <span class="o_hp_stat_icon"><i class="fa fa-heartbeat" aria-hidden="true"/></span>
                                         <span class="o_hp_stat_value">24<small>/</small>7</span>
                                         <span class="o_hp_stat_label">Emergency Care</span>
-                                        <span class="o_hp_stat_hint">Always open, every day</span>
                                     </div>
                                 </div>
                             </div>

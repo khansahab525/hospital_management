@@ -237,9 +237,9 @@
                                 <i class="fa fa-calendar" aria-hidden="true"/>
                                 <span t-field="appointment.appointment_datetime" t-options="{'widget': 'date'}"/>
                             </li>
-                            <li>
+                            <li t-if="doctor_hours_display">
                                 <i class="fa fa-clock-o" aria-hidden="true"/>
-                                <span t-field="appointment.appointment_datetime" t-options="{'time_only': True, 'format': 'h:mm a'}"/>
+                                <t t-out="doctor_hours_display"/>
                             </li>
                             <li t-if="appointment.branch_id">
                                 <i class="fa fa-map-marker" aria-hidden="true"/>
@@ -296,8 +296,8 @@
                                     <div class="o_av_info o_av_info_violet">
                                         <span class="o_av_info_icon"><i class="fa fa-clock-o" aria-hidden="true"/></span>
                                         <div>
-                                            <span class="o_av_label">Time</span>
-                                            <strong><span t-field="appointment.appointment_datetime" t-options="{'time_only': True, 'format': 'h:mm a'}"/></strong>
+                                            <span class="o_av_label">Doctor hours</span>
+                                            <strong t-out="doctor_hours_display or '—'"/>
                                         </div>
                                     </div>
                                 </div>
@@ -476,16 +476,55 @@
                                         </t>
                                     </select>
                                 </div>
-                                <div class="o_appt_form_group">
-                                    <label class="form-label" for="appointment_date">Date</label>
-                                    <input class="form-control" type="date" name="appointment_date" id="appointment_date" required="required"
-                                           t-att-min="min_booking_date"
-                                           t-att-value="appointment_date_input or post.get('appointment_date') or ''"/>
-                                </div>
-                                <div class="o_appt_form_group">
-                                    <label class="form-label" for="appointment_time">Time</label>
-                                    <input class="form-control" type="time" name="appointment_time" id="appointment_time" required="required" readonly="readonly"
-                                           t-att-value="appointment_time_input or ''"/>
+                                <div class="o_appt_form_group o_appt_form_full">
+                                    <div class="row g-3 o_appt_date_hours">
+                                        <div class="col-md-auto">
+                                            <label class="form-label" for="appointment_date">Date</label>
+                                            <div class="o_booking_calendar"
+                                                 data-booking-calendar="1"
+                                                 t-att-data-available-weekdays="available_weekdays_json or '[]'"
+                                                 t-att-data-min-date="min_booking_date">
+                                                <input type="hidden" name="appointment_date" id="appointment_date"
+                                                       t-att-required="selected_doctor_id and available_weekdays and 'required' or None"
+                                                       t-att-value="appointment_date_input or post.get('appointment_date') or ''"
+                                                       t-att-disabled="(not selected_doctor_id or not available_weekdays) and 'disabled' or None"/>
+                                                <div t-if="not selected_doctor_id" class="o_bc_empty_state">
+                                                    <i class="fa fa-user-md" aria-hidden="true"/>
+                                                    Select a doctor to see available dates.
+                                                </div>
+                                                <div t-elif="not available_weekdays" class="o_bc_empty_state">
+                                                    <i class="fa fa-calendar-times-o" aria-hidden="true"/>
+                                                    This doctor has no availability at the selected branch.
+                                                </div>
+                                                <t t-else="">
+                                                    <div class="o_bc_toolbar">
+                                                        <button type="button" class="o_bc_nav" data-calendar-prev="1" aria-label="Previous month">
+                                                            <i class="fa fa-chevron-left" aria-hidden="true"/>
+                                                        </button>
+                                                        <strong data-calendar-label="1"/>
+                                                        <button type="button" class="o_bc_nav" data-calendar-next="1" aria-label="Next month">
+                                                            <i class="fa fa-chevron-right" aria-hidden="true"/>
+                                                        </button>
+                                                    </div>
+                                                    <div class="o_bc_grid" data-calendar-grid="1"/>
+                                                    <p class="o_bc_hint" t-if="available_weekday_labels">
+                                                        <i class="fa fa-info-circle" aria-hidden="true"/>
+                                                        Available:
+                                                        <t t-out="', '.join(available_weekday_labels)"/>
+                                                    </p>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        <div t-if="appointment_time_display" class="col-md">
+                                            <label class="form-label" for="appointment_time_display">Doctor hours</label>
+                                            <input type="hidden" name="appointment_time" id="appointment_time"
+                                                   t-att-value="appointment_time_input or ''"/>
+                                            <div class="o_appt_time_display" id="appointment_time_display">
+                                                <i class="fa fa-clock-o" aria-hidden="true"/>
+                                                <strong t-out="appointment_time_display"/>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="o_appt_form_group o_appt_form_full">
                                     <label class="form-label" for="notes">Notes (optional)</label>
