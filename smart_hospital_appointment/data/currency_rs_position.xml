@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="base.PKR" model="res.currency">
+        <field name="position">before</field>
+        <field name="symbol">Rs.</field>
+    </record>
+    <function model="res.currency" name="_hospital_set_rs_symbol_before"/>
+</odoo>

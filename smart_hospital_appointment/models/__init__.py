@@ -12,3 +12,4 @@ from . import hospital_appointment_medicine_line
 from . import hospital_appointment
 from . import payment_transaction
 from . import hospital_home_slider
+from . import res_currency
